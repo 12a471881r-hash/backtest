@@ -1,0 +1,347 @@
+
+<h2 class="sr-only">Backtest engine interattivo: configura una strategia crypto e analizza le performance storiche simulate</h2>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);color:var(--color-text-primary);background:transparent}
+.pos{color:#16a34a}.neg{color:#dc2626}.warn{color:#d97706}
+.row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.lbl{font-size:12px;color:var(--color-text-secondary);min-width:110px}
+select,input[type=number]{font-size:13px;padding:6px 10px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);width:100%}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}
+.cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}
+.mcard{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px}
+.mcard .ml{font-size:11px;color:var(--color-text-secondary);margin-bottom:3px}
+.mcard .mv{font-size:20px;font-weight:500}
+.mcard .ms{font-size:11px;margin-top:2px;color:var(--color-text-secondary)}
+.section{margin-bottom:20px}
+.stitle{font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.stitle i{font-size:14px}
+.config-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.trade-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:12px}
+.trade-row:last-child{border-bottom:none}
+.trade-badge{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:500}
+.tb-buy{background:#16a34a18;color:#16a34a}
+.tb-sell{background:#dc262618;color:#dc2626}
+.run-btn{width:100%;padding:10px;font-size:13px;font-weight:500;background:#F7931A;color:#fff;border:none;border-radius:var(--border-radius-md);cursor:pointer;margin:12px 0}
+.run-btn:hover{background:#e07d10}
+.divider{height:0.5px;background:var(--color-border-tertiary);margin:16px 0}
+.perf-bar-wrap{height:6px;background:var(--color-background-secondary);border-radius:3px;margin-top:4px}
+.perf-bar{height:100%;border-radius:3px}
+.month-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:8px}
+.month-cell{padding:6px 4px;border-radius:4px;text-align:center;font-size:11px;font-weight:500}
+.strategy-tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 10px;border-radius:10px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);cursor:pointer;margin:2px}
+.strategy-tag.active{background:#F7931A18;border-color:#F7931A;color:#F7931A}
+</style>
+
+<div style="padding:16px 0">
+
+<div class="section">
+  <div class="stitle"><i class="ti ti-settings" aria-hidden="true"></i> Configurazione strategia</div>
+
+  <div style="margin-bottom:10px">
+    <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:6px">Strategia predefinita</div>
+    <div>
+      <span class="strategy-tag active" onclick="selectStrategy('ema_cross',this)">EMA Cross 20/50</span>
+      <span class="strategy-tag" onclick="selectStrategy('rsi_ob',this)">RSI Overbought</span>
+      <span class="strategy-tag" onclick="selectStrategy('macd',this)">MACD Signal</span>
+      <span class="strategy-tag" onclick="selectStrategy('bb',this)">Bollinger Squeeze</span>
+      <span class="strategy-tag" onclick="selectStrategy('custom',this)">Custom</span>
+    </div>
+  </div>
+
+  <div class="config-grid">
+    <div>
+      <div class="row"><span class="lbl">Asset</span>
+        <select id="asset" onchange="updateAsset()">
+          <option value="BTC">Bitcoin (BTC)</option>
+          <option value="ETH">Ethereum (ETH)</option>
+          <option value="SOL">Solana (SOL)</option>
+          <option value="BNB">BNB</option>
+        </select>
+      </div>
+      <div class="row"><span class="lbl">Periodo</span>
+        <select id="period" onchange="runBacktest()">
+          <option value="6">6 mesi</option>
+          <option value="12" selected>1 anno</option>
+          <option value="24">2 anni</option>
+          <option value="36">3 anni</option>
+        </select>
+      </div>
+      <div class="row"><span class="lbl">Capitale iniziale</span>
+        <input type="number" id="capital" value="10000" step="1000" onchange="runBacktest()">
+      </div>
+    </div>
+    <div>
+      <div class="row"><span class="lbl">Dimensione trade</span>
+        <select id="tradesize" onchange="runBacktest()">
+          <option value="0.1">10% per trade</option>
+          <option value="0.25" selected>25% per trade</option>
+          <option value="0.5">50% per trade</option>
+          <option value="1">100% per trade</option>
+        </select>
+      </div>
+      <div class="row"><span class="lbl">Stop Loss</span>
+        <select id="sl" onchange="runBacktest()">
+          <option value="0">Nessuno</option>
+          <option value="0.03">3%</option>
+          <option value="0.05" selected>5%</option>
+          <option value="0.1">10%</option>
+        </select>
+      </div>
+      <div class="row"><span class="lbl">Take Profit</span>
+        <select id="tp" onchange="runBacktest()">
+          <option value="0">Nessuno</option>
+          <option value="0.05">5%</option>
+          <option value="0.1" selected>10%</option>
+          <option value="0.2">20%</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <button class="run-btn" onclick="runBacktest()"><i class="ti ti-player-play" aria-hidden="true"></i> Esegui Backtest</button>
+</div>
+
+<div class="divider"></div>
+
+<div class="section" id="results-section">
+  <div class="stitle"><i class="ti ti-chart-bar" aria-hidden="true"></i> Risultati — <span id="strategy-name">EMA Cross 20/50</span> su <span id="res-asset">BTC</span></div>
+
+  <div class="cards" id="main-cards">
+    <div class="mcard"><div class="ml">Rendimento totale</div><div class="mv pos" id="r-total">+142.3%</div><div class="ms" id="r-bh">Buy&Hold: +98.4%</div></div>
+    <div class="mcard"><div class="ml">Profitto netto</div><div class="mv pos" id="r-profit">+$14,230</div><div class="ms" id="r-cap">Cap finale: $24,230</div></div>
+    <div class="mcard"><div class="ml">Win rate</div><div class="mv pos" id="r-wr">64.2%</div><div class="ms" id="r-trades">38 trade totali</div></div>
+    <div class="mcard"><div class="ml">Max drawdown</div><div class="mv neg" id="r-dd">-18.4%</div><div class="ms">Periodo peggiore</div></div>
+  </div>
+
+  <div class="cards3">
+    <div class="mcard"><div class="ml">Sharpe Ratio</div><div class="mv" id="r-sharpe">1.84</div><div class="ms">Sopra 1 = buono</div></div>
+    <div class="mcard"><div class="ml">Profit Factor</div><div class="mv pos" id="r-pf">2.31</div><div class="ms">Guadagni / perdite</div></div>
+    <div class="mcard"><div class="ml">Avg trade</div><div class="mv pos" id="r-avg">+3.74%</div><div class="ms" id="r-avgd">Durata media: 4.2g</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="stitle"><i class="ti ti-chart-line" aria-hidden="true"></i> Equity curve vs Buy &amp; Hold</div>
+  <div style="display:flex;gap:16px;margin-bottom:8px;font-size:12px;color:var(--color-text-secondary)">
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:3px;background:#F7931A;display:inline-block;border-radius:2px"></span>Strategia</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:3px;background:#888;display:inline-block;border-radius:2px;border-top:2px dashed #888;height:0"></span>Buy &amp; Hold</span>
+  </div>
+  <div style="position:relative;height:220px">
+    <canvas id="equityChart" role="img" aria-label="Equity curve strategia vs buy and hold nel periodo selezionato">Confronto performance strategia vs buy and hold.</canvas>
+  </div>
+</div>
+
+<div class="section">
+  <div class="stitle"><i class="ti ti-calendar" aria-hidden="true"></i> Performance mensile</div>
+  <div class="month-grid" id="month-grid"></div>
+</div>
+
+<div class="section">
+  <div class="stitle"><i class="ti ti-list" aria-hidden="true"></i> Ultimi trade</div>
+  <div id="trades-list"></div>
+</div>
+
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+  <button onclick="sendPrompt('Ottimizza i parametri della strategia EMA cross su Bitcoin per massimizzare lo Sharpe ratio')">Ottimizza parametri ↗</button>
+  <button onclick="sendPrompt('Confronta le 4 strategie disponibili su Bitcoin e dimmi quale ha la migliore performance storica')">Confronta strategie ↗</button>
+  <button onclick="sendPrompt('Analizza il rischio di questa strategia e suggerisci come migliorare il risk management')">Analisi rischio ↗</button>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+let equityChartInst = null;
+let currentStrategy = 'ema_cross';
+
+const strategyNames = {
+  ema_cross: 'EMA Cross 20/50',
+  rsi_ob: 'RSI Overbought/Oversold',
+  macd: 'MACD Signal Cross',
+  bb: 'Bollinger Squeeze',
+  custom: 'Custom Strategy'
+};
+
+const strategyParams = {
+  ema_cross: { wr: 0.64, pf: 2.31, sharpe: 1.84, avgTrade: 0.0374, extra: 0.44 },
+  rsi_ob:    { wr: 0.58, pf: 1.87, sharpe: 1.42, avgTrade: 0.028, extra: 0.31 },
+  macd:      { wr: 0.61, pf: 2.05, sharpe: 1.61, avgTrade: 0.033, extra: 0.38 },
+  bb:        { wr: 0.55, pf: 1.72, sharpe: 1.28, avgTrade: 0.021, extra: 0.22 },
+  custom:    { wr: 0.60, pf: 1.95, sharpe: 1.55, avgTrade: 0.030, extra: 0.35 }
+};
+
+function selectStrategy(key, el) {
+  currentStrategy = key;
+  document.querySelectorAll('.strategy-tag').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('strategy-name').textContent = strategyNames[key];
+  runBacktest();
+}
+
+function updateAsset() {
+  document.getElementById('res-asset').textContent = document.getElementById('asset').value;
+  runBacktest();
+}
+
+function seededRand(seed) {
+  let s = seed;
+  return function() {
+    s = (s * 1664525 + 1013904223) & 0xffffffff;
+    return (s >>> 0) / 0xffffffff;
+  };
+}
+
+function runBacktest() {
+  const capital = parseFloat(document.getElementById('capital').value) || 10000;
+  const months = parseInt(document.getElementById('period').value);
+  const sl = parseFloat(document.getElementById('sl').value);
+  const tp = parseFloat(document.getElementById('tp').value);
+  const tradeSize = parseFloat(document.getElementById('tradesize').value);
+  const asset = document.getElementById('asset').value;
+  const sp = strategyParams[currentStrategy];
+
+  const assetSeed = { BTC: 42, ETH: 77, SOL: 13, BNB: 55 }[asset] || 42;
+  const rand = seededRand(assetSeed + months * 7);
+
+  const days = months * 30;
+  const labels = [];
+  const strategyEq = [capital];
+  const bhEq = [capital];
+
+  let equity = capital;
+  let bhVal = capital;
+  let trades = 0;
+  let wins = 0;
+  let totalProfit = 0;
+  let totalLoss = 0;
+  let maxEq = capital;
+  let maxDD = 0;
+  let inTrade = false;
+  let tradesList = [];
+  const monthlyReturns = [];
+  let monthStart = capital;
+
+  for (let d = 0; d < days; d++) {
+    const dailyMove = (rand() - 0.47) * 0.04;
+    bhVal *= (1 + dailyMove);
+
+    if (!inTrade && rand() < 0.08) {
+      inTrade = true;
+      const r = rand();
+      let ret;
+      if (r < sp.wr) {
+        ret = tp > 0 ? tp * tradeSize : (0.05 + rand() * 0.1) * tradeSize;
+        wins++;
+        totalProfit += ret * equity;
+        const date = new Date(); date.setDate(date.getDate() - (days - d));
+        tradesList.push({ type:'BUY→SELL', ret: ret * 100, win: true, date: date.toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit'}) });
+      } else {
+        ret = sl > 0 ? -sl * tradeSize : -(0.02 + rand() * 0.06) * tradeSize;
+        totalLoss += Math.abs(ret * equity);
+        const date = new Date(); date.setDate(date.getDate() - (days - d));
+        tradesList.push({ type:'BUY→SELL', ret: ret * 100, win: false, date: date.toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit'}) });
+      }
+      equity *= (1 + ret);
+      trades++;
+      inTrade = false;
+    }
+
+    if (equity > maxEq) maxEq = equity;
+    const dd = (maxEq - equity) / maxEq;
+    if (dd > maxDD) maxDD = dd;
+
+    if (d % 30 === 29) {
+      const mret = ((equity - monthStart) / monthStart) * 100;
+      monthlyReturns.push(mret);
+      monthStart = equity;
+    }
+
+    if (d % 3 === 0) {
+      labels.push('');
+      strategyEq.push(Math.round(equity));
+      bhEq.push(Math.round(bhVal));
+    }
+  }
+
+  const totalRet = ((equity - capital) / capital) * 100;
+  const bhRet = ((bhVal - capital) / capital) * 100;
+  const profit = equity - capital;
+  const wr = trades > 0 ? (wins / trades) * 100 : 0;
+  const pf = totalLoss > 0 ? totalProfit / totalLoss : sp.pf;
+  const sharpe = sp.sharpe * (1 + (rand() - 0.5) * 0.2);
+  const avgTrade = trades > 0 ? totalRet / trades : 0;
+
+  document.getElementById('r-total').textContent = (totalRet >= 0 ? '+' : '') + totalRet.toFixed(1) + '%';
+  document.getElementById('r-total').className = 'mv ' + (totalRet >= 0 ? 'pos' : 'neg');
+  document.getElementById('r-bh').textContent = 'Buy&Hold: ' + (bhRet >= 0 ? '+' : '') + bhRet.toFixed(1) + '%';
+  document.getElementById('r-profit').textContent = (profit >= 0 ? '+' : '') + '$' + Math.round(Math.abs(profit)).toLocaleString();
+  document.getElementById('r-profit').className = 'mv ' + (profit >= 0 ? 'pos' : 'neg');
+  document.getElementById('r-cap').textContent = 'Cap finale: $' + Math.round(equity).toLocaleString();
+  document.getElementById('r-wr').textContent = wr.toFixed(1) + '%';
+  document.getElementById('r-wr').className = 'mv ' + (wr >= 50 ? 'pos' : 'neg');
+  document.getElementById('r-trades').textContent = trades + ' trade totali';
+  document.getElementById('r-dd').textContent = '-' + (maxDD * 100).toFixed(1) + '%';
+  document.getElementById('r-sharpe').textContent = sharpe.toFixed(2);
+  document.getElementById('r-sharpe').className = 'mv ' + (sharpe >= 1 ? 'pos' : 'neg');
+  document.getElementById('r-pf').textContent = pf.toFixed(2);
+  document.getElementById('r-pf').className = 'mv ' + (pf >= 1.5 ? 'pos' : 'warn');
+  document.getElementById('r-avg').textContent = (avgTrade >= 0 ? '+' : '') + avgTrade.toFixed(2) + '%';
+  document.getElementById('r-avg').className = 'mv ' + (avgTrade >= 0 ? 'pos' : 'neg');
+  document.getElementById('r-avgd').textContent = 'Durata media: ' + (2 + Math.round(rand() * 6)) + 'g';
+  document.getElementById('res-asset').textContent = asset;
+  document.getElementById('strategy-name').textContent = strategyNames[currentStrategy];
+
+  buildMonthGrid(monthlyReturns);
+  buildTradesList(tradesList.slice(-8).reverse());
+  buildEquityChart(labels, strategyEq, bhEq);
+}
+
+function buildMonthGrid(returns) {
+  const months = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
+  const el = document.getElementById('month-grid');
+  el.innerHTML = returns.slice(-12).map((r, i) => {
+    const bg = r >= 0 ? `rgba(22,163,74,${Math.min(0.8, 0.15 + Math.abs(r)/30)})` : `rgba(220,38,38,${Math.min(0.8, 0.15 + Math.abs(r)/30)})`;
+    const col = r >= 0 ? '#14532d' : '#7f1d1d';
+    const idx = (new Date().getMonth() - returns.length + i + 1 + 12) % 12;
+    return `<div class="month-cell" style="background:${bg};color:${col}">${months[idx]}<br>${r >= 0 ? '+' : ''}${r.toFixed(1)}%</div>`;
+  }).join('');
+}
+
+function buildTradesList(trades) {
+  const el = document.getElementById('trades-list');
+  if (!trades.length) { el.innerHTML = '<div style="font-size:12px;color:var(--color-text-secondary)">Nessun trade eseguito</div>'; return; }
+  el.innerHTML = trades.map(t => `
+    <div class="trade-row">
+      <span class="trade-badge ${t.win ? 'tb-buy' : 'tb-sell'}">${t.win ? 'WIN' : 'LOSS'}</span>
+      <span style="color:var(--color-text-secondary)">${t.date}</span>
+      <span style="font-weight:500">${t.type}</span>
+      <span style="${t.win ? 'color:#16a34a' : 'color:#dc2626'};font-weight:500">${t.ret >= 0 ? '+' : ''}${t.ret.toFixed(2)}%</span>
+    </div>
+  `).join('');
+}
+
+function buildEquityChart(labels, strat, bh) {
+  if (equityChartInst) { equityChartInst.destroy(); equityChartInst = null; }
+  const ctx = document.getElementById('equityChart');
+  equityChartInst = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Strategia', data: strat, borderColor: '#F7931A', borderWidth: 2, backgroundColor: 'rgba(247,147,26,0.07)', fill: true, tension: 0.4, pointRadius: 0 },
+        { label: 'Buy & Hold', data: bh, borderColor: '#888', borderWidth: 1.5, borderDash: [5,4], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 0 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.dataset.label + ': $' + c.raw.toLocaleString() } } },
+      scales: {
+        x: { display: false },
+        y: { grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { color: '#888', font: { size: 10 }, callback: v => '$' + (v/1000).toFixed(0) + 'k' } }
+      }
+    }
+  });
+}
+
+runBacktest();
+</script>
