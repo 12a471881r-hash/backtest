@@ -221,6 +221,21 @@ async function runBacktest() {
   const days = months * 30;
   const candles = await fetchBinanceData("BTCUSDT", "1h", 500);
   const closes = candles.map(c => c.close);
+  function calculateEMA(data, period) {
+  const k = 2 / (period + 1);
+  let ema = [data[0]];
+
+  for (let i = 1; i < data.length; i++) {
+    ema.push(data[i] * k + ema[i - 1] * (1 - k));
+  }
+
+  return ema;
+}
+
+const ema20 = calculateEMA(closes, 20);
+const ema50 = calculateEMA(closes, 50);
+  let position = 0;   // 0 = flat, 1 = long
+let entryPrice = 0;
   const labels = [];
   const strategyEq = [capital];
   const bhEq = [capital];
@@ -239,14 +254,52 @@ async function runBacktest() {
   let monthStart = capital;
 
   for (let d = 0; d < days; d++) {
-    const currentPrice = closes[d] || closes[closes.length - 1];
+   const currentPrice = closes[d] || closes[closes.length - 1];
 const prevPrice = closes[d - 1] || currentPrice;
+    const prevEma20 = ema20[d - 1];
+const prevEma50 = ema50[d - 1];
+const currEma20 = ema20[d];
+const currEma50 = ema50[d];
+
+const longSignal =
+  prevEma20 <= prevEma50 && currEma20 > currEma50;
+
+const shortSignal =
+  prevEma20 >= prevEma50 && currEma20 < currEma50;
 
 const dailyMove = (currentPrice - prevPrice) / prevPrice;
     bhVal *= (1 + dailyMove);
 
-    if (!inTrade && rand() < 0.08) {
-      inTrade = true;
+   if (position === 0 && longSignal) {
+  position = 1;
+  entryPrice = currentPrice;
+}
+    if (position === 1 && shortSignal) {
+  const ret = (currentPrice - entryPrice) / entryPrice;
+
+  equity *= (1 + ret * tradeSize);
+
+  trades++;
+
+  if (ret > 0) wins++;
+  else totalLoss += Math.abs(ret * equity);
+  if (ret > 0) totalProfit += ret * equity;
+
+  const date = new Date();
+  date.setDate(date.getDate() - (days - d));
+
+  tradesList.push({
+    type: 'EMA CROSS',
+    ret: ret * 100,
+    win: ret > 0,
+    date: date.toLocaleDateString('it-IT', {
+      day: '2-digit',
+      month: '2-digit'
+    })
+  });
+
+  position = 0;
+}
       const r = rand();
       let ret;
       if (r < sp.wr) {
@@ -278,8 +331,8 @@ const dailyMove = (currentPrice - prevPrice) / prevPrice;
 
     if (d % 3 === 0) {
       labels.push('');
-      strategyEq.push(Math.round(equity));
-      bhEq.push(Math.round(bhVal));
+      strategyEq.push(equity);
+bhEq.push(bhVal);
     }
   }
 
