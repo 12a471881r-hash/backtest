@@ -151,6 +151,21 @@ select,input[type=number]{font-size:13px;padding:6px 10px;border:0.5px solid var
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
+  async function fetchBinanceData(symbol = "BTCUSDT", interval = "1h", limit = 500) {
+  const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`;
+
+  const response = await fetch(url);
+  const data = await response.json();
+
+  return data.map(candle => ({
+    time: candle[0],
+    open: parseFloat(candle[1]),
+    high: parseFloat(candle[2]),
+    low: parseFloat(candle[3]),
+    close: parseFloat(candle[4]),
+    volume: parseFloat(candle[5])
+  }));
+}
 let equityChartInst = null;
 let currentStrategy = 'ema_cross';
 
@@ -191,7 +206,7 @@ function seededRand(seed) {
   };
 }
 
-function runBacktest() {
+async function runBacktest() {
   const capital = parseFloat(document.getElementById('capital').value) || 10000;
   const months = parseInt(document.getElementById('period').value);
   const sl = parseFloat(document.getElementById('sl').value);
@@ -204,6 +219,8 @@ function runBacktest() {
   const rand = seededRand(assetSeed + months * 7);
 
   const days = months * 30;
+  const candles = await fetchBinanceData("BTCUSDT", "1h", 500);
+  const closes = candles.map(c => c.close);
   const labels = [];
   const strategyEq = [capital];
   const bhEq = [capital];
@@ -222,7 +239,10 @@ function runBacktest() {
   let monthStart = capital;
 
   for (let d = 0; d < days; d++) {
-    const dailyMove = (rand() - 0.47) * 0.04;
+    const currentPrice = closes[d] || closes[closes.length - 1];
+const prevPrice = closes[d - 1] || currentPrice;
+
+const dailyMove = (currentPrice - prevPrice) / prevPrice;
     bhVal *= (1 + dailyMove);
 
     if (!inTrade && rand() < 0.08) {
