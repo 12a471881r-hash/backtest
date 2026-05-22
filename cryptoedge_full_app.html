@@ -1,0 +1,565 @@
+
+<h2 class="sr-only">CryptoEdge AI — app completa con dashboard, analisi, backtest, screener e sistema alert</h2>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);color:var(--color-text-primary);background:transparent}
+.app{display:grid;grid-template-columns:210px 1fr;min-height:780px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
+.sidebar{border-right:0.5px solid var(--color-border-tertiary);display:flex;flex-direction:column;background:var(--color-background-primary)}
+.logo-wrap{padding:14px 14px 12px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:8px}
+.logo-dot{width:26px;height:26px;background:#F7931A;border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0}
+.logo-text{font-size:14px;font-weight:500}
+.logo-badge{font-size:9px;background:#F7931A18;color:#F7931A;padding:1px 5px;border-radius:8px;font-weight:500}
+.nav-sec{font-size:10px;font-weight:500;color:var(--color-text-tertiary);padding:12px 14px 4px;letter-spacing:.08em;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 10px;font-size:12px;cursor:pointer;border-radius:6px;margin:1px 6px;color:var(--color-text-secondary);transition:all .12s}
+.nav-item:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.nav-item.active{background:#F7931A15;color:#F7931A;font-weight:500}
+.nav-item i{font-size:15px;flex-shrink:0}
+.nav-badge{margin-left:auto;font-size:10px;background:#dc262618;color:#dc2626;padding:1px 6px;border-radius:8px;font-weight:500}
+.nav-badge.green{background:#16a34a18;color:#16a34a}
+.watchlist-mini{padding:8px 6px;border-top:0.5px solid var(--color-border-tertiary);margin-top:auto}
+.wl-row{display:flex;align-items:center;justify-content:space-between;padding:5px 8px;border-radius:5px;cursor:pointer;font-size:11px}
+.wl-row:hover{background:var(--color-background-secondary)}
+.wl-sym{font-weight:500}
+.wl-chg{font-size:11px}
+.pos{color:#16a34a}.neg{color:#dc2626}.warn{color:#d97706}
+.main{background:var(--color-background-primary);overflow:hidden;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:0.5px solid var(--color-border-tertiary);flex-shrink:0}
+.page-title{font-size:15px;font-weight:500;display:flex;align-items:center;gap:8px}
+.page-title i{font-size:17px;color:#F7931A}
+.page-sub{font-size:11px;color:var(--color-text-secondary);margin-top:1px}
+.content{padding:14px 16px;overflow-y:auto;flex:1}
+.view{display:none}
+.view.active{display:block}
+
+.cards4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.mcard{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:9px 11px}
+.mcard .ml{font-size:10px;color:var(--color-text-secondary);margin-bottom:2px}
+.mcard .mv{font-size:17px;font-weight:500}
+.mcard .ms{font-size:10px;color:var(--color-text-secondary);margin-top:1px}
+
+.section{margin-bottom:18px}
+.stitle{font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.stitle i{font-size:13px}
+
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+select,input{font-size:12px;padding:5px 9px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary)}
+.filter-btn{font-size:11px;padding:5px 12px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);cursor:pointer;background:transparent;color:var(--color-text-secondary);transition:all .12s}
+.filter-btn:hover,.filter-btn.active{background:#F7931A18;border-color:#F7931A;color:#F7931A}
+
+.screener-table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+.screener-table th{font-size:10px;font-weight:500;color:var(--color-text-secondary);text-align:left;padding:6px 8px;border-bottom:0.5px solid var(--color-border-tertiary);cursor:pointer;user-select:none;text-transform:uppercase;letter-spacing:.05em}
+.screener-table th:hover{color:var(--color-text-primary)}
+.screener-table td{padding:8px 8px;border-bottom:0.5px solid var(--color-border-tertiary);vertical-align:middle}
+.screener-table tr:last-child td{border-bottom:none}
+.screener-table tr:hover td{background:var(--color-background-secondary)}
+.coin-cell{display:flex;align-items:center;gap:7px}
+.coin-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+.score-pill{display:inline-flex;align-items:center;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:500}
+.sp-buy{background:#16a34a18;color:#16a34a}
+.sp-sell{background:#dc262618;color:#dc2626}
+.sp-neu{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.score-bar-w{width:50px;height:4px;background:var(--color-background-secondary);border-radius:2px;display:inline-block;vertical-align:middle;margin-left:4px}
+.score-bar-f{height:100%;border-radius:2px}
+
+.alert-form{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;margin-bottom:14px;background:var(--color-background-primary)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.form-field{display:flex;flex-direction:column;gap:4px}
+.form-field label{font-size:11px;color:var(--color-text-secondary)}
+.form-field select,.form-field input{width:100%}
+.add-btn{width:100%;padding:8px;font-size:12px;font-weight:500;background:#F7931A;color:#fff;border:none;border-radius:var(--border-radius-md);cursor:pointer}
+.add-btn:hover{background:#e07d10}
+
+.alert-list{display:flex;flex-direction:column;gap:8px}
+.alert-card{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 12px;display:flex;align-items:center;gap:10px;background:var(--color-background-primary)}
+.alert-card.triggered{border-color:#16a34a;background:#16a34a08}
+.alert-card.triggered-neg{border-color:#dc2626;background:#dc262608}
+.alert-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.alert-body{flex:1;min-width:0}
+.alert-title{font-size:12px;font-weight:500}
+.alert-desc{font-size:11px;color:var(--color-text-secondary);margin-top:1px}
+.alert-status{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500;white-space:nowrap}
+.as-active{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.as-trig{background:#16a34a18;color:#16a34a}
+.as-trig-neg{background:#dc262618;color:#dc2626}
+.alert-del{cursor:pointer;color:var(--color-text-secondary);font-size:14px;padding:4px;border-radius:4px;flex-shrink:0}
+.alert-del:hover{color:#dc2626;background:var(--color-background-secondary)}
+
+.notif-banner{background:#16a34a18;border:0.5px solid #16a34a40;border-radius:var(--border-radius-md);padding:8px 12px;margin-bottom:10px;display:flex;align-items:center;gap:8px;font-size:12px;color:#16a34a}
+.notif-banner i{font-size:15px}
+
+.ind-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.ind-card{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 10px}
+.ind-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.ind-name{font-size:11px;font-weight:500}
+.pill{font-size:10px;padding:1px 7px;border-radius:10px;font-weight:500}
+.pill-buy{background:#16a34a18;color:#16a34a}
+.pill-sell{background:#dc262618;color:#dc2626}
+.pill-neu{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.bar-w{height:4px;background:var(--color-background-secondary);border-radius:2px;margin-bottom:4px}
+.bar-f{height:100%;border-radius:2px}
+.ind-desc{font-size:10px;color:var(--color-text-secondary)}
+.ind-val{font-size:12px;font-weight:500;float:right}
+</style>
+
+<div class="app">
+<div class="sidebar">
+  <div class="logo-wrap">
+    <div class="logo-dot">₿</div>
+    <div>
+      <div class="logo-text">CryptoEdge</div>
+      <div class="logo-badge">AI POWERED</div>
+    </div>
+  </div>
+
+  <div class="nav-sec">Analisi</div>
+  <div class="nav-item active" onclick="nav('dashboard',this)"><i class="ti ti-layout-dashboard" aria-hidden="true"></i> Dashboard</div>
+  <div class="nav-item" onclick="nav('analysis',this)"><i class="ti ti-chart-candlestick" aria-hidden="true"></i> Analisi AI</div>
+  <div class="nav-item" onclick="nav('backtest',this)"><i class="ti ti-history" aria-hidden="true"></i> Backtest</div>
+
+  <div class="nav-sec">Strumenti</div>
+  <div class="nav-item" onclick="nav('screener',this)"><i class="ti ti-filter" aria-hidden="true"></i> Screener <span class="nav-badge green">12</span></div>
+  <div class="nav-item" onclick="nav('alerts',this)"><i class="ti ti-bell" aria-hidden="true"></i> Alert <span class="nav-badge" id="alert-badge">3</span></div>
+
+  <div class="nav-sec">Account</div>
+  <div class="nav-item"><i class="ti ti-wallet" aria-hidden="true"></i> Portafoglio</div>
+  <div class="nav-item"><i class="ti ti-settings" aria-hidden="true"></i> Impostazioni</div>
+
+  <div class="watchlist-mini">
+    <div style="font-size:10px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.07em;padding:0 8px 6px">Watchlist</div>
+    <div class="wl-row"><span class="wl-sym">BTC</span><span class="wl-chg pos">+4.2%</span></div>
+    <div class="wl-row"><span class="wl-sym">ETH</span><span class="wl-chg pos">+2.8%</span></div>
+    <div class="wl-row"><span class="wl-sym">SOL</span><span class="wl-chg neg">-1.2%</span></div>
+    <div class="wl-row"><span class="wl-sym">BNB</span><span class="wl-chg pos">+0.9%</span></div>
+    <div class="wl-row"><span class="wl-sym">AVAX</span><span class="wl-chg pos">+6.1%</span></div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar" id="topbar">
+    <div>
+      <div class="page-title" id="page-title"><i class="ti ti-layout-dashboard" aria-hidden="true"></i> Dashboard</div>
+      <div class="page-sub" id="page-sub">Panoramica mercato crypto · Aggiornato ora</div>
+    </div>
+    <div style="display:flex;gap:6px">
+      <button style="font-size:11px;padding:5px 11px;border:0.5px solid var(--color-border-secondary);border-radius:6px;cursor:pointer;background:transparent;color:var(--color-text-primary)" onclick="sendPrompt('Dammi un riassunto completo del mercato crypto oggi')">Riassunto AI ↗</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="view active" id="view-dashboard">
+      <div class="cards4">
+        <div class="mcard"><div class="ml">Market Cap Totale</div><div class="mv">$3.42T</div><div class="ms pos">+2.8% 24h</div></div>
+        <div class="mcard"><div class="ml">Volume 24h</div><div class="mv">$182B</div><div class="ms pos">+14% vs media</div></div>
+        <div class="mcard"><div class="ml">BTC Dominance</div><div class="mv">54.1%</div><div class="ms pos">+0.3%</div></div>
+        <div class="mcard"><div class="ml">Fear & Greed</div><div class="mv pos">74</div><div class="ms pos">Greed</div></div>
+      </div>
+      <div class="section">
+        <div class="stitle"><i class="ti ti-flame" aria-hidden="true"></i> Top movers oggi</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+          <div style="border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 12px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+              <span style="font-size:13px;font-weight:500">AVAX</span><span class="pos" style="font-size:13px;font-weight:500">+12.4%</span>
+            </div>
+            <div style="font-size:11px;color:var(--color-text-secondary)">$42.18 · Vol +340%</div>
+            <div style="height:3px;background:var(--color-background-secondary);border-radius:2px;margin-top:6px"><div style="width:88%;height:100%;background:#16a34a;border-radius:2px"></div></div>
+          </div>
+          <div style="border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 12px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+              <span style="font-size:13px;font-weight:500">INJ</span><span class="pos" style="font-size:13px;font-weight:500">+9.1%</span>
+            </div>
+            <div style="font-size:11px;color:var(--color-text-secondary)">$28.44 · Vol +210%</div>
+            <div style="height:3px;background:var(--color-background-secondary);border-radius:2px;margin-top:6px"><div style="width:76%;height:100%;background:#16a34a;border-radius:2px"></div></div>
+          </div>
+          <div style="border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 12px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+              <span style="font-size:13px;font-weight:500">ARB</span><span class="neg" style="font-size:13px;font-weight:500">-5.3%</span>
+            </div>
+            <div style="font-size:11px;color:var(--color-text-secondary)">$0.84 · Vol +180%</div>
+            <div style="height:3px;background:var(--color-background-secondary);border-radius:2px;margin-top:6px"><div style="width:30%;height:100%;background:#dc2626;border-radius:2px"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="stitle"><i class="ti ti-chart-line" aria-hidden="true"></i> Andamento BTC 30 giorni</div>
+        <div style="position:relative;height:160px"><canvas id="dashChart" role="img" aria-label="Grafico BTC 30 giorni">Andamento Bitcoin ultimi 30 giorni.</canvas></div>
+      </div>
+      <div class="section">
+        <div class="stitle"><i class="ti ti-bell" aria-hidden="true"></i> Alert recenti</div>
+        <div id="dash-alerts"></div>
+      </div>
+    </div>
+
+    <!-- ANALISI AI -->
+    <div class="view" id="view-analysis">
+      <div class="cards4">
+        <div class="mcard"><div class="ml">Prezzo BTC</div><div class="mv">$103,240</div><div class="ms pos">+4.2% 24h</div></div>
+        <div class="mcard"><div class="ml">AI Edge Score</div><div class="mv pos">73/100</div><div class="ms pos">Long moderato</div></div>
+        <div class="mcard"><div class="ml">Segnali Buy</div><div class="mv pos">9</div><div class="ms">su 15 indicatori</div></div>
+        <div class="mcard"><div class="ml">Max Drawdown</div><div class="mv neg">-18.4%</div><div class="ms">Storico 1Y</div></div>
+      </div>
+      <div class="ind-grid">
+        <div class="ind-card"><div class="ind-top"><span class="ind-name">RSI (14)</span><span class="pill pill-neu">Neutro</span></div><div class="bar-w"><div class="bar-f" style="width:62%;background:#d97706"></div></div><div><span class="ind-desc">Zona neutra</span><span class="ind-val warn">62.4</span></div></div>
+        <div class="ind-card"><div class="ind-top"><span class="ind-name">MACD</span><span class="pill pill-buy">Buy</span></div><div class="bar-w"><div class="bar-f" style="width:76%;background:#16a34a"></div></div><div><span class="ind-desc">Crossover bullish</span><span class="ind-val pos">+420</span></div></div>
+        <div class="ind-card"><div class="ind-top"><span class="ind-name">EMA 20/50</span><span class="pill pill-buy">Buy</span></div><div class="bar-w"><div class="bar-f" style="width:80%;background:#16a34a"></div></div><div><span class="ind-desc">Golden cross attivo</span><span class="ind-val pos">Allin.</span></div></div>
+        <div class="ind-card"><div class="ind-top"><span class="ind-name">Bollinger</span><span class="pill pill-neu">Watch</span></div><div class="bar-w"><div class="bar-f" style="width:68%;background:#d97706"></div></div><div><span class="ind-desc">Vicino banda sup.</span><span class="ind-val warn">$106.8k</span></div></div>
+        <div class="ind-card"><div class="ind-top"><span class="ind-name">ADX (14)</span><span class="pill pill-buy">Buy</span></div><div class="bar-w"><div class="bar-f" style="width:72%;background:#16a34a"></div></div><div><span class="ind-desc">Trend forte</span><span class="ind-val pos">38.2</span></div></div>
+        <div class="ind-card"><div class="ind-top"><span class="ind-name">Ichimoku</span><span class="pill pill-buy">Buy</span></div><div class="bar-w"><div class="bar-f" style="width:74%;background:#16a34a"></div></div><div><span class="ind-desc">Sopra Kumo cloud</span><span class="ind-val pos">Above</span></div></div>
+      </div>
+      <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px;margin-top:8px;font-size:12px;line-height:1.6;color:var(--color-text-secondary)">
+        <span style="font-weight:500;color:var(--color-text-primary)">Conclusione AI · </span>
+        Bitcoin mostra struttura tecnica solida. Resistenza immediata $106,800. SL consigliato sotto $98,140. Target T1 $108,400 · T2 $112,600.
+      </div>
+      <div style="margin-top:10px;display:flex;gap:6px">
+        <button style="font-size:11px;padding:5px 11px;border:0.5px solid var(--color-border-secondary);border-radius:6px;cursor:pointer;background:transparent;color:var(--color-text-primary)" onclick="sendPrompt('Analizza in dettaglio Bitcoin con tutti gli indicatori disponibili')">Analisi completa ↗</button>
+      </div>
+    </div>
+
+    <!-- BACKTEST -->
+    <div class="view" id="view-backtest">
+      <div class="cards4">
+        <div class="mcard"><div class="ml">Rendimento totale</div><div class="mv pos">+142.3%</div><div class="ms">vs BH +98.4%</div></div>
+        <div class="mcard"><div class="ml">Win rate</div><div class="mv pos">64.2%</div><div class="ms">38 trade</div></div>
+        <div class="mcard"><div class="ml">Sharpe Ratio</div><div class="mv pos">1.84</div><div class="ms">Buono ≥ 1</div></div>
+        <div class="mcard"><div class="ml">Max Drawdown</div><div class="mv neg">-18.4%</div><div class="ms">1 anno</div></div>
+      </div>
+      <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;font-size:12px;color:var(--color-text-secondary);margin-bottom:12px">
+        Strategia: <span style="font-weight:500;color:var(--color-text-primary)">EMA Cross 20/50</span> · BTC · 1 anno · Cap $10,000 · SL 5% · TP 10%
+      </div>
+      <div style="position:relative;height:180px"><canvas id="btChart" role="img" aria-label="Equity curve backtest EMA cross BTC">Equity curve strategia EMA cross su Bitcoin.</canvas></div>
+      <div style="margin-top:12px;display:flex;gap:6px">
+        <button style="font-size:11px;padding:5px 11px;border:0.5px solid var(--color-border-secondary);border-radius:6px;cursor:pointer;background:transparent;color:var(--color-text-primary)" onclick="sendPrompt('Apri il backtest engine completo con tutti i parametri configurabili')">Backtest engine completo ↗</button>
+      </div>
+    </div>
+
+    <!-- SCREENER -->
+    <div class="view" id="view-screener">
+      <div class="filter-row">
+        <select id="scr-filter-sig" onchange="renderScreener()">
+          <option value="all">Tutti i segnali</option>
+          <option value="buy">Solo BUY</option>
+          <option value="sell">Solo SELL</option>
+          <option value="neu">Neutrali</option>
+        </select>
+        <select id="scr-filter-vol" onchange="renderScreener()">
+          <option value="all">Qualsiasi volume</option>
+          <option value="high">Volume alto (+50%)</option>
+          <option value="vhigh">Volume molto alto (+100%)</option>
+        </select>
+        <select id="scr-filter-chg" onchange="renderScreener()">
+          <option value="all">Qualsiasi variazione</option>
+          <option value="pos">Solo positivi</option>
+          <option value="neg">Solo negativi</option>
+          <option value="big">Variazione >5%</option>
+        </select>
+        <span class="filter-btn active" onclick="toggleFilter(this,'rsi')">RSI</span>
+        <span class="filter-btn active" onclick="toggleFilter(this,'macd')">MACD</span>
+        <span class="filter-btn" onclick="toggleFilter(this,'vol')">Vol spike</span>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="screener-table">
+          <thead>
+            <tr>
+              <th style="width:130px" onclick="sortScreener('name')">Asset <i class="ti ti-selector" style="font-size:10px" aria-hidden="true"></i></th>
+              <th style="width:80px" onclick="sortScreener('price')">Prezzo</th>
+              <th style="width:60px" onclick="sortScreener('chg')">24h</th>
+              <th style="width:70px" onclick="sortScreener('vol')">Volume</th>
+              <th style="width:55px" onclick="sortScreener('rsi')">RSI</th>
+              <th style="width:70px" onclick="sortScreener('macd')">MACD</th>
+              <th style="width:80px" onclick="sortScreener('score')">Score</th>
+              <th style="width:75px" onclick="sortScreener('signal')">Segnale</th>
+              <th style="width:40px"></th>
+            </tr>
+          </thead>
+          <tbody id="screener-body"></tbody>
+        </table>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--color-text-secondary)" id="scr-count"></div>
+    </div>
+
+    <!-- ALERTS -->
+    <div class="view" id="view-alerts">
+      <div class="notif-banner" id="notif-banner" style="display:none">
+        <i class="ti ti-bell" aria-hidden="true"></i>
+        <span id="notif-text">Alert attivato!</span>
+      </div>
+
+      <div class="section">
+        <div class="stitle"><i class="ti ti-plus" aria-hidden="true"></i> Crea nuovo alert</div>
+        <div class="alert-form">
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Asset</label>
+              <select id="al-asset">
+                <option>BTC</option><option>ETH</option><option>SOL</option><option>BNB</option><option>AVAX</option><option>INJ</option><option>ARB</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Tipo di alert</label>
+              <select id="al-type" onchange="updateAlertType()">
+                <option value="price_above">Prezzo sopra</option>
+                <option value="price_below">Prezzo sotto</option>
+                <option value="rsi_above">RSI sopra</option>
+                <option value="rsi_below">RSI sotto</option>
+                <option value="macd_cross">MACD crossover</option>
+                <option value="vol_spike">Volume spike +X%</option>
+                <option value="score_above">AI Score sopra</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label id="al-val-label">Valore soglia</label>
+              <input type="number" id="al-value" value="110000" step="100">
+            </div>
+            <div class="form-field">
+              <label>Canale notifica</label>
+              <select id="al-channel">
+                <option>In-app</option>
+                <option>Email</option>
+                <option>Telegram</option>
+                <option>Email + Telegram</option>
+              </select>
+            </div>
+          </div>
+          <button class="add-btn" onclick="addAlert()"><i class="ti ti-plus" aria-hidden="true"></i> Aggiungi Alert</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="stitle"><i class="ti ti-list" aria-hidden="true"></i> Alert attivi — <span id="alert-count">0</span></div>
+        <div class="alert-list" id="alert-list"></div>
+        <div id="no-alerts" style="font-size:12px;color:var(--color-text-secondary);display:none">Nessun alert configurato. Crea il primo!</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const pages = {
+  dashboard:{ title:'Dashboard', icon:'ti-layout-dashboard', sub:'Panoramica mercato crypto · Aggiornato ora' },
+  analysis:{ title:'Analisi AI', icon:'ti-chart-candlestick', sub:'Bitcoin BTC/USDT · 15 indicatori attivi' },
+  backtest:{ title:'Backtest Engine', icon:'ti-history', sub:'EMA Cross 20/50 · BTC · 1 anno' },
+  screener:{ title:'Screener', icon:'ti-filter', sub:'12 opportunità trovate · Aggiornato ora' },
+  alerts:{ title:'Alert', icon:'ti-bell', sub:'Monitoraggio continuo 24/7' }
+};
+
+let chartsBuilt = {};
+let screenerSort = { col:'score', asc:false };
+let alerts = [
+  { id:1, asset:'BTC', type:'price_above', value:110000, channel:'In-app', label:'Prezzo sopra $110,000', triggered:false },
+  { id:2, asset:'ETH', type:'rsi_above', value:70, channel:'Email', label:'RSI sopra 70', triggered:false },
+  { id:3, asset:'SOL', type:'vol_spike', value:100, channel:'Telegram', label:'Volume spike +100%', triggered:true }
+];
+let alertIdCounter = 4;
+
+const screenerData = [
+  { name:'Bitcoin', sym:'BTC', color:'#F7931A', price:103240, chg:4.2, vol:'+12%', rsi:62.4, macd:'Bull', score:84, signal:'buy' },
+  { name:'Ethereum', sym:'ETH', color:'#627EEA', price:3812, chg:2.8, vol:'+8%', rsi:58.1, macd:'Bull', score:78, signal:'buy' },
+  { name:'Avalanche', sym:'AVAX', color:'#E84142', price:42.18, chg:12.4, vol:'+340%', rsi:71.2, macd:'Bull', score:91, signal:'buy' },
+  { name:'Injective', sym:'INJ', color:'#00B4D8', price:28.44, chg:9.1, vol:'+210%', rsi:68.8, macd:'Bull', score:87, signal:'buy' },
+  { name:'Solana', sym:'SOL', color:'#9945FF', price:185.4, chg:-1.2, vol:'+3%', rsi:48.2, macd:'Neu', score:55, signal:'neu' },
+  { name:'BNB', sym:'BNB', color:'#F3BA2F', price:622, chg:0.9, vol:'+5%', rsi:52.0, macd:'Bull', score:61, signal:'buy' },
+  { name:'Arbitrum', sym:'ARB', color:'#2D374B', price:0.84, chg:-5.3, vol:'+180%', rsi:38.4, macd:'Bear', score:32, signal:'sell' },
+  { name:'Chainlink', sym:'LINK', color:'#2A5ADA', price:18.72, chg:3.4, vol:'+22%', rsi:56.8, macd:'Bull', score:70, signal:'buy' },
+  { name:'Polkadot', sym:'DOT', color:'#E6007A', price:8.14, chg:-2.1, vol:'+11%', rsi:41.2, macd:'Bear', score:38, signal:'sell' },
+  { name:'Sui', sym:'SUI', color:'#6FBCF0', price:3.82, chg:7.2, vol:'+95%', rsi:66.1, macd:'Bull', score:80, signal:'buy' },
+  { name:'Render', sym:'RNDR', color:'#FF5733', price:8.44, chg:5.8, vol:'+78%', rsi:63.4, macd:'Bull', score:76, signal:'buy' },
+  { name:'Pepe', sym:'PEPE', color:'#46A717', price:0.0000142, chg:-8.4, vol:'+260%', rsi:32.1, macd:'Bear', score:28, signal:'sell' },
+];
+
+function nav(page, el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + page).classList.add('active');
+  const p = pages[page];
+  document.getElementById('page-title').innerHTML = `<i class="ti ${p.icon}" aria-hidden="true"></i> ${p.title}`;
+  document.getElementById('page-sub').textContent = p.sub;
+  if (page === 'dashboard' && !chartsBuilt.dash) { buildDashChart(); chartsBuilt.dash = true; }
+  if (page === 'backtest' && !chartsBuilt.bt) { buildBtChart(); chartsBuilt.bt = true; }
+  if (page === 'screener') renderScreener();
+  if (page === 'alerts') renderAlerts();
+}
+
+function buildDashChart() {
+  const labels = [], data = [];
+  let p = 95000;
+  for (let i = 30; i >= 0; i--) {
+    p += (Math.random() - 0.44) * 2200;
+    labels.push('');
+    data.push(Math.round(p));
+  }
+  new Chart(document.getElementById('dashChart'), {
+    type:'line', data:{ labels, datasets:[{ data, borderColor:'#F7931A', borderWidth:2, backgroundColor:'rgba(247,147,26,0.07)', fill:true, tension:0.4, pointRadius:0 }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ display:false }, y:{ grid:{ color:'rgba(128,128,128,0.1)' }, ticks:{ color:'#888', font:{ size:10 }, callback:v=>'$'+(v/1000).toFixed(0)+'k' } } } }
+  });
+  buildDashAlerts();
+}
+
+function buildDashAlerts() {
+  const el = document.getElementById('dash-alerts');
+  const triggered = alerts.filter(a => a.triggered);
+  if (!triggered.length) { el.innerHTML = '<div style="font-size:12px;color:var(--color-text-secondary)">Nessun alert recente attivato.</div>'; return; }
+  el.innerHTML = triggered.map(a => `
+    <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:0.5px solid #16a34a40;border-radius:var(--border-radius-md);background:#16a34a08;margin-bottom:6px;font-size:12px">
+      <i class="ti ti-bell" style="color:#16a34a;font-size:14px" aria-hidden="true"></i>
+      <span><span style="font-weight:500">${a.asset}</span> — ${a.label}</span>
+      <span style="margin-left:auto;font-size:10px;background:#16a34a18;color:#16a34a;padding:2px 7px;border-radius:8px">Attivato</span>
+    </div>
+  `).join('');
+}
+
+function buildBtChart() {
+  const labels = [], strat = [10000], bh = [10000];
+  let eq = 10000, bhv = 10000;
+  for (let i = 0; i < 120; i++) {
+    eq += (Math.random() - 0.43) * 320;
+    bhv += (Math.random() - 0.44) * 280;
+    labels.push('');
+    strat.push(Math.round(eq));
+    bh.push(Math.round(bhv));
+  }
+  new Chart(document.getElementById('btChart'), {
+    type:'line',
+    data:{ labels, datasets:[
+      { label:'Strategia', data:strat, borderColor:'#F7931A', borderWidth:2, backgroundColor:'rgba(247,147,26,0.07)', fill:true, tension:0.4, pointRadius:0 },
+      { label:'Buy&Hold', data:bh, borderColor:'#888', borderWidth:1.5, borderDash:[5,4], fill:false, tension:0.4, pointRadius:0 }
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ display:false }, y:{ grid:{ color:'rgba(128,128,128,0.1)' }, ticks:{ color:'#888', font:{ size:10 }, callback:v=>'$'+(v/1000).toFixed(0)+'k' } } } }
+  });
+}
+
+function sortScreener(col) {
+  if (screenerSort.col === col) screenerSort.asc = !screenerSort.asc;
+  else { screenerSort.col = col; screenerSort.asc = false; }
+  renderScreener();
+}
+
+function toggleFilter(el, key) {
+  el.classList.toggle('active');
+  renderScreener();
+}
+
+function renderScreener() {
+  const sigF = document.getElementById('scr-filter-sig').value;
+  const volF = document.getElementById('scr-filter-vol').value;
+  const chgF = document.getElementById('scr-filter-chg').value;
+
+  let data = [...screenerData].filter(d => {
+    if (sigF !== 'all' && d.signal !== sigF) return false;
+    const volPct = parseInt(d.vol);
+    if (volF === 'high' && volPct < 50) return false;
+    if (volF === 'vhigh' && volPct < 100) return false;
+    if (chgF === 'pos' && d.chg < 0) return false;
+    if (chgF === 'neg' && d.chg > 0) return false;
+    if (chgF === 'big' && Math.abs(d.chg) < 5) return false;
+    return true;
+  });
+
+  const col = screenerSort.col;
+  data.sort((a, b) => {
+    let va = a[col], vb = b[col];
+    if (col === 'signal') { va = a.signal; vb = b.signal; }
+    if (col === 'vol') { va = parseInt(a.vol); vb = parseInt(b.vol); }
+    if (col === 'macd') { va = a.macd; vb = b.macd; }
+    return screenerSort.asc ? (va > vb ? 1 : -1) : (va < vb ? 1 : -1);
+  });
+
+  const tbody = document.getElementById('screener-body');
+  tbody.innerHTML = data.map(d => {
+    const sigClass = d.signal === 'buy' ? 'sp-buy' : d.signal === 'sell' ? 'sp-sell' : 'sp-neu';
+    const sigLabel = d.signal === 'buy' ? 'BUY' : d.signal === 'sell' ? 'SELL' : 'Neutro';
+    const priceStr = d.price >= 1 ? '$' + d.price.toLocaleString() : '$' + d.price.toFixed(7);
+    const rsiCol = d.rsi > 70 ? '#dc2626' : d.rsi < 30 ? '#16a34a' : '#d97706';
+    const macdCol = d.macd === 'Bull' ? '#16a34a' : d.macd === 'Bear' ? '#dc2626' : '#888';
+    const scoreColor = d.score >= 75 ? '#16a34a' : d.score >= 50 ? '#d97706' : '#dc2626';
+    return `<tr>
+      <td><div class="coin-cell"><div class="coin-dot" style="background:${d.color}">${d.sym.substring(0,2)}</div><div><div style="font-size:12px;font-weight:500">${d.sym}</div><div style="font-size:10px;color:var(--color-text-secondary)">${d.name}</div></div></div></td>
+      <td style="font-size:12px;font-weight:500">${priceStr}</td>
+      <td style="font-size:12px;font-weight:500;color:${d.chg>=0?'#16a34a':'#dc2626'}">${d.chg>=0?'+':''}${d.chg.toFixed(1)}%</td>
+      <td style="font-size:11px;color:${parseInt(d.vol)>=100?'#16a34a':'var(--color-text-secondary)'}">${d.vol}</td>
+      <td style="font-size:12px;font-weight:500;color:${rsiCol}">${d.rsi.toFixed(1)}</td>
+      <td style="font-size:11px;font-weight:500;color:${macdCol}">${d.macd}</td>
+      <td><span style="font-size:12px;font-weight:500;color:${scoreColor}">${d.score}</span><div class="score-bar-w"><div class="score-bar-f" style="width:${d.score}%;background:${scoreColor}"></div></div></td>
+      <td><span class="score-pill ${sigClass}">${sigLabel}</span></td>
+      <td><span style="font-size:11px;cursor:pointer;color:var(--color-text-secondary)" onclick="sendPrompt('Analizza in dettaglio ${d.sym} con tutti gli indicatori disponibili')">↗</span></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('scr-count').textContent = data.length + ' asset trovati su ' + screenerData.length + ' totali';
+}
+
+function updateAlertType() {
+  const type = document.getElementById('al-type').value;
+  const labels = { price_above:'Prezzo ($)', price_below:'Prezzo ($)', rsi_above:'RSI (0-100)', rsi_below:'RSI (0-100)', macd_cross:'— (nessun valore)', vol_spike:'Volume % soglia', score_above:'AI Score (0-100)' };
+  const vals = { price_above:110000, price_below:90000, rsi_above:70, rsi_below:30, macd_cross:0, vol_spike:100, score_above:80 };
+  document.getElementById('al-val-label').textContent = labels[type] || 'Valore';
+  document.getElementById('al-value').value = vals[type] || 0;
+  document.getElementById('al-value').disabled = type === 'macd_cross';
+}
+
+function addAlert() {
+  const asset = document.getElementById('al-asset').value;
+  const type = document.getElementById('al-type').value;
+  const value = parseFloat(document.getElementById('al-value').value);
+  const channel = document.getElementById('al-channel').value;
+  const typeLabels = { price_above:`Prezzo sopra $${value.toLocaleString()}`, price_below:`Prezzo sotto $${value.toLocaleString()}`, rsi_above:`RSI sopra ${value}`, rsi_below:`RSI sotto ${value}`, macd_cross:'MACD crossover', vol_spike:`Volume spike +${value}%`, score_above:`AI Score sopra ${value}` };
+  alerts.push({ id: alertIdCounter++, asset, type, value, channel, label: typeLabels[type], triggered: false });
+  renderAlerts();
+  updateBadge();
+  showNotif(`Alert aggiunto: ${asset} — ${typeLabels[type]}`);
+}
+
+function deleteAlert(id) {
+  alerts = alerts.filter(a => a.id !== id);
+  renderAlerts();
+  updateBadge();
+}
+
+function renderAlerts() {
+  const el = document.getElementById('alert-list');
+  const noEl = document.getElementById('no-alerts');
+  document.getElementById('alert-count').textContent = alerts.length;
+  updateBadge();
+  if (!alerts.length) { el.innerHTML = ''; noEl.style.display = 'block'; return; }
+  noEl.style.display = 'none';
+  const typeIcons = { price_above:'ti-trending-up', price_below:'ti-trending-down', rsi_above:'ti-chart-line', rsi_below:'ti-chart-line', macd_cross:'ti-arrows-exchange', vol_spike:'ti-activity', score_above:'ti-brain' };
+  el.innerHTML = alerts.map(a => {
+    const ic = typeIcons[a.type] || 'ti-bell';
+    const statusClass = a.triggered ? 'as-trig' : 'as-active';
+    const statusLabel = a.triggered ? 'Attivato' : 'In attesa';
+    const cardClass = a.triggered ? 'alert-card triggered' : 'alert-card';
+    const iconBg = a.triggered ? '#16a34a18' : 'var(--color-background-secondary)';
+    const iconCol = a.triggered ? '#16a34a' : 'var(--color-text-secondary)';
+    return `<div class="${cardClass}">
+      <div class="alert-icon" style="background:${iconBg}"><i class="ti ${ic}" style="color:${iconCol};font-size:16px" aria-hidden="true"></i></div>
+      <div class="alert-body">
+        <div class="alert-title">${a.asset} — ${a.label}</div>
+        <div class="alert-desc">Notifica via ${a.channel}</div>
+      </div>
+      <span class="alert-status ${statusClass}">${statusLabel}</span>
+      <span class="alert-del" onclick="deleteAlert(${a.id})" aria-label="Elimina alert"><i class="ti ti-trash" aria-hidden="true"></i></span>
+    </div>`;
+  }).join('');
+}
+
+function updateBadge() {
+  const active = alerts.filter(a => !a.triggered).length;
+  const triggered = alerts.filter(a => a.triggered).length;
+  const badge = document.getElementById('alert-badge');
+  badge.textContent = triggered > 0 ? triggered : active;
+  badge.className = triggered > 0 ? 'nav-badge' : 'nav-badge green';
+}
+
+function showNotif(msg) {
+  const banner = document.getElementById('notif-banner');
+  document.getElementById('notif-text').textContent = msg;
+  banner.style.display = 'flex';
+  setTimeout(() => { banner.style.display = 'none'; }, 4000);
+}
+
+buildDashChart();
+renderAlerts();
+</script>
