@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CryptoEdge AI — Impostazioni</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+
+<style>
+:root{
+  --bg:#0a0a0f;
+  --bg2:#111118;
+  --bg3:#1a1a24;
+  --bg4:#22222f;
+
+  --border:#2a2a3a;
+  --border2:#343448;
+
+  --text:#f1f1f7;
+  --text2:#9ca0b5;
+  --text3:#676b82;
+
+  --accent:#F7931A;
+  --accent2:#ff6b35;
+
+  --green:#22c55e;
+  --red:#ef4444;
+  --blue:#3b82f6;
+  --yellow:#f59e0b;
+
+  --radius:12px;
+  --radius-lg:18px;
+}
+
+body.light{
+  --bg:#f4f6fb;
+  --bg2:#ffffff;
+  --bg3:#eef1f7;
+  --bg4:#dfe5ef;
+
+  --border:#dde3ed;
+  --border2:#cfd6e2;
+
+  --text:#171923;
+  --text2:#4d5566;
+  --text3:#7c8497;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter, sans-serif;
+  min-height:100vh;
+}
+
+.page{
+  max-width:1300px;
+  margin:auto;
+  padding:28px;
+}
+
+/* HEADER */
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:28px;
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.logo-icon{
+  width:52px;
+  height:52px;
+  border-radius:16px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  color:white;
+  font-weight:800;
+  box-shadow:0 8px 20px rgba(247,147,26,.35);
+}
+
+.logo h1{
+  font-size:24px;
+  margin-bottom:3px;
+}
+
+.logo p{
+  font-size:13px;
+  color:var(--text3);
+}
+
+.back-btn{
+  text-decoration:none;
+  color:var(--text);
+  background:var(--bg2);
+  border:1px solid var(--border);
+  padding:10px 16px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  transition:.2s;
+}
+
+.back-btn:hover{
+  background:var(--bg3);
+  border-color:var(--border2);
+}
+
+/* GRID */
+
+.grid{
+  display:grid;
+  grid-template-columns:300px 1fr;
+  gap:20px;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:14px;
+  height:fit-content;
+}
+
+.side-title{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--text3);
+  margin-bottom:10px;
+  padding:0 8px;
+  font-weight:700;
+}
+
+.side-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px;
+  border-radius:10px;
+  cursor:pointer;
+  transition:.2s;
+  color:var(--text2);
+  margin-bottom:4px;
+}
+
+.side-item:hover{
+  background:var(--bg3);
+  color:var(--text);
+}
+
+.side-item.active{
+  background:linear-gradient(135deg,rgba(247,147,26,.15),rgba(255,107,53,.08));
+  color:var(--accent);
+  border:1px solid rgba(247,147,26,.25);
+}
+
+/* CONTENT */
+
+.content{
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+}
+
+.card{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:22px;
+}
+
+.card-title{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:18px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.card-sub{
+  color:var(--text3);
+  font-size:13px;
+  margin-bottom:24px;
+}
+
+/* FORM */
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.field.full{
+  grid-column:1 / -1;
+}
+
+.field label{
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:var(--text3);
+  font-weight:700;
+}
+
+input,
+select{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:13px 14px;
+  border-radius:12px;
+  outline:none;
+  transition:.2s;
+}
+
+input:focus,
+select:focus{
+  border-color:var(--accent);
+}
+
+/* SWITCH */
+
+.switch-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 0;
+  border-bottom:1px solid var(--border);
+}
+
+.switch-row:last-child{
+  border-bottom:none;
+}
+
+.switch-left h4{
+  font-size:14px;
+  margin-bottom:3px;
+}
+
+.switch-left p{
+  font-size:12px;
+  color:var(--text3);
+}
+
+.switch{
+  position:relative;
+  width:54px;
+  height:30px;
+}
+
+.switch input{
+  opacity:0;
+  width:0;
+  height:0;
+}
+
+.slider{
+  position:absolute;
+  inset:0;
+  background:var(--bg4);
+  border-radius:999px;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.slider::before{
+  content:"";
+  position:absolute;
+  width:22px;
+  height:22px;
+  left:4px;
+  top:4px;
+  border-radius:50%;
+  background:white;
+  transition:.25s;
+}
+
+.switch input:checked + .slider{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+}
+
+.switch input:checked + .slider::before{
+  transform:translateX(24px);
+}
+
+/* THEME BOX */
+
+.theme-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+
+.theme-card{
+  border:1px solid var(--border);
+  background:var(--bg3);
+  border-radius:16px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.theme-card:hover{
+  transform:translateY(-3px);
+  border-color:var(--accent);
+}
+
+.theme-preview{
+  height:110px;
+  position:relative;
+}
+
+.dark-preview{
+  background:#0f1117;
+}
+
+.light-preview{
+  background:#f4f6fb;
+}
+
+.orange-preview{
+  background:linear-gradient(135deg,#1c1c28,#ff7b00);
+}
+
+.theme-preview::after{
+  content:"";
+  position:absolute;
+  width:70%;
+  height:16px;
+  background:rgba(255,255,255,.15);
+  left:15%;
+  top:22px;
+  border-radius:20px;
+}
+
+.theme-preview::before{
+  content:"";
+  position:absolute;
+  width:50%;
+  height:55px;
+  background:rgba(255,255,255,.08);
+  left:25%;
+  bottom:16px;
+  border-radius:14px;
+}
+
+.theme-info{
+  padding:14px;
+}
+
+.theme-info h4{
+  margin-bottom:4px;
+}
+
+.theme-info p{
+  color:var(--text3);
+  font-size:12px;
+}
+
+/* BUTTONS */
+
+.actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:12px;
+}
+
+.btn{
+  padding:12px 18px;
+  border:none;
+  border-radius:12px;
+  font-weight:700;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.btn-secondary{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  color:var(--text);
+}
+
+.btn-secondary:hover{
+  background:var(--bg4);
+}
+
+.btn-primary{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:white;
+  box-shadow:0 6px 16px rgba(247,147,26,.3);
+}
+
+.btn-primary:hover{
+  opacity:.92;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:980px){
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .theme-grid{
+    grid-template-columns:1fr;
+  }
+
+  .form-grid{
+    grid-template-columns:1fr;
+  }
+
+  .topbar{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:18px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+  <div class="topbar">
+
+    <div class="logo">
+      <div class="logo-icon">₿</div>
+
+      <div>
+        <h1>Impostazioni</h1>
+        <p>Gestisci preferenze, tema e sicurezza account</p>
+      </div>
+    </div>
+
+    <a href="index.html" class="back-btn">
+      <i class="ti ti-arrow-left"></i>
+      Dashboard
+    </a>
+
+  </div>
+
+  <div class="grid">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+      <div class="side-title">Preferenze</div>
+
+      <div class="side-item active">
+        <i class="ti ti-user"></i>
+        Profilo
+      </div>
+
+      <div class="side-item">
+        <i class="ti ti-palette"></i>
+        Aspetto
+      </div>
+
+      <div class="side-item">
+        <i class="ti ti-bell"></i>
+        Notifiche
+      </div>
+
+      <div class="side-item">
+        <i class="ti ti-shield-lock"></i>
+        Sicurezza
+      </div>
+
+      <div class="side-item">
+        <i class="ti ti-chart-bar"></i>
+        Trading
+      </div>
+
+      <div class="side-item">
+        <i class="ti ti-database"></i>
+        API & Dati
+      </div>
+
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <!-- PROFILO -->
+      <div class="card">
+
+        <div class="card-title">
+          <i class="ti ti-user"></i>
+          Profilo Utente
+        </div>
+
+        <div class="card-sub">
+          Personalizza le informazioni del tuo account CryptoEdge AI
+        </div>
+
+        <div class="form-grid">
+
+          <div class="field">
+            <label>Nome utente</label>
+            <input type="text" value="CryptoTrader99">
+          </div>
+
+          <div class="field">
+            <label>Email</label>
+            <input type="email" value="utente@email.com">
+          </div>
+
+          <div class="field full">
+            <label>Biografia</label>
+            <input type="text" value="Trader crypto · AI enthusiast · BTC maximalist">
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- TEMA -->
+      <div class="card">
+
+        <div class="card-title">
+          <i class="ti ti-palette"></i>
+          Tema Interfaccia
+        </div>
+
+        <div class="card-sub">
+          Cambia l'aspetto della piattaforma
+        </div>
+
+        <div class="theme-grid">
+
+          <div class="theme-card" onclick="setTheme('dark')">
+
+            <div class="theme-preview dark-preview"></div>
+
+            <div class="theme-info">
+              <h4>Dark Pro</h4>
+              <p>Tema scuro professionale</p>
+            </div>
+
+          </div>
+
+          <div class="theme-card" onclick="setTheme('light')">
+
+            <div class="theme-preview light-preview"></div>
+
+            <div class="theme-info">
+              <h4>Light</h4>
+              <p>Interfaccia chiara moderna</p>
+            </div>
+
+          </div>
+
+          <div class="theme-card" onclick="setAccentOrange()">
+
+            <div class="theme-preview orange-preview"></div>
+
+            <div class="theme-info">
+              <h4>Orange Edge</h4>
+              <p>Versione accentuata premium</p>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- PREFERENZE -->
+      <div class="card">
+
+        <div class="card-title">
+          <i class="ti ti-adjustments"></i>
+          Preferenze Generali
+        </div>
+
+        <div class="card-sub">
+          Configura il comportamento della piattaforma
+        </div>
+
+        <div class="switch-row">
+          <div class="switch-left">
+            <h4>Modalità realtime</h4>
+            <p>Aggiornamento automatico dati live</p>
+          </div>
+
+          <label class="switch">
+            <input type="checkbox" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="switch-row">
+          <div class="switch-left">
+            <h4>Notifiche sonore</h4>
+            <p>Riproduci suoni sugli alert</p>
+          </div>
+
+          <label class="switch">
+            <input type="checkbox" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="switch-row">
+          <div class="switch-left">
+            <h4>Trading AI automatico</h4>
+            <p>Abilita suggerimenti AI avanzati</p>
+          </div>
+
+          <label class="switch">
+            <input type="checkbox">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="switch-row">
+          <div class="switch-left">
+            <h4>Animazioni UI</h4>
+            <p>Effetti dinamici dell'interfaccia</p>
+          </div>
+
+          <label class="switch">
+            <input type="checkbox" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+      </div>
+
+      <!-- API -->
+      <div class="card">
+
+        <div class="card-title">
+          <i class="ti ti-api"></i>
+          API Binance
+        </div>
+
+        <div class="card-sub">
+          Configura connessione dati e WebSocket
+        </div>
+
+        <div class="form-grid">
+
+          <div class="field">
+            <label>API Key</label>
+            <input type="password" placeholder="Inserisci API Key">
+          </div>
+
+          <div class="field">
+            <label>Secret Key</label>
+            <input type="password" placeholder="Inserisci Secret Key">
+          </div>
+
+          <div class="field full">
+            <label>Server API</label>
+            <select>
+              <option>Binance Mainnet</option>
+              <option>Binance Testnet</option>
+            </select>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="actions">
+
+        <button class="btn btn-secondary">
+          Ripristina
+        </button>
+
+        <button class="btn btn-primary" onclick="saveSettings()">
+          Salva Impostazioni
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+function setTheme(mode){
+
+  if(mode === 'light'){
+    document.body.classList.add('light');
+    localStorage.setItem('theme','light');
+  }else{
+    document.body.classList.remove('light');
+    localStorage.setItem('theme','dark');
+  }
+}
+
+function setAccentOrange(){
+  document.documentElement.style.setProperty('--accent','#ff7b00');
+  document.documentElement.style.setProperty('--accent2','#ff3d00');
+}
+
+function saveSettings(){
+
+  const btn = document.querySelector('.btn-primary');
+
+  btn.innerHTML = '<i class="ti ti-check"></i> Salvato';
+
+  setTimeout(()=>{
+    btn.innerHTML = 'Salva Impostazioni';
+  },2000);
+}
+
+window.onload = () => {
+
+  const savedTheme = localStorage.getItem('theme');
+
+  if(savedTheme === 'light'){
+    document.body.classList.add('light');
+  }
+}
+
+</script>
+
+</body>
+</html>
