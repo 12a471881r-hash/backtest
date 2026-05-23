@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CryptoEdge AI — Portafoglio</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --bg:#0f1117;
+    --bg2:#171923;
+    --bg3:#1e2230;
+    --bg4:#262c3d;
+
+    --border:#2b3245;
+    --border2:#3b435b;
+
+    --text:#ffffff;
+    --text2:#b8bfd3;
+    --text3:#7f8799;
+
+    --accent:#f7931a;
+    --accent2:#ff6b35;
+
+    --green:#16c784;
+    --red:#ea3943;
+
+    --radius:18px;
+    --shadow:0 12px 35px rgba(0,0,0,.35);
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Inter',sans-serif;
+    background:linear-gradient(135deg,#0b0d13,#141824);
+    color:var(--text);
+    min-height:100vh;
+}
+
+.page{
+    max-width:1400px;
+    margin:auto;
+    padding:28px;
+}
+
+/* TOPBAR */
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:28px;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.logo-box{
+    width:56px;
+    height:56px;
+    border-radius:18px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:24px;
+    font-weight:800;
+    box-shadow:0 10px 25px rgba(247,147,26,.35);
+}
+
+.logo h1{
+    font-size:24px;
+}
+
+.logo p{
+    font-size:13px;
+    color:var(--text3);
+}
+
+.top-actions{
+    display:flex;
+    gap:12px;
+}
+
+.btn{
+    border:none;
+    padding:12px 18px;
+    border-radius:12px;
+    cursor:pointer;
+    font-weight:700;
+    transition:.2s;
+}
+
+.btn-primary{
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:white;
+    box-shadow:0 8px 20px rgba(247,147,26,.25);
+}
+
+.btn-primary:hover{
+    transform:translateY(-2px);
+}
+
+.btn-secondary{
+    background:var(--bg2);
+    color:var(--text);
+    border:1px solid var(--border);
+}
+
+.btn-secondary:hover{
+    background:var(--bg3);
+}
+
+/* GRID */
+
+.grid{
+    display:grid;
+    grid-template-columns:1.2fr .8fr;
+    gap:22px;
+}
+
+/* CARD */
+
+.card{
+    background:rgba(23,25,35,.92);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:24px;
+    box-shadow:var(--shadow);
+    backdrop-filter:blur(10px);
+}
+
+.card-title{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:22px;
+}
+
+.card-title h2{
+    font-size:20px;
+}
+
+.card-title p{
+    color:var(--text3);
+    font-size:13px;
+    margin-top:4px;
+}
+
+/* TOTAL */
+
+.total-balance{
+    font-size:42px;
+    font-weight:800;
+    margin-bottom:12px;
+}
+
+.balance-change{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:30px;
+}
+
+.green{
+    color:var(--green);
+}
+
+.red{
+    color:var(--red);
+}
+
+/* STATS */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+}
+
+.stat-box{
+    background:var(--bg3);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:18px;
+}
+
+.stat-box span{
+    color:var(--text3);
+    font-size:12px;
+}
+
+.stat-box h3{
+    margin-top:10px;
+    font-size:22px;
+}
+
+/* ASSETS */
+
+.asset-list{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+.asset{
+    background:var(--bg3);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    transition:.2s;
+}
+
+.asset:hover{
+    transform:translateY(-2px);
+    border-color:var(--border2);
+}
+
+.asset-left{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.coin{
+    width:52px;
+    height:52px;
+    border-radius:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:800;
+    font-size:18px;
+    color:white;
+}
+
+.btc{
+    background:linear-gradient(135deg,#f7931a,#ffb347);
+}
+
+.eth{
+    background:linear-gradient(135deg,#627eea,#8fa8ff);
+}
+
+.sol{
+    background:linear-gradient(135deg,#9945ff,#14f195);
+}
+
+.asset-info h3{
+    font-size:16px;
+    margin-bottom:4px;
+}
+
+.asset-info p{
+    font-size:13px;
+    color:var(--text3);
+}
+
+.asset-right{
+    text-align:right;
+}
+
+.asset-right h4{
+    font-size:18px;
+    margin-bottom:4px;
+}
+
+.asset-right p{
+    font-size:13px;
+}
+
+/* ALLOCATION */
+
+.allocations{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+.alloc{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.alloc-top{
+    display:flex;
+    justify-content:space-between;
+    font-size:14px;
+}
+
+.bar{
+    height:12px;
+    background:var(--bg4);
+    border-radius:999px;
+    overflow:hidden;
+}
+
+.fill{
+    height:100%;
+    border-radius:999px;
+}
+
+.fill-btc{
+    width:52%;
+    background:linear-gradient(90deg,#f7931a,#ffb347);
+}
+
+.fill-eth{
+    width:31%;
+    background:linear-gradient(90deg,#627eea,#8fa8ff);
+}
+
+.fill-sol{
+    width:17%;
+    background:linear-gradient(90deg,#9945ff,#14f195);
+}
+
+/* TRANSACTIONS */
+
+.transactions{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+.tx{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px;
+    background:var(--bg3);
+    border-radius:14px;
+    border:1px solid var(--border);
+}
+
+.tx-left{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.tx-icon{
+    width:42px;
+    height:42px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(247,147,26,.12);
+    color:var(--accent);
+    font-weight:700;
+}
+
+.tx-left h4{
+    font-size:14px;
+    margin-bottom:4px;
+}
+
+.tx-left p{
+    font-size:12px;
+    color:var(--text3);
+}
+
+.tx-right{
+    text-align:right;
+}
+
+.tx-right h4{
+    font-size:15px;
+    margin-bottom:4px;
+}
+
+.tx-right p{
+    font-size:12px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1000px){
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .stats{
+        grid-template-columns:1fr;
+    }
+
+}
+
+@media(max-width:700px){
+
+    .topbar{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:20px;
+    }
+
+    .asset{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:16px;
+    }
+
+    .asset-right{
+        text-align:left;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <!-- TOPBAR -->
+
+    <div class="topbar">
+
+        <div class="logo">
+            <div class="logo-box">₿</div>
+
+            <div>
+                <h1>Portfolio</h1>
+                <p>Gestione avanzata del tuo capitale</p>
+            </div>
+        </div>
+
+        <div class="top-actions">
+            <button class="btn btn-secondary">
+                Esporta
+            </button>
+
+            <button class="btn btn-primary">
+                + Aggiungi Asset
+            </button>
+        </div>
+
+    </div>
+
+    <!-- GRID -->
+
+    <div class="grid">
+
+        <!-- LEFT -->
+
+        <div style="display:flex; flex-direction:column; gap:22px;">
+
+            <!-- TOTAL -->
+
+            <div class="card">
+
+                <div class="card-title">
+                    <div>
+                        <h2>Valore Totale</h2>
+                        <p>Aggiornato in tempo reale</p>
+                    </div>
+                </div>
+
+                <div class="total-balance">
+                    €24.582,43
+                </div>
+
+                <div class="balance-change">
+                    <span class="green">▲ +8.42%</span>
+                    <span style="color:var(--text3);">
+                        Ultimi 30 giorni
+                    </span>
+                </div>
+
+                <div class="stats">
+
+                    <div class="stat-box">
+                        <span>Profitto Totale</span>
+                        <h3 class="green">+€3.412</h3>
+                    </div>
+
+                    <div class="stat-box">
+                        <span>Asset Attivi</span>
+                        <h3>12</h3>
+                    </div>
+
+                    <div class="stat-box">
+                        <span>ROI Medio</span>
+                        <h3 class="green">+18.6%</h3>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- ASSETS -->
+
+            <div class="card">
+
+                <div class="card-title">
+                    <div>
+                        <h2>I Tuoi Asset</h2>
+                        <p>Criptovalute nel portafoglio</p>
+                    </div>
+                </div>
+
+                <div class="asset-list">
+
+                    <div class="asset">
+
+                        <div class="asset-left">
+
+                            <div class="coin btc">₿</div>
+
+                            <div class="asset-info">
+                                <h3>Bitcoin</h3>
+                                <p>0.245 BTC</p>
+                            </div>
+
+                        </div>
+
+                        <div class="asset-right">
+                            <h4>€12.804</h4>
+                            <p class="green">+4.21%</p>
+                        </div>
+
+                    </div>
+
+                    <div class="asset">
+
+                        <div class="asset-left">
+
+                            <div class="coin eth">Ξ</div>
+
+                            <div class="asset-info">
+                                <h3>Ethereum</h3>
+                                <p>3.41 ETH</p>
+                            </div>
+
+                        </div>
+
+                        <div class="asset-right">
+                            <h4>€7.542</h4>
+                            <p class="green">+2.81%</p>
+                        </div>
+
+                    </div>
+
+                    <div class="asset">
+
+                        <div class="asset-left">
+
+                            <div class="coin sol">S</div>
+
+                            <div class="asset-info">
+                                <h3>Solana</h3>
+                                <p>28.4 SOL</p>
+                            </div>
+
+                        </div>
+
+                        <div class="asset-right">
+                            <h4>€4.236</h4>
+                            <p class="red">-1.33%</p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- RIGHT -->
+
+        <div style="display:flex; flex-direction:column; gap:22px;">
+
+            <!-- ALLOCATION -->
+
+            <div class="card">
+
+                <div class="card-title">
+                    <div>
+                        <h2>Allocazione</h2>
+                        <p>Diversificazione portafoglio</p>
+                    </div>
+                </div>
+
+                <div class="allocations">
+
+                    <div class="alloc">
+
+                        <div class="alloc-top">
+                            <span>Bitcoin</span>
+                            <span>52%</span>
+                        </div>
+
+                        <div class="bar">
+                            <div class="fill fill-btc"></div>
+                        </div>
+
+                    </div>
+
+                    <div class="alloc">
+
+                        <div class="alloc-top">
+                            <span>Ethereum</span>
+                            <span>31%</span>
+                        </div>
+
+                        <div class="bar">
+                            <div class="fill fill-eth"></div>
+                        </div>
+
+                    </div>
+
+                    <div class="alloc">
+
+                        <div class="alloc-top">
+                            <span>Solana</span>
+                            <span>17%</span>
+                        </div>
+
+                        <div class="bar">
+                            <div class="fill fill-sol"></div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- TRANSACTIONS -->
+
+            <div class="card">
+
+                <div class="card-title">
+                    <div>
+                        <h2>Ultime Transazioni</h2>
+                        <p>Storico operazioni recenti</p>
+                    </div>
+                </div>
+
+                <div class="transactions">
+
+                    <div class="tx">
+
+                        <div class="tx-left">
+
+                            <div class="tx-icon">↗</div>
+
+                            <div>
+                                <h4>Acquisto BTC</h4>
+                                <p>22 Mag 2026 • Binance</p>
+                            </div>
+
+                        </div>
+
+                        <div class="tx-right">
+                            <h4>+0.042 BTC</h4>
+                            <p class="green">€2.134</p>
+                        </div>
+
+                    </div>
+
+                    <div class="tx">
+
+                        <div class="tx-left">
+
+                            <div class="tx-icon">↘</div>
+
+                            <div>
+                                <h4>Vendita ETH</h4>
+                                <p>21 Mag 2026 • Coinbase</p>
+                            </div>
+
+                        </div>
+
+                        <div class="tx-right">
+                            <h4>-1.20 ETH</h4>
+                            <p class="red">€1.842</p>
+                        </div>
+
+                    </div>
+
+                    <div class="tx">
+
+                        <div class="tx-left">
+
+                            <div class="tx-icon">↗</div>
+
+                            <div>
+                                <h4>Acquisto SOL</h4>
+                                <p>20 Mag 2026 • Kraken</p>
+                            </div>
+
+                        </div>
+
+                        <div class="tx-right">
+                            <h4>+12 SOL</h4>
+                            <p class="green">€1.012</p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
