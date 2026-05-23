@@ -1,40 +1,376 @@
-
-<a href="index.html">← Torna alla Home</a>
-<h2 class="sr-only">Backtest engine interattivo: configura una strategia crypto e analizza le performance storiche simulate</h2>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CryptoEdge AI - Backtest Engine</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-sans);color:var(--color-text-primary);background:transparent}
-.pos{color:#16a34a}.neg{color:#dc2626}.warn{color:#d97706}
-.row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.lbl{font-size:12px;color:var(--color-text-secondary);min-width:110px}
-select,input[type=number]{font-size:13px;padding:6px 10px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);width:100%}
-.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}
-.cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}
-.mcard{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px}
-.mcard .ml{font-size:11px;color:var(--color-text-secondary);margin-bottom:3px}
-.mcard .mv{font-size:20px;font-weight:500}
-.mcard .ms{font-size:11px;margin-top:2px;color:var(--color-text-secondary)}
-.section{margin-bottom:20px}
-.stitle{font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.stitle i{font-size:14px}
-.config-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.trade-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:12px}
-.trade-row:last-child{border-bottom:none}
-.trade-badge{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:500}
-.tb-buy{background:#16a34a18;color:#16a34a}
-.tb-sell{background:#dc262618;color:#dc2626}
-.run-btn{width:100%;padding:10px;font-size:13px;font-weight:500;background:#F7931A;color:#fff;border:none;border-radius:var(--border-radius-md);cursor:pointer;margin:12px 0}
-.run-btn:hover{background:#e07d10}
-.divider{height:0.5px;background:var(--color-border-tertiary);margin:16px 0}
-.perf-bar-wrap{height:6px;background:var(--color-background-secondary);border-radius:3px;margin-top:4px}
-.perf-bar{height:100%;border-radius:3px}
-.month-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:8px}
-.month-cell{padding:6px 4px;border-radius:4px;text-align:center;font-size:11px;font-weight:500}
-.strategy-tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 10px;border-radius:10px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);cursor:pointer;margin:2px}
-.strategy-tag.active{background:#F7931A18;border-color:#F7931A;color:#F7931A}
-</style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #1a1a24;
+    --bg4: #22222f;
+    --border: #2a2a3a;
+    --border2: #333345;
+    --text: #e8e8f0;
+    --text2: #9090a8;
+    --text3: #5a5a72;
+    --accent: #F7931A;
+    --accent2: #ff6b35;
+    --green: #22c55e;
+    --red: #ef4444;
+    --yellow: #f59e0b;
+    --blue: #3b82f6;
+    --purple: #a855f7;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --radius-lg: 14px;
+  }
 
-<div style="padding:16px 0">
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { 
+    font-family: 'Inter', -apple-system, sans-serif; 
+    background: var(--bg); 
+    color: var(--text); 
+    min-height: 100vh; 
+    overflow: hidden; 
+  }
+
+  /* ── LAYOUT ── */
+  .app { display: grid; grid-template-columns: 260px 1fr; height: 100vh; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    overflow-y: auto;
+  }
+  .sidebar-head {
+    padding: 18px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .sidebar-icon {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 16px;
+    box-shadow: 0 4px 12px rgba(247,147,26,.3);
+  }
+  .sidebar-title { font-size: 14px; font-weight: 700; }
+  .sidebar-sub { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: .05em; }
+
+  .sec-label {
+    font-size: 10px; font-weight: 700; color: var(--text3);
+    padding: 16px 16px 6px; letter-spacing: .1em; text-transform: uppercase;
+  }
+
+  /* ── INPUTS ── */
+  .field { padding: 4px 16px; margin-bottom: 4px; }
+  .field label { font-size: 11px; color: var(--text2); display: block; margin-bottom: 4px; font-weight: 500; }
+  select, input {
+    width: 100%; font-size: 12px; padding: 7px 10px;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    background: var(--bg3); color: var(--text);
+    outline: none; transition: border-color .15s;
+  }
+  select:focus, input:focus { border-color: var(--accent); }
+
+  .strategy-tags { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 16px; }
+  .stag {
+    font-size: 10px; padding: 5px 10px; border-radius: 6px;
+    border: 1px solid var(--border); cursor: pointer;
+    color: var(--text2); transition: all .15s; font-weight: 600;
+  }
+  .stag.active { 
+    background: rgba(247,147,26,.15); 
+    border-color: var(--accent); 
+    color: var(--accent); 
+  }
+
+  /* ── BUTTONS ── */
+  .run-btn {
+    margin: 16px; padding: 10px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff; border: none; border-radius: var(--radius-sm);
+    font-size: 12px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(247,147,26,.25);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .run-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .reset-btn {
+    margin: -8px 16px 16px; padding: 8px;
+    background: transparent; color: var(--text3);
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    font-size: 11px; cursor: pointer;
+  }
+  .reset-btn:hover { color: var(--text2); border-color: var(--border2); }
+
+  /* ── MAIN CONTENT ── */
+  .main { display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
+  
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 20px; border-bottom: 1px solid var(--border);
+    background: var(--bg2); flex-shrink: 0;
+  }
+  .page-title { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 9px; }
+  .page-title i { color: var(--accent); }
+
+  .content { padding: 20px; overflow-y: auto; flex: 1; }
+
+  /* Cards Style from Homepage */
+  .cards4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px; }
+  .mcard {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px;
+  }
+  .mcard .ml { font-size: 11px; color: var(--text3); margin-bottom: 5px; font-weight: 600; text-transform: uppercase; }
+  .mcard .mv { font-size: 22px; font-weight: 800; }
+  .mcard .ms { font-size: 11px; color: var(--text2); margin-top: 4px; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 1px; }
+  .tab {
+    padding: 8px 16px; font-size: 12px; font-weight: 600; color: var(--text3);
+    cursor: pointer; position: relative; transition: color .2s;
+  }
+  .tab.active { color: var(--accent); }
+  .tab.active::after {
+    content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+    height: 2px; background: var(--accent);
+  }
+
+  /* Table Style */
+  .table-wrap { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { text-align: left; padding: 12px; background: var(--bg3); color: var(--text3); font-weight: 700; text-transform: uppercase; font-size: 10px; }
+  td { padding: 12px; border-bottom: 1px solid var(--border); color: var(--text2); }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .pos { color: var(--green); }
+  .neg { color: var(--red); }
+
+  /* Overlay Spinner */
+  .overlay {
+    position: absolute; inset: 0; background: rgba(10,10,15,0.8);
+    display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100;
+  }
+  .spinner {
+    width: 40px; height: 40px; border: 3px solid var(--border);
+    border-top-color: var(--accent); border-radius: 50%;
+    animation: spin 1s linear infinite; margin-bottom: 12px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-head">
+      <div class="sidebar-icon"><i class="ti ti-settings"></i></div>
+      <div>
+        <div class="sidebar-title">Backtest Engine</div>
+        <div class="sidebar-sub">Configurazione AI</div>
+      </div>
+    </div>
+
+    <div class="sec-label">Strategia</div>
+    <div class="strategy-tags">
+      <span class="stag active" onclick="setStrategy('ema', this)">EMA Cross</span>
+      <span class="stag" onclick="setStrategy('rsi', this)">RSI Mean Rev</span>
+      <span class="stag" onclick="setStrategy('macd', this)">MACD Signal</span>
+      <span class="stag" onclick="setStrategy('bb', this)">Bollinger</span>
+    </div>
+
+    <div class="sec-label">Parametri Asset</div>
+    <div class="field">
+      <label>Asset</label>
+      <select id="cfg-asset">
+        <option value="BTC">Bitcoin (BTC)</option>
+        <option value="ETH">Ethereum (ETH)</option>
+        <option value="SOL">Solana (SOL)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Timeframe</label>
+      <select id="cfg-tf">
+        <option value="1h">1 Ora</option>
+        <option value="4h">4 Ore</option>
+        <option value="1d" selected>1 Giorno</option>
+      </select>
+    </div>
+
+    <div class="sec-label">Gestione Rischio</div>
+    <div class="field">
+      <label>Capitale Iniziale ($)</label>
+      <input type="number" id="cfg-capital" value="10000">
+    </div>
+    <div class="field">
+      <label>Stop Loss (%)</label>
+      <input type="number" id="cfg-sl" value="5" step="0.5">
+    </div>
+    <div class="field">
+      <label>Take Profit (%)</label>
+      <input type="number" id="cfg-tp" value="10" step="0.5">
+    </div>
+
+    <button class="run-btn" onclick="runBacktest()">
+      <i class="ti ti-player-play"></i> ESEGUI TEST
+    </button>
+    <button class="reset-btn" onclick="resetAll()">
+      <i class="ti ti-refresh"></i> Reset Parametri
+    </button>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="page-title">
+        <i class="ti ti-history"></i> Report Performance
+      </div>
+      <div class="topbar-right">
+        <button class="btn" style="background:var(--bg3); padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); color: var(--text2); font-size: 11px; cursor: pointer;">
+          <i class="ti ti-download"></i> Esporta PDF
+        </button>
+      </div>
+    </header>
+
+    <div class="content" id="results-view">
+      <div class="overlay" id="loader">
+        <div class="spinner"></div>
+        <div style="font-size: 13px; font-weight: 600;">Analisi in corso...</div>
+      </div>
+
+      <div class="cards4">
+        <div class="mcard">
+          <div class="ml">Net Profit</div>
+          <div class="mv pos" id="res-profit">+24.5%</div>
+          <div class="ms" id="res-profit-cash">+$2,450.00</div>
+        </div>
+        <div class="mcard">
+          <div class="ml">Win Rate</div>
+          <div class="mv" id="res-wr">62.0%</div>
+          <div class="ms">Su 45 eseguiti</div>
+        </div>
+        <div class="mcard">
+          <div class="ml">Profit Factor</div>
+          <div class="mv warn" id="res-pf">1.85</div>
+          <div class="ms">Ratio Lordo</div>
+        </div>
+        <div class="mcard">
+          <div class="ml">Max Drawdown</div>
+          <div class="mv neg" id="res-mdd">-8.2%</div>
+          <div class="ms">Picco storico</div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('equity')">Grafico Equity</div>
+        <div class="tab" onclick="switchTab('trades')">Storico Operazioni</div>
+      </div>
+
+      <div id="tab-equity" class="table-wrap" style="padding: 20px; height: 400px;">
+        <canvas id="equityChart"></canvas>
+      </div>
+
+      <div id="tab-trades" class="table-wrap" style="display: none;">
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Tipo</th>
+              <th>Prezzo Entrata</th>
+              <th>Prezzo Uscita</th>
+              <th>Risultato %</th>
+            </tr>
+          </thead>
+          <tbody id="trade-list">
+            <tr>
+              <td>2024-05-10</td>
+              <td><span style="color:var(--green)">Long</span></td>
+              <td>$64,200</td>
+              <td>$67,500</td>
+              <td class="pos">+5.14%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  let chart;
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    document.getElementById('tab-equity').style.display = tab === 'equity' ? 'block' : 'none';
+    document.getElementById('tab-trades').style.display = tab === 'trades' ? 'block' : 'none';
+  }
+
+  function setStrategy(type, el) {
+    document.querySelectorAll('.stag').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+    console.log("Strategia impostata:", type);
+  }
+
+  async function runBacktest() {
+    const loader = document.getElementById('loader');
+    loader.style.display = 'flex';
+    
+    // Simulazione calcolo
+    await new Promise(r => setTimeout(r, 1500));
+    
+    loader.style.display = 'none';
+    initChart();
+  }
+
+  function initChart() {
+    const ctx = document.getElementById('equityChart').getContext('2d');
+    if(chart) chart.destroy();
+    
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu'],
+        datasets: [{
+          label: 'Equity Line ($)',
+          data: [10000, 10500, 10200, 11800, 12100, 12450],
+          borderColor: '#F7931A',
+          backgroundColor: 'rgba(247,147,26,0.1)',
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { grid: { color: '#2a2a3a' }, ticks: { color: '#5a5a72' } },
+          x: { grid: { display: false }, ticks: { color: '#5a5a72' } }
+        }
+      }
+    });
+  }
+
+  function resetAll() {
+    document.getElementById('cfg-capital').value = 10000;
+    document.getElementById('cfg-sl').value = 5;
+    document.getElementById('cfg-tp').value = 10;
+  }
+
+  window.onload = initChart;
+</script>
+</body>
+</html><div style="padding:16px 0">
 
 <div class="section">
   <div class="stitle"><i class="ti ti-settings" aria-hidden="true"></i> Configurazione strategia</div>
