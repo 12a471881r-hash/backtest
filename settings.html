@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 
 <style>
+
 :root{
   --bg:#0a0a0f;
   --bg2:#111118;
@@ -35,6 +36,837 @@
 body.light{
   --bg:#f4f7fb;
   --bg2:#ffffff;
+  --bg3:#edf1f7;
+  --bg4:#dfe5ef;
+
+  --border:#dce2ec;
+  --border2:#cfd7e4;
+
+  --text:#171923;
+  --text2:#4b5565;
+  --text3:#7f8797;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,sans-serif;
+  min-height:100vh;
+}
+
+.page{
+  max-width:1400px;
+  margin:auto;
+  padding:28px;
+}
+
+/* TOPBAR */
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:24px;
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.logo-box{
+  width:56px;
+  height:56px;
+  border-radius:18px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  font-size:24px;
+  font-weight:800;
+  box-shadow:0 8px 20px rgba(247,147,26,.35);
+}
+
+.logo h1{
+  font-size:26px;
+  margin-bottom:4px;
+}
+
+.logo p{
+  font-size:13px;
+  color:var(--text3);
+}
+
+.back-btn{
+  text-decoration:none;
+  color:var(--text);
+  background:var(--bg2);
+  border:1px solid var(--border);
+  padding:12px 18px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  transition:.2s;
+}
+
+.back-btn:hover{
+  background:var(--bg3);
+  border-color:var(--border2);
+}
+
+/* LAYOUT */
+
+.layout{
+  display:grid;
+  grid-template-columns:280px 1fr;
+  gap:22px;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:16px;
+  height:fit-content;
+}
+
+.side-title{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--text3);
+  margin-bottom:10px;
+  padding-left:8px;
+  font-weight:700;
+}
+
+.side-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:13px;
+  border-radius:12px;
+  cursor:pointer;
+  transition:.2s;
+  color:var(--text2);
+  margin-bottom:5px;
+  font-weight:500;
+}
+
+.side-item:hover{
+  background:var(--bg3);
+  color:var(--text);
+}
+
+.side-item.active{
+  background:linear-gradient(135deg,rgba(247,147,26,.15),rgba(255,107,53,.08));
+  color:var(--accent);
+  border:1px solid rgba(247,147,26,.25);
+}
+
+/* CONTENT */
+
+.content{
+  display:flex;
+  flex-direction:column;
+  gap:22px;
+}
+
+.card{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:24px;
+}
+
+.card-title{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:20px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.card-sub{
+  font-size:13px;
+  color:var(--text3);
+  margin-bottom:24px;
+}
+
+/* FORM */
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.field.full{
+  grid-column:1/-1;
+}
+
+.field label{
+  font-size:12px;
+  color:var(--text3);
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  font-weight:700;
+}
+
+input,
+select{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:14px;
+  border-radius:12px;
+  outline:none;
+  transition:.2s;
+}
+
+input:focus,
+select:focus{
+  border-color:var(--accent);
+}
+
+/* SWITCH */
+
+.switch-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px 0;
+  border-bottom:1px solid var(--border);
+}
+
+.switch-row:last-child{
+  border-bottom:none;
+}
+
+.switch-left h4{
+  font-size:14px;
+  margin-bottom:4px;
+}
+
+.switch-left p{
+  font-size:12px;
+  color:var(--text3);
+}
+
+.switch{
+  position:relative;
+  width:56px;
+  height:30px;
+}
+
+.switch input{
+  opacity:0;
+  width:0;
+  height:0;
+}
+
+.slider{
+  position:absolute;
+  inset:0;
+  background:var(--bg4);
+  border-radius:999px;
+  transition:.25s;
+  cursor:pointer;
+}
+
+.slider::before{
+  content:"";
+  position:absolute;
+  width:22px;
+  height:22px;
+  left:4px;
+  top:4px;
+  background:white;
+  border-radius:50%;
+  transition:.25s;
+}
+
+.switch input:checked + .slider{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+}
+
+.switch input:checked + .slider::before{
+  transform:translateX(26px);
+}
+
+/* THEME GRID */
+
+.theme-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+}
+
+.theme-card{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:18px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.theme-card:hover{
+  transform:translateY(-4px);
+  border-color:var(--accent);
+}
+
+.theme-preview{
+  height:120px;
+  position:relative;
+}
+
+.dark-preview{
+  background:#101118;
+}
+
+.light-preview{
+  background:#f4f7fb;
+}
+
+.orange-preview{
+  background:linear-gradient(135deg,#1d1d28,#ff7b00);
+}
+
+.theme-preview::before{
+  content:"";
+  position:absolute;
+  width:70%;
+  height:18px;
+  background:rgba(255,255,255,.12);
+  left:15%;
+  top:22px;
+  border-radius:20px;
+}
+
+.theme-preview::after{
+  content:"";
+  position:absolute;
+  width:52%;
+  height:56px;
+  background:rgba(255,255,255,.08);
+  left:24%;
+  bottom:16px;
+  border-radius:16px;
+}
+
+.theme-info{
+  padding:16px;
+}
+
+.theme-info h4{
+  margin-bottom:5px;
+}
+
+.theme-info p{
+  font-size:12px;
+  color:var(--text3);
+}
+
+/* BUTTONS */
+
+.actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:14px;
+}
+
+.btn{
+  border:none;
+  padding:13px 20px;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:700;
+  transition:.2s;
+}
+
+.btn-secondary{
+  background:var(--bg3);
+  color:var(--text);
+  border:1px solid var(--border);
+}
+
+.btn-secondary:hover{
+  background:var(--bg4);
+}
+
+.btn-primary{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:white;
+  box-shadow:0 8px 20px rgba(247,147,26,.3);
+}
+
+.btn-primary:hover{
+  opacity:.92;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:980px){
+
+  .layout{
+    grid-template-columns:1fr;
+  }
+
+  .theme-grid{
+    grid-template-columns:1fr;
+  }
+
+  .form-grid{
+    grid-template-columns:1fr;
+  }
+
+  .topbar{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:18px;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+  <!-- TOPBAR -->
+
+  <div class="topbar">
+
+    <div class="logo">
+
+      <div class="logo-box">₿</div>
+
+      <div>
+        <h1>Impostazioni</h1>
+        <p>Configura CryptoEdge AI</p>
+      </div>
+
+    </div>
+
+    <a href="index.html" class="back-btn">
+      <i class="ti ti-arrow-left"></i>
+      Dashboard
+    </a>
+
+  </div>
+
+  <!-- LAYOUT -->
+
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+
+    <div class="sidebar">
+
+      <div class="side-title">Preferenze</div>
+
+      <div class="side-item active" data-section="profile-section">
+        <i class="ti ti-user"></i>
+        Profilo
+      </div>
+
+      <div class="side-item" data-section="theme-section">
+        <i class="ti ti-palette"></i>
+        Aspetto
+      </div>
+
+      <div class="side-item" data-section="notifications-section">
+        <i class="ti ti-bell"></i>
+        Notifiche
+      </div>
+
+      <div class="side-item" data-section="security-section">
+        <i class="ti ti-shield-lock"></i>
+        Sicurezza
+      </div>
+
+      <div class="side-item" data-section="trading-section">
+        <i class="ti ti-chart-bar"></i>
+        Trading
+      </div>
+
+      <div class="side-item" data-section="api-section">
+        <i class="ti ti-database"></i>
+        API & Dati
+      </div>
+
+    </div>
+
+    <!-- CONTENT -->
+
+    <div class="content">
+
+      <!-- PROFILO -->
+
+      <div class="card settings-section" id="profile-section">
+
+        <div class="card-title">
+          <i class="ti ti-user"></i>
+          Profilo Utente
+        </div>
+
+        <div class="card-sub">
+          Personalizza il tuo account CryptoEdge AI
+        </div>
+
+        <div class="form-grid">
+
+          <div class="field">
+            <label>Nome Utente</label>
+            <input type="text" value="CryptoTrader99">
+          </div>
+
+          <div class="field">
+            <label>Email</label>
+            <input type="email" value="utente@email.com">
+          </div>
+
+          <div class="field full">
+            <label>Biografia</label>
+            <input type="text" value="Trader crypto · AI enthusiast">
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ASPETTO -->
+
+      <div class="card settings-section" id="theme-section" style="display:none;">
+
+        <div class="card-title">
+          <i class="ti ti-palette"></i>
+          Tema Interfaccia
+        </div>
+
+        <div class="card-sub">
+          Personalizza l'aspetto della piattaforma
+        </div>
+
+        <div class="theme-grid">
+
+          <div class="theme-card" onclick="setTheme('dark')">
+
+            <div class="theme-preview dark-preview"></div>
+
+            <div class="theme-info">
+              <h4>Dark Pro</h4>
+              <p>Tema scuro professionale</p>
+            </div>
+
+          </div>
+
+          <div class="theme-card" onclick="setTheme('light')">
+
+            <div class="theme-preview light-preview"></div>
+
+            <div class="theme-info">
+              <h4>Light</h4>
+              <p>Interfaccia chiara moderna</p>
+            </div>
+
+          </div>
+
+          <div class="theme-card" onclick="setOrangeTheme()">
+
+            <div class="theme-preview orange-preview"></div>
+
+            <div class="theme-info">
+              <h4>Orange Edge</h4>
+              <p>Versione premium arancione</p>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- NOTIFICHE -->
+
+      <div class="card settings-section" id="notifications-section" style="display:none;">
+
+        <div class="card-title">
+          <i class="ti ti-bell"></i>
+          Notifiche
+        </div>
+
+        <div class="card-sub">
+          Gestisci alert e notifiche realtime
+        </div>
+
+        <div class="switch-row">
+          <div class="switch-left">
+            <h4>Push Notifications</h4>
+            <p>Ricevi notifiche live sugli alert</p>
+          </div>
+
+          <label class="switch">
+            <input type="checkbox" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="switch-row">
+          <div class="switch-left">
+            <h4>Notifiche Email</h4>
+            <p>Ricevi report giornalieri</p>
+          </div>
+
+          <label class="switch">
+            <input type="checkbox">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+      </div>
+
+      <!-- SICUREZZA -->
+
+      <div class="card settings-section" id="security-section" style="display:none;">
+
+        <div class="card-title">
+          <i class="ti ti-shield-lock"></i>
+          Sicurezza
+        </div>
+
+        <div class="card-sub">
+          Password e autenticazione account
+        </div>
+
+        <div class="form-grid">
+
+          <div class="field">
+            <label>Nuova Password</label>
+            <input type="password" placeholder="********">
+          </div>
+
+          <div class="field">
+            <label>Conferma Password</label>
+            <input type="password" placeholder="********">
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- TRADING -->
+
+      <div class="card settings-section" id="trading-section" style="display:none;">
+
+        <div class="card-title">
+          <i class="ti ti-chart-bar"></i>
+          Trading
+        </div>
+
+        <div class="card-sub">
+          Preferenze trading automatico AI
+        </div>
+
+        <div class="switch-row">
+          <div class="switch-left">
+            <h4>Trading AI</h4>
+            <p>Attiva segnali automatici</p>
+          </div>
+
+          <label class="switch">
+            <input type="checkbox" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="switch-row">
+          <div class="switch-left">
+            <h4>Realtime Market Scan</h4>
+            <p>Scansione continua del mercato</p>
+          </div>
+
+          <label class="switch">
+            <input type="checkbox" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+      </div>
+
+      <!-- API -->
+
+      <div class="card settings-section" id="api-section" style="display:none;">
+
+        <div class="card-title">
+          <i class="ti ti-database"></i>
+          API & Dati
+        </div>
+
+        <div class="card-sub">
+          Configurazione API Binance
+        </div>
+
+        <div class="form-grid">
+
+          <div class="field">
+            <label>API Key</label>
+            <input type="password" placeholder="Inserisci API Key">
+          </div>
+
+          <div class="field">
+            <label>Secret Key</label>
+            <input type="password" placeholder="Inserisci Secret Key">
+          </div>
+
+          <div class="field full">
+            <label>Server</label>
+
+            <select>
+              <option>Binance Mainnet</option>
+              <option>Binance Testnet</option>
+            </select>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- BUTTONS -->
+
+      <div class="actions">
+
+        <button class="btn btn-secondary">
+          Ripristina
+        </button>
+
+        <button class="btn btn-primary" onclick="saveSettings()">
+          Salva Impostazioni
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+/* NAVIGATION */
+
+const sections = document.querySelectorAll('.settings-section');
+const menuItems = document.querySelectorAll('.side-item');
+
+menuItems.forEach(item => {
+
+  item.addEventListener('click', () => {
+
+    menuItems.forEach(i => i.classList.remove('active'));
+
+    item.classList.add('active');
+
+    sections.forEach(section => {
+      section.style.display = 'none';
+    });
+
+    const target = item.dataset.section;
+
+    document.getElementById(target).style.display = 'block';
+
+  });
+
+});
+
+/* THEMES */
+
+function setTheme(mode){
+
+  if(mode === 'light'){
+
+    document.body.classList.add('light');
+
+    localStorage.setItem('theme','light');
+
+  }else{
+
+    document.body.classList.remove('light');
+
+    localStorage.setItem('theme','dark');
+  }
+}
+
+function setOrangeTheme(){
+
+  document.body.classList.remove('light');
+
+  document.documentElement.style.setProperty('--accent','#ff7b00');
+  document.documentElement.style.setProperty('--accent2','#ff3d00');
+
+  localStorage.setItem('orangeTheme','true');
+}
+
+/* SAVE */
+
+function saveSettings(){
+
+  const btn = document.querySelector('.btn-primary');
+
+  btn.innerHTML = '<i class="ti ti-check"></i> Salvato';
+
+  setTimeout(() => {
+
+    btn.innerHTML = 'Salva Impostazioni';
+
+  },2000);
+}
+
+/* LOAD SETTINGS */
+
+window.onload = () => {
+
+  const theme = localStorage.getItem('theme');
+
+  if(theme === 'light'){
+
+    document.body.classList.add('light');
+  }
+
+  const orange = localStorage.getItem('orangeTheme');
+
+  if(orange === 'true'){
+
+    document.documentElement.style.setProperty('--accent','#ff7b00');
+    document.documentElement.style.setProperty('--accent2','#ff3d00');
+  }
+}
+
+</script>
+
+</body>
+</html>  --bg2:#ffffff;
   --bg3:#edf1f7;
   --bg4:#dfe5ef;
 
