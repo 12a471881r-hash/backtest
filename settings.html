@@ -1,40 +1,940 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>CryptoEdge AI — Settings</title>
+<title>CryptoEdge AI • Settings</title>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
 
 :root{
-  --bg:#0a0a0f;
-  --bg2:#111118;
-  --bg3:#1a1a24;
-  --bg4:#232332;
-
-  --border:#2b2b3a;
-  --border2:#3a3a4a;
-
-  --text:#f5f7ff;
-  --text2:#9ea3b9;
-  --text3:#6d7288;
-
-  --accent:#F7931A;
+  --accent:#f7931a;
   --accent2:#ff6b35;
 
-  --green:#22c55e;
-  --red:#ef4444;
-  --yellow:#f59e0b;
+  --radius:18px;
+  --radius-lg:24px;
 
-  --radius:14px;
+  --bg:#0f1117;
+  --bg2:#171923;
+  --bg3:#1f2330;
+  --bg4:#2b3142;
+
+  --border:#2a3142;
+  --border2:#394154;
+
+  --text:#ffffff;
+  --text2:#cfd6e4;
+  --text3:#8892a8;
+
+  --shadow:0 10px 35px rgba(0,0,0,.35);
 }
 
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Inter',sans-serif;
+  min-height:100vh;
+}
+
+.page{
+  max-width:1400px;
+  margin:auto;
+  padding:28px;
+}
+
+/* TOPBAR */
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:28px;
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
+
+.logo-icon{
+  width:56px;
+  height:56px;
+  border-radius:18px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  font-weight:800;
+  color:white;
+  box-shadow:0 10px 24px rgba(247,147,26,.35);
+}
+
+.logo h1{
+  font-size:24px;
+  margin-bottom:4px;
+}
+
+.logo p{
+  color:var(--text3);
+  font-size:13px;
+}
+
+.back-btn{
+  text-decoration:none;
+  color:white;
+  background:var(--bg2);
+  border:1px solid var(--border);
+  padding:12px 18px;
+  border-radius:14px;
+  transition:.25s;
+  font-weight:600;
+}
+
+.back-btn:hover{
+  border-color:var(--accent);
+  transform:translateY(-2px);
+}
+
+/* GRID */
+
+.grid{
+  display:grid;
+  grid-template-columns:290px 1fr;
+  gap:24px;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:16px;
+  height:fit-content;
+  box-shadow:var(--shadow);
+}
+
+.side-title{
+  color:var(--text3);
+  font-size:11px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  margin-bottom:14px;
+  padding-left:8px;
+  font-weight:700;
+}
+
+.side-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px;
+  border-radius:14px;
+  cursor:pointer;
+  transition:.25s;
+  margin-bottom:6px;
+  color:var(--text2);
+  border:1px solid transparent;
+  font-weight:500;
+}
+
+.side-item:hover{
+  background:var(--bg3);
+  color:white;
+}
+
+.side-item.active{
+  background:linear-gradient(
+    135deg,
+    rgba(247,147,26,.18),
+    rgba(255,107,53,.08)
+  );
+
+  border-color:rgba(247,147,26,.25);
+  color:var(--accent);
+}
+
+/* CONTENT */
+
+.content{
+  display:flex;
+  flex-direction:column;
+  gap:22px;
+}
+
+.section{
+  display:none;
+}
+
+.section.active{
+  display:block;
+}
+
+.card{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:24px;
+  box-shadow:var(--shadow);
+}
+
+.card-title{
+  font-size:20px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.card-sub{
+  color:var(--text3);
+  font-size:13px;
+  margin-bottom:26px;
+}
+
+/* FORM */
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.field.full{
+  grid-column:1 / -1;
+}
+
+.field label{
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--text3);
+  font-weight:700;
+}
+
+input,
+select{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px;
+  color:white;
+  outline:none;
+  transition:.25s;
+}
+
+input:focus,
+select:focus{
+  border-color:var(--accent);
+}
+
+/* SWITCH */
+
+.switch-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:18px 0;
+  border-bottom:1px solid var(--border);
+}
+
+.switch-row:last-child{
+  border-bottom:none;
+}
+
+.switch-left h4{
+  margin-bottom:4px;
+}
+
+.switch-left p{
+  color:var(--text3);
+  font-size:13px;
+}
+
+.switch{
+  position:relative;
+  width:58px;
+  height:32px;
+}
+
+.switch input{
+  opacity:0;
+  width:0;
+  height:0;
+}
+
+.slider{
+  position:absolute;
+  inset:0;
+  background:var(--bg4);
+  border-radius:999px;
+  transition:.25s;
+  cursor:pointer;
+}
+
+.slider::before{
+  content:"";
+  position:absolute;
+  width:24px;
+  height:24px;
+  left:4px;
+  top:4px;
+  border-radius:50%;
+  background:white;
+  transition:.25s;
+}
+
+.switch input:checked + .slider{
+  background:linear-gradient(
+    135deg,
+    var(--accent),
+    var(--accent2)
+  );
+}
+
+.switch input:checked + .slider::before{
+  transform:translateX(26px);
+}
+
+/* THEMES */
+
+.theme-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+}
+
+.theme-card{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:18px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.theme-card:hover{
+  transform:translateY(-4px);
+  border-color:var(--accent);
+}
+
+.theme-card.active{
+  border-color:var(--accent);
+  box-shadow:0 0 0 2px rgba(247,147,26,.25);
+}
+
+.theme-preview{
+  height:110px;
+  position:relative;
+}
+
+.theme-preview::before{
+  content:"";
+  position:absolute;
+  width:70%;
+  height:16px;
+  border-radius:20px;
+  left:15%;
+  top:18px;
+  background:rgba(255,255,255,.15);
+}
+
+.theme-preview::after{
+  content:"";
+  position:absolute;
+  width:50%;
+  height:52px;
+  border-radius:14px;
+  left:25%;
+  bottom:18px;
+  background:rgba(255,255,255,.08);
+}
+
+.dark-preview{
+  background:#0f1117;
+}
+
+.light-preview{
+  background:#f3f6fc;
+}
+
+.orange-preview{
+  background:linear-gradient(135deg,#1f1f2d,#ff7b00);
+}
+
+.theme-info{
+  padding:16px;
+}
+
+.theme-info h4{
+  margin-bottom:5px;
+}
+
+.theme-info p{
+  font-size:12px;
+  color:var(--text3);
+}
+
+/* BUTTONS */
+
+.actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:12px;
+  margin-top:24px;
+}
+
+.btn{
+  border:none;
+  padding:13px 18px;
+  border-radius:14px;
+  cursor:pointer;
+  font-weight:700;
+  transition:.25s;
+}
+
+.btn-secondary{
+  background:var(--bg3);
+  color:white;
+  border:1px solid var(--border);
+}
+
+.btn-secondary:hover{
+  background:var(--bg4);
+}
+
+.btn-primary{
+  background:linear-gradient(
+    135deg,
+    var(--accent),
+    var(--accent2)
+  );
+  color:white;
+  box-shadow:0 10px 24px rgba(247,147,26,.28);
+}
+
+.btn-primary:hover{
+  transform:translateY(-2px);
+}
+
+/* LIGHT THEME */
+
 body.light{
-  --bg:#f4f7fb;
+
+  --bg:#f4f6fb;
+  --bg2:#ffffff;
+  --bg3:#eef1f7;
+  --bg4:#dfe5ef;
+
+  --border:#dde3ed;
+  --border2:#cfd6e2;
+
+  --text:#171923;
+  --text2:#4d5566;
+  --text3:#7c8497;
+
+  --shadow:0 10px 30px rgba(15,23,42,.08);
+}
+
+body.light input,
+body.light select{
+  color:#171923;
+}
+
+/* ORANGE THEME */
+
+body.orange{
+
+  --bg:#151515;
+  --bg2:#1d1d1d;
+  --bg3:#272727;
+  --bg4:#343434;
+
+  --border:#393939;
+
+  --text:#ffffff;
+  --text2:#d5d5d5;
+  --text3:#9b9b9b;
+
+  --accent:#ff8c00;
+  --accent2:#ff4d00;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1000px){
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .theme-grid{
+    grid-template-columns:1fr;
+  }
+
+  .form-grid{
+    grid-template-columns:1fr;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+  <div class="topbar">
+
+    <div class="logo">
+      <div class="logo-icon">₿</div>
+
+      <div>
+        <h1>CryptoEdge AI</h1>
+        <p>Impostazioni piattaforma</p>
+      </div>
+    </div>
+
+    <a href="index.html" class="back-btn">
+      ← Dashboard
+    </a>
+
+  </div>
+
+  <div class="grid">
+
+    <!-- SIDEBAR -->
+
+    <div class="sidebar">
+
+      <div class="side-title">Settings</div>
+
+      <div class="side-item active" data-section="profilo">
+        👤 Profilo
+      </div>
+
+      <div class="side-item" data-section="aspetto">
+        🎨 Aspetto
+      </div>
+
+      <div class="side-item" data-section="notifiche">
+        🔔 Notifiche
+      </div>
+
+      <div class="side-item" data-section="sicurezza">
+        🔒 Sicurezza
+      </div>
+
+      <div class="side-item" data-section="trading">
+        📈 Trading
+      </div>
+
+      <div class="side-item" data-section="api">
+        ⚡ API & Dati
+      </div>
+
+    </div>
+
+    <!-- CONTENT -->
+
+    <div class="content">
+
+      <!-- PROFILO -->
+
+      <div class="section active" id="profilo">
+
+        <div class="card">
+
+          <div class="card-title">
+            Profilo
+          </div>
+
+          <div class="card-sub">
+            Gestisci le informazioni del tuo account
+          </div>
+
+          <div class="form-grid">
+
+            <div class="field">
+              <label>Nome</label>
+              <input type="text" placeholder="Elton">
+            </div>
+
+            <div class="field">
+              <label>Email</label>
+              <input type="email" placeholder="email@example.com">
+            </div>
+
+            <div class="field full">
+              <label>Bio</label>
+              <input type="text" placeholder="Trader & Crypto Analyst">
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ASPETTO -->
+
+      <div class="section" id="aspetto">
+
+        <div class="card">
+
+          <div class="card-title">
+            Tema Interfaccia
+          </div>
+
+          <div class="card-sub">
+            Personalizza l'aspetto della piattaforma
+          </div>
+
+          <div class="theme-grid">
+
+            <div class="theme-card active" data-theme="dark">
+
+              <div class="theme-preview dark-preview"></div>
+
+              <div class="theme-info">
+                <h4>Dark Pro</h4>
+                <p>Tema scuro professionale</p>
+              </div>
+
+            </div>
+
+            <div class="theme-card" data-theme="light">
+
+              <div class="theme-preview light-preview"></div>
+
+              <div class="theme-info">
+                <h4>Light</h4>
+                <p>Interfaccia chiara moderna</p>
+              </div>
+
+            </div>
+
+            <div class="theme-card" data-theme="orange">
+
+              <div class="theme-preview orange-preview"></div>
+
+              <div class="theme-info">
+                <h4>Orange Edge</h4>
+                <p>Versione premium arancione</p>
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="actions">
+
+            <button class="btn btn-secondary" id="resetTheme">
+              Ripristina
+            </button>
+
+            <button class="btn btn-primary" id="saveTheme">
+              Salva Impostazioni
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- NOTIFICHE -->
+
+      <div class="section" id="notifiche">
+
+        <div class="card">
+
+          <div class="card-title">
+            Notifiche
+          </div>
+
+          <div class="card-sub">
+            Gestisci gli avvisi della piattaforma
+          </div>
+
+          <div class="switch-row">
+
+            <div class="switch-left">
+              <h4>Alert Trading</h4>
+              <p>Ricevi notifiche sui segnali AI</p>
+            </div>
+
+            <label class="switch">
+              <input type="checkbox" checked>
+              <span class="slider"></span>
+            </label>
+
+          </div>
+
+          <div class="switch-row">
+
+            <div class="switch-left">
+              <h4>Email Report</h4>
+              <p>Report giornaliero via email</p>
+            </div>
+
+            <label class="switch">
+              <input type="checkbox">
+              <span class="slider"></span>
+            </label>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- SICUREZZA -->
+
+      <div class="section" id="sicurezza">
+
+        <div class="card">
+
+          <div class="card-title">
+            Sicurezza
+          </div>
+
+          <div class="card-sub">
+            Proteggi il tuo account
+          </div>
+
+          <div class="switch-row">
+
+            <div class="switch-left">
+              <h4>2FA Authentication</h4>
+              <p>Abilita autenticazione a due fattori</p>
+            </div>
+
+            <label class="switch">
+              <input type="checkbox">
+              <span class="slider"></span>
+            </label>
+
+          </div>
+
+          <div class="switch-row">
+
+            <div class="switch-left">
+              <h4>Login Alert</h4>
+              <p>Notifica accessi sospetti</p>
+            </div>
+
+            <label class="switch">
+              <input type="checkbox" checked>
+              <span class="slider"></span>
+            </label>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- TRADING -->
+
+      <div class="section" id="trading">
+
+        <div class="card">
+
+          <div class="card-title">
+            Trading
+          </div>
+
+          <div class="card-sub">
+            Configura i parametri operativi
+          </div>
+
+          <div class="form-grid">
+
+            <div class="field">
+              <label>Leva Default</label>
+
+              <select>
+                <option>1x</option>
+                <option>5x</option>
+                <option>10x</option>
+                <option>20x</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Risk Level</label>
+
+              <select>
+                <option>Basso</option>
+                <option>Medio</option>
+                <option>Alto</option>
+              </select>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- API -->
+
+      <div class="section" id="api">
+
+        <div class="card">
+
+          <div class="card-title">
+            API & Dati
+          </div>
+
+          <div class="card-sub">
+            Collega exchange e provider esterni
+          </div>
+
+          <div class="form-grid">
+
+            <div class="field full">
+              <label>Binance API Key</label>
+              <input type="text" placeholder="Inserisci API Key">
+            </div>
+
+            <div class="field full">
+              <label>Secret Key</label>
+              <input type="password" placeholder="Inserisci Secret Key">
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+/* NAVIGATION */
+
+const items = document.querySelectorAll('.side-item');
+const sections = document.querySelectorAll('.section');
+
+items.forEach(item => {
+
+  item.addEventListener('click', () => {
+
+    items.forEach(i => i.classList.remove('active'));
+    sections.forEach(s => s.classList.remove('active'));
+
+    item.classList.add('active');
+
+    const target = item.dataset.section;
+
+    document
+      .getElementById(target)
+      .classList.add('active');
+
+  });
+
+});
+
+/* THEMES */
+
+const body = document.body;
+const themeCards = document.querySelectorAll('.theme-card');
+
+let currentTheme = localStorage.getItem('theme') || 'dark';
+
+applyTheme(currentTheme);
+
+themeCards.forEach(card => {
+
+  card.addEventListener('click', () => {
+
+    themeCards.forEach(c => c.classList.remove('active'));
+
+    card.classList.add('active');
+
+    currentTheme = card.dataset.theme;
+
+    applyTheme(currentTheme);
+
+  });
+
+});
+
+function applyTheme(theme){
+
+  body.classList.remove('light');
+  body.classList.remove('orange');
+
+  if(theme === 'light'){
+    body.classList.add('light');
+  }
+
+  if(theme === 'orange'){
+    body.classList.add('orange');
+  }
+
+}
+
+/* SAVE */
+
+document
+.getElementById('saveTheme')
+.addEventListener('click', () => {
+
+  localStorage.setItem('theme', currentTheme);
+
+  alert('Impostazioni salvate');
+
+});
+
+/* RESET */
+
+document
+.getElementById('resetTheme')
+.addEventListener('click', () => {
+
+  currentTheme = 'dark';
+
+  localStorage.setItem('theme', 'dark');
+
+  applyTheme('dark');
+
+  themeCards.forEach(c => c.classList.remove('active'));
+
+  document
+    .querySelector('[data-theme="dark"]')
+    .classList.add('active');
+
+});
+
+</script>
+
+</body>
+</html>  --bg:#f4f7fb;
   --bg2:#ffffff;
   --bg3:#edf1f7;
   --bg4:#dfe5ef;
