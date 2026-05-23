@@ -305,69 +305,178 @@
 </div>
 
 <script>
-  let chart;
+ // --- CONFIGURAZIONE E STATO ---
+let chart;
+let currentStrategy = 'ema';
 
-  function switchTab(tab) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    event.target.classList.add('active');
-    
-    document.getElementById('tab-equity').style.display = tab === 'equity' ? 'block' : 'none';
-    document.getElementById('tab-trades').style.display = tab === 'trades' ? 'block' : 'none';
-  }
+// --- MOTORE DI SIMULAZIONE DATI (Simula API) ---
+function generateData(points = 100, volatility = 0.02) {
+    let data = [];
+    let price = 60000; // Prezzo base
+    let time = new Date();
+    time.setHours(time.getHours() - points);
 
-  function setStrategy(type, el) {
+    for (let i = 0; i < points; i++) {
+        let change = price * volatility * (Math.random() - 0.48); // Leggero bias positivo
+        price += change;
+        data.push({
+            time: new Date(time.getTime() + i * 3600000).toISOString().split('T')[0],
+            price: price
+        });
+    }
+    return data;
+}
+
+// --- LOGICA DELLE STRATEGIE ---
+function runStrategyLogic(data, strategy, slPct, tpPct) {
+    let trades = [];
+    let capital = parseFloat(document.getElementById('cfg-capital').value);
+    let balance = capital;
+    let position = null;
+
+    for (let i = 20; i < data.length; i++) {
+        const currentPrice = data[i].price;
+        
+        // Logica Segnali
+        let signal = null;
+        if (strategy === 'ema') {
+            // Semplice crossover simulato
+            if (data[i].price > data[i-1].price && data[i-1].price < data[i-2].price) signal = 'BUY';
+        } else if (strategy === 'rsi') {
+            // Ipervenduto simulato
+            if (Math.random() > 0.85) signal = 'BUY';
+        }
+
+        // Gestione Posizione Aperta (SL/TP)
+        if (position) {
+            let pnlPct = (currentPrice - position.entryPrice) / position.entryPrice;
+            
+            if (pnlPct >= tpPct || pnlPct <= -slPct || i === data.length - 1) {
+                let pnlCash = position.size * pnlPct;
+                balance += pnlCash;
+                trades.push({
+                    date: data[i].time,
+                    type: 'LONG',
+                    entry: position.entryPrice.toFixed(2),
+                    exit: currentPrice.toFixed(2),
+                    pnl: (pnlPct * 100).toFixed(2),
+                    cash: pnlCash.toFixed(2)
+                });
+                position = null;
+            }
+        } 
+        // Apertura Nuova Posizione
+        else if (signal === 'BUY') {
+            position = { entryPrice: currentPrice, size: balance };
+        }
+    }
+    return { trades, finalBalance: balance };
+}
+
+// --- AZIONI UI ---
+function setStrategy(type, el) {
     document.querySelectorAll('.stag').forEach(s => s.classList.remove('active'));
     el.classList.add('active');
-    console.log("Strategia impostata:", type);
-  }
+    currentStrategy = type;
+}
 
-  async function runBacktest() {
+async function runBacktest() {
     const loader = document.getElementById('loader');
     loader.style.display = 'flex';
-    
-    // Simulazione calcolo
-    await new Promise(r => setTimeout(r, 1500));
-    
+
+    // Parametri UI
+    const capitalInitial = parseFloat(document.getElementById('cfg-capital').value);
+    const sl = parseFloat(document.getElementById('cfg-sl').value) / 100;
+    const tp = parseFloat(document.getElementById('cfg-tp').value) / 100;
+
+    // Simula ritardo computazionale
+    await new Promise(r => setTimeout(r, 800));
+
+    // 1. Genera Dati e Calcola
+    const marketData = generateData(150);
+    const result = runStrategyLogic(marketData, currentStrategy, sl, tp);
+
+    // 2. Aggiorna KPI
+    updateDashboard(result, capitalInitial);
+
+    // 3. Aggiorna Tabella Operazioni
+    renderTable(result.trades);
+
+    // 4. Aggiorna Grafico
+    renderChart(marketData, result.trades, capitalInitial);
+
     loader.style.display = 'none';
-    initChart();
-  }
+}
 
-  function initChart() {
+function updateDashboard(result, initial) {
+    const netProfit = result.finalBalance - initial;
+    const netPct = (netProfit / initial) * 100;
+    const wins = result.trades.filter(t => parseFloat(t.pnl) > 0).length;
+    const winRate = result.trades.length > 0 ? (wins / result.trades.length * 100).toFixed(1) : 0;
+
+    document.getElementById('res-profit').textContent = (netPct >= 0 ? '+' : '') + netPct.toFixed(2) + '%';
+    document.getElementById('res-profit').className = 'mv ' + (netPct >= 0 ? 'pos' : 'neg');
+    document.getElementById('res-profit-cash').textContent = (netProfit >= 0 ? '+$' : '-$') + Math.abs(netProfit).toLocaleString();
+    document.getElementById('res-wr').textContent = winRate + '%';
+    document.getElementById('res-mdd').textContent = '-' + (Math.random() * 10 + 2).toFixed(1) + '%'; // MDD Simulato
+}
+
+function renderTable(trades) {
+    const tbody = document.getElementById('trade-list');
+    tbody.innerHTML = trades.map(t => `
+        <tr>
+            <td>${t.date}</td>
+            <td><span style="color:var(--green)">${t.type}</span></td>
+            <td>$${t.entry}</td>
+            <td>$${t.exit}</td>
+            <td class="${parseFloat(t.pnl) >= 0 ? 'pos' : 'neg'}">${t.pnl}%</td>
+        </tr>
+    `).join('') || '<tr><td colspan="5" style="text-align:center">Nessuna operazione eseguita</td></tr>';
+}
+
+function renderChart(marketData, trades, initialCapital) {
     const ctx = document.getElementById('equityChart').getContext('2d');
-    if(chart) chart.destroy();
-    
-    chart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu'],
-        datasets: [{
-          label: 'Equity Line ($)',
-          data: [10000, 10500, 10200, 11800, 12100, 12450],
-          borderColor: '#F7931A',
-          backgroundColor: 'rgba(247,147,26,0.1)',
-          fill: true,
-          tension: 0.4
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          y: { grid: { color: '#2a2a3a' }, ticks: { color: '#5a5a72' } },
-          x: { grid: { display: false }, ticks: { color: '#5a5a72' } }
-        }
-      }
+    if (chart) chart.destroy();
+
+    // Calcolo curva equity semplificata
+    let currentEq = initialCapital;
+    let equityCurve = marketData.map((d, i) => {
+        let tradeAtTime = trades.find(t => t.date === d.time);
+        if (tradeAtTime) currentEq += parseFloat(tradeAtTime.cash);
+        return currentEq;
     });
-  }
 
-  function resetAll() {
-    document.getElementById('cfg-capital').value = 10000;
-    document.getElementById('cfg-sl').value = 5;
-    document.getElementById('cfg-tp').value = 10;
-  }
+    chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: marketData.map(d => d.time),
+            datasets: [{
+                label: 'Capitale ($)',
+                data: equityCurve,
+                borderColor: '#F7931A',
+                backgroundColor: 'rgba(247,147,26,0.05)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.3,
+                pointRadius: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { display: false }, ticks: { color: '#5a5a72', maxRotation: 0 } },
+                y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#5a5a72' } }
+            }
+        }
+    });
+}
 
-  window.onload = initChart;
+// Inizializzazione
+window.onload = () => {
+    runBacktest();
+};
 </script>
 </body>
 </html><div style="padding:16px 0">
