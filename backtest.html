@@ -539,7 +539,40 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 
       <!-- Canvas -->
       <div class="chart-canvas-wrap" id="canvas-wrap">
-        <canvas id="mainChart"></canvas>
+      <div id="tradingview_chart" style="height:100%; width:100%;"></div>
+
+<script src="https://s3.tradingview.com/tv.js"></script>
+
+<script>
+new TradingView.widget({
+
+  "container_id": "tradingview_chart",
+
+  "width": "100%",
+  "height": "100%",
+
+  "symbol": "BINANCE:BTCUSDT",
+
+  "interval": "15",
+
+  "timezone": "Europe/Rome",
+
+  "theme": "dark",
+
+  "style": "1",
+
+  "locale": "it",
+
+  "toolbar_bg": "#0f0f18",
+
+  "enable_publishing": false,
+
+  "hide_top_toolbar": false,
+
+  "save_image": false
+
+});
+</script>
         <canvas id="drawCanvas" style="position:absolute;top:0;left:0;cursor:crosshair"></canvas>
       </div>
     </div>
