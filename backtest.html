@@ -3,37 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CryptoEdge AI - Backtest Engine</title>
+<title>CryptoEdge AI — Backtest Engine</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --bg2: #111118;
-    --bg3: #1a1a24;
-    --bg4: #22222f;
-    --border: #2a2a3a;
-    --border2: #333345;
-    --text: #e8e8f0;
-    --text2: #9090a8;
-    --text3: #5a5a72;
-    --accent: #F7931A;
-    --accent2: #ff6b35;
-    --green: #22c55e;
-    --red: #ef4444;
-    --yellow: #f59e0b;
-    --blue: #3b82f6;
-    --purple: #a855f7;
-    --radius: 10px;
-    --radius-sm: 6px;
-    --radius-lg: 14px;
-  }
+:root{
+  --bg:#07070d;--bg2:#0d0d16;--bg3:#13131f;--bg4:#1a1a28;--bg5:#212132;
+  --border:#1c1c2e;--border2:#252540;--border3:#2e2e50;
+  --text:#f2f2ff;--text2:#8888b0;--text3:#4a4a6a;--text4:#2a2a45;
+  --accent:#F7931A;--accent2:#ff6b35;--accent3:#ffb347;
+  --green:#22c55e;--green2:#16a34a;--red:#ef4444;--red2:#dc2626;
+  --yellow:#f59e0b;--blue:#3b82f6;--blue2:#60a5fa;--purple:#a855f7;--cyan:#06b6d4;
+  --r:8px;--r-sm:5px;--r-lg:12px;--r-xl:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:12px}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border3);border-radius:3px}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { 
-    font-family: 'Inter', -apple-system, sans-serif; 
-    background: var(--bg); 
-    color: var(--text); 
+/* ── TOPNAV ── */
+.topnav{
+  height:44px;display:flex;align-items:center;gap:0;
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  position:relative;z-index:200;flex-shrink:0;
+}
+.tn-logo{display:flex;align-items:center;gap:8px;padding:0 16px;border-right:1px solid var(--border);height:100%}
+.tn-logo-icon{width:26px;height:26px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#fff;box-shadow:0 2px 8px rgba(247,147,26,.3)}
+.tn-logo-text{font-size:13px;font-weight:800;letter-spacing:-.3px}
+.tn-back{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);padding:0 12px;border-right:1px solid var(--border);height:100%;cursor:pointer;text-decoration:none;transition:color .15s}
     min-height: 100vh; 
     overflow: hidden; 
   }
