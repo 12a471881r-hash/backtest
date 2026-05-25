@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CryptoEdge AI</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{
+  --bg:#07070d;--bg2:#0d0d18;--bg3:#13131f;--bg4:#1a1a28;--bg5:#21213a;
+  --border:#181828;--border2:#222238;--border3:#2e2e50;
+  --text:#f2f2ff;--text2:#8888b8;--text3:#4a4a70;
+  --accent:#F7931A;--accent2:#ff6b35;--accent3:#ffb347;
+  --green:#22c55e;--red:#ef4444;--yellow:#f59e0b;
+  --blue:#3b82f6;--purple:#a855f7;--cyan:#06b6d4;
+  --r:10px;--r-sm:6px;--r-lg:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:13px}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border3);border-radius:3px}
+
+/* ═══ CUSTOM SELECT ═══ */
+.custom-select-wrap{position:relative;display:inline-block;width:100%}
+.custom-select-wrap select{display:none}
+.cs-display{
+  display:flex;align-items:center;gap:9px;padding:9px 13px;
+  background:linear-gradient(135deg,var(--bg4),var(--bg3));
+  border:1px solid var(--border3);border-radius:var(--r-sm);
+  cursor:pointer;user-select:none;transition:all .2s;
+  font-size:12px;font-weight:700;color:var(--text);
+}
