@@ -1500,5 +1500,30 @@ document.getElementById('modal-overlay').addEventListener('click', e => {
   if (e.target === document.getElementById('modal-overlay')) closeModal();
 });
 </script>
+  <script>
+
+const socket = new WebSocket(
+
+  "wss://stream.binance.com:9443/ws/btcusdt@ticker"
+
+);
+
+socket.onmessage = (event) => {
+
+    const data = JSON.parse(event.data);
+
+    const price = parseFloat(data.c).toFixed(2);
+
+    const el = document.querySelector(".tbtc-price");
+
+    if(el){
+
+        el.innerText = "$" + price;
+
+    }
+
+};
+
+</script>
 </body>
 </html>
