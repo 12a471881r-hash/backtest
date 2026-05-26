@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CryptoEdge AI</title>
+<title>CryptoEdge AI - Professional Terminal</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -17,24 +17,218 @@
   --blue:#3b82f6;--purple:#a855f7;--cyan:#06b6d4;
   --r:10px;--r-sm:6px;--r-lg:14px;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden}
-body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:13px}
-::-webkit-scrollbar{width:3px;height:3px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border3);border-radius:3px}
+*{box-sizing:border-box;margin:0;padding:0;outline:none}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13px;height:100vh;overflow:hidden}
 
-/* ═══ CUSTOM SELECT ═══ */
-.custom-select-wrap{position:relative;display:inline-block;width:100%}
-.custom-select-wrap select{display:none}
-.cs-display{
-  display:flex;align-items:center;gap:9px;padding:9px 13px;
-  background:linear-gradient(135deg,var(--bg4),var(--bg3));
-  border:1px solid var(--border3);border-radius:var(--r-sm);
-  cursor:pointer;user-select:none;transition:all .2s;
-  font-size:12px;font-weight:700;color:var(--text);
+.app{display:grid;grid-template-columns:230px 1fr;height:100vh}
+
+/* SIDEBAR */
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:15px 0}
+.logo-wrap{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:15px}
+.nav-item{padding:10px 20px;display:flex;align-items:center;gap:10px;color:var(--text2);cursor:pointer;transition:0.2s;font-weight:500}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{color:var(--accent);background:rgba(247,147,26,0.05);border-right:3px solid var(--accent)}
+.nav-label{padding:15px 20px 5px;font-size:10px;text-transform:uppercase;color:var(--text3);letter-spacing:1px}
+
+/* CONTENT AREA */
+.main{overflow-y:auto;background:var(--bg)}
+.content{padding:25px}
+.view{display:none}
+.view.active{display:block;animation:fadeIn 0.3s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* HOLDING CARDS (Specifiche come le volevi tu) */
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:20px}
+.kcard{background:var(--bg2);border:1px solid var(--border);padding:15px;border-radius:var(--r)}
+.kv{font-size:20px;font-weight:700;margin:5px 0}
+.kl{font-size:11px;color:var(--text2)}
+.ks{font-size:11px;padding:2px 6px;border-radius:4px}
+.pos{background:rgba(34,197,94,0.1);color:var(--green)}
+.neg{background:rgba(239,68,68,0.1);color:var(--red)}
+
+/* CUSTOM SELECT */
+.custom-select{position:relative;margin-bottom:20px;width:250px}
+.select-trigger{background:var(--bg2);border:1px solid var(--border);padding:10px;border-radius:var(--r);cursor:pointer;display:flex;justify-content:space-between}
+.select-options{position:absolute;top:100%;left:0;right:0;background:var(--bg2);border:1px solid var(--border);z-index:10;display:none;border-radius:0 0 var(--r) var(--r)}
+.select-options.show{display:block}
+.option{padding:10px;cursor:pointer}
+.option:hover{background:var(--bg3)}
+
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo-wrap">
+      <h2 style="color:var(--accent)">CryptoEdge AI</h2>
+      <span style="font-size:10px;color:var(--text3)">TERMINAL V3.0</span>
+    </div>
+    
+    <div class="nav-label">Analisi</div>
+    <div class="nav-item active" onclick="switchView('home', this)"><i class="ti ti-home"></i> Home</div>
+    <div class="nav-item" onclick="switchView('dashboard', this)"><i class="ti ti-layout-dashboard"></i> Dashboard</div>
+    <div class="nav-item" onclick="switchView('analysis', this)"><i class="ti ti-chart-candle"></i> Analisi AI</div>
+    <div class="nav-item" onclick="switchView('screener', this)"><i class="ti ti-filter"></i> Screener</div>
+    
+    <div class="nav-label">Sviluppo</div>
+    <div class="nav-item" onclick="switchView('backtest', this)"><i class="ti ti-history"></i> Backtest</div>
+    <div class="nav-item" onclick="switchView('portfolio', this)"><i class="ti ti-wallet"></i> Portfolio</div>
+    <div class="nav-item" onclick="switchView('settings', this)"><i class="ti ti-settings"></i> Impostazioni</div>
+  </aside>
+
+  <main class="main">
+    <div class="content">
+      
+      <div id="view-home" class="view active">
+        <div class="grid-3">
+          <div class="kcard">
+            <div class="kl">Bitcoin (BTC)</div>
+            <div id="hbtc-val" class="kv">$0.00</div>
+            <span id="hbtc-amt" class="kl">0.85 BTC</span>
+            <span id="hbtc-chg-pill" class="ks">0.00%</span>
+          </div>
+          <div class="kcard">
+            <div class="kl">Ethereum (ETH)</div>
+            <div id="heth-val" class="kv">$0.00</div>
+            <span id="heth-amt" class="kl">1.5 ETH</span>
+            <span id="heth-chg-pill" class="ks">0.00%</span>
+          </div>
+          <div class="kcard">
+            <div class="kl">Solana (SOL)</div>
+            <div id="hsol-val" class="kv">$0.00</div>
+            <span id="hsol-amt" class="kl">145 SOL</span>
+            <span id="hsol-chg-pill" class="ks">0.00%</span>
+          </div>
+        </div>
+        <div class="kcard" style="height: 300px;">
+          <h3>Market Overview Live</h3>
+          <canvas id="mainChart"></canvas>
+        </div>
+      </div>
+
+      <div id="view-dashboard" class="view">
+        <div class="custom-select">
+          <div class="select-trigger" onclick="toggleDropdown()">
+            <span id="selected-coin-label">Seleziona Asset...</span>
+            <i class="ti ti-chevron-down"></i>
+          </div>
+          <div id="coin-options" class="select-options">
+            <div class="option" onclick="selectCoin('BTC', 64230, 2.45)">Bitcoin (BTC)</div>
+            <div class="option" onclick="selectCoin('ETH', 3450, -1.2)">Ethereum (ETH)</div>
+            <div class="option" onclick="selectCoin('SOL', 142, 5.1)">Solana (SOL)</div>
+          </div>
+        </div>
+        
+        <div class="grid-3">
+          <div class="kcard">
+            <div class="kl">Prezzo Selezionato</div>
+            <div id="dash-price" class="kv">$0.00</div>
+          </div>
+          <div class="kcard">
+            <div class="kl">Variazione 24h</div>
+            <div id="dash-chg" class="kv">0.00%</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="view-analysis" class="view"><h2>Analisi Avanzata</h2></div>
+      <div id="view-screener" class="view"><h2>Market Screener</h2></div>
+      <div id="view-backtest" class="view"><h2>Backtest (In Sviluppo)</h2></div>
+      <div id="view-portfolio" class="view"><h2>Portfolio (In Sviluppo)</h2></div>
+      <div id="view-settings" class="view"><h2>Impostazioni</h2></div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+// --- FUNZIONI DI NAVIGAZIONE (SISTEMATE) ---
+function switchView(id, el) {
+  // Rimuovi 'active' da tutti i link e viste
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  
+  // Attiva link e vista corrente
+  el.classList.add('active');
+  const target = document.getElementById('view-' + id);
+  if(target) target.classList.add('active');
 }
-.cs-display:hover{border-color:var(--accent);box-shadow:0 0 0 2px rgba(247,147,26,.08)}
+
+// --- FUNZIONI SPECIFICHE HOLDING (TUE LOGICHE ORIGINALI) ---
+function updateBTCHolding(price, chg) {
+    const val = document.getElementById('hbtc-val');
+    const pill = document.getElementById('hbtc-chg-pill');
+    if(val) val.textContent = '$' + (price * 0.85).toLocaleString(undefined, {maximumFractionDigits:0});
+    if(pill) {
+        pill.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
+        pill.className = 'ks ' + (chg >= 0 ? 'pos' : 'neg');
+    }
+}
+
+function updateETHHolding(price, chg) {
+    const val = document.getElementById('heth-val');
+    const pill = document.getElementById('heth-chg-pill');
+    if(val) val.textContent = '$' + (price * 1.5).toLocaleString(undefined, {maximumFractionDigits:0});
+    if(pill) {
+        pill.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
+        pill.className = 'ks ' + (chg >= 0 ? 'pos' : 'neg');
+    }
+}
+
+function updateSOLHolding(price, chg) {
+    const val = document.getElementById('hsol-val');
+    const pill = document.getElementById('hsol-chg-pill');
+    if(val) val.textContent = '$' + (price * 145).toLocaleString(undefined, {maximumFractionDigits:0});
+    if(pill) {
+        pill.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
+        pill.className = 'ks ' + (chg >= 0 ? 'pos' : 'neg');
+    }
+}
+
+// --- LOGICA DASHBOARD & SELECT ---
+function toggleDropdown() {
+  document.getElementById('coin-options').classList.toggle('show');
+}
+
+function selectCoin(sym, price, chg) {
+  document.getElementById('selected-coin-label').textContent = sym;
+  document.getElementById('dash-price').textContent = '$' + price.toLocaleString();
+  const chgEl = document.getElementById('dash-chg');
+  chgEl.textContent = (chg >= 0 ? '+' : '') + chg + '%';
+  chgEl.style.color = chg >= 0 ? 'var(--green)' : 'var(--red)';
+  toggleDropdown();
+}
+
+// --- INIZIALIZZAZIONE & GRAFICO ---
+window.onload = function() {
+  // Avvia i dati live di esempio
+  updateBTCHolding(64000, 2.5);
+  updateETHHolding(3400, -1.2);
+  updateSOLHolding(140, 4.8);
+  
+  // Inizializza grafico (se presente canvas)
+  const ctx = document.getElementById('mainChart');
+  if(ctx) {
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00'],
+        datasets: [{
+          label: 'Market Sentiment',
+          data: [65, 59, 80, 81, 56, 55],
+          borderColor: '#F7931A',
+          tension: 0.4,
+          fill: false
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  }
+};
+</script>
+</body>
+</html>.cs-display:hover{border-color:var(--accent);box-shadow:0 0 0 2px rgba(247,147,26,.08)}
 .cs-display.open{border-color:var(--accent);box-shadow:0 0 0 2px rgba(247,147,26,.1)}
 .cs-arrow{margin-left:auto;transition:transform .2s;color:var(--text3);font-size:14px}
 .cs-display.open .cs-arrow{transform:rotate(180deg)}
