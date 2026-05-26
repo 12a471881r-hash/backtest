@@ -3,38 +3,299 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CryptoEdge AI - Professional Terminal</title>
+<title>CryptoEdge</title>
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
 <style>
-:root{
-  --bg:#07070d;--bg2:#0d0d18;--bg3:#13131f;--bg4:#1a1a28;--bg5:#21213a;
-  --border:#181828;--border2:#222238;--border3:#2e2e50;
-  --text:#f2f2ff;--text2:#8888b8;--text3:#4a4a70;
-  --accent:#F7931A;--accent2:#ff6b35;--accent3:#ffb347;
-  --green:#22c55e;--red:#ef4444;--yellow:#f59e0b;
-  --blue:#3b82f6;--purple:#a855f7;--cyan:#06b6d4;
-  --r:10px;--r-sm:6px;--r-lg:14px;
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
 }
-*{box-sizing:border-box;margin:0;padding:0;outline:none}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13px;height:100vh;overflow:hidden}
 
-.app{display:grid;grid-template-columns:230px 1fr;height:100vh}
+body{
+  background:#07070d;
+  color:white;
+  font-family:Inter,sans-serif;
+  overflow:hidden;
+}
 
-/* SIDEBAR */
-.sidebar{background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:15px 0}
-.logo-wrap{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:15px}
-.nav-item{padding:10px 20px;display:flex;align-items:center;gap:10px;color:var(--text2);cursor:pointer;transition:0.2s;font-weight:500}
-.nav-item:hover{background:var(--bg3);color:var(--text)}
-.nav-item.active{color:var(--accent);background:rgba(247,147,26,0.05);border-right:3px solid var(--accent)}
-.nav-label{padding:15px 20px 5px;font-size:10px;text-transform:uppercase;color:var(--text3);letter-spacing:1px}
+.app{
+  display:grid;
+  grid-template-columns:230px 1fr;
+  height:100vh;
+}
 
-/* CONTENT AREA */
-.main{overflow-y:auto;background:var(--bg)}
-.content{padding:25px}
-.view{display:none}
-.view.active{display:block;animation:fadeIn 0.3s ease}
+.sidebar{
+  background:#0d0d16;
+  border-right:1px solid #1f1f2e;
+  padding:20px;
+}
+
+.logo{
+  font-size:24px;
+  font-weight:800;
+  color:#F7931A;
+  margin-bottom:30px;
+}
+
+.nav-item{
+  padding:12px;
+  border-radius:10px;
+  margin-bottom:10px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.nav-item:hover{
+  background:#1a1a28;
+}
+
+.nav-item.active{
+  background:#F7931A;
+  color:black;
+  font-weight:700;
+}
+
+.main{
+  display:flex;
+  flex-direction:column;
+}
+
+.topbar{
+  height:70px;
+  border-bottom:1px solid #1f1f2e;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 25px;
+}
+
+.price-box{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+#btc-price{
+  font-size:24px;
+  font-weight:800;
+}
+
+#btc-change{
+  padding:5px 10px;
+  border-radius:20px;
+  font-size:13px;
+  font-weight:700;
+}
+
+.content{
+  flex:1;
+  overflow:hidden;
+}
+
+.page{
+  display:none;
+  height:100%;
+}
+
+.page.active{
+  display:block;
+}
+
+.home-page{
+  padding:20px;
+  height:100%;
+}
+
+#tv-chart{
+  width:100%;
+  height:85vh;
+}
+
+.coming{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:100%;
+  font-size:28px;
+  font-weight:800;
+  color:#666;
+}
+
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <div class="sidebar">
+
+    <div class="logo">CryptoEdge</div>
+
+    <div class="nav-item active" onclick="showPage('home', this)">
+      <i class="ti ti-home"></i>
+      Home
+    </div>
+
+    <div class="nav-item" onclick="showPage('dashboard', this)">
+      <i class="ti ti-layout-dashboard"></i>
+      Dashboard
+    </div>
+
+    <div class="nav-item" onclick="showPage('analysis', this)">
+      <i class="ti ti-chart-candlestick"></i>
+      Analisi AI
+    </div>
+
+    <a href="backtest.html" style="text-decoration:none;color:white">
+      <div class="nav-item">
+        <i class="ti ti-history"></i>
+        Backtest
+      </div>
+    </a>
+
+  </div>
+
+  <div class="main">
+
+    <div class="topbar">
+
+      <div>
+        <h2>BTC/USDT</h2>
+      </div>
+
+      <div class="price-box">
+        <div id="btc-price">Loading...</div>
+        <div id="btc-change">LIVE</div>
+      </div>
+
+    </div>
+
+    <div class="content">
+
+      <div class="page active" id="page-home">
+        <div class="home-page">
+
+          <div id="tv-chart"></div>
+
+        </div>
+      </div>
+
+      <div class="page" id="page-dashboard">
+        <div class="coming">
+          Dashboard in sviluppo
+        </div>
+      </div>
+
+      <div class="page" id="page-analysis">
+        <div class="coming">
+          Analisi AI in sviluppo
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="https://s3.tradingview.com/tv.js"></script>
+
+<script>
+
+// =====================================
+// NAVIGAZIONE
+// =====================================
+
+function showPage(page, el){
+
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('active');
+  });
+
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.remove('active');
+  });
+
+  document.getElementById('page-' + page).classList.add('active');
+
+  el.classList.add('active');
+}
+
+// =====================================
+// BINANCE LIVE PRICE
+// =====================================
+
+const socket = new WebSocket(
+  'wss://stream.binance.com:9443/ws/btcusdt@ticker'
+);
+
+socket.onmessage = (event) => {
+
+  const data = JSON.parse(event.data);
+
+  const price = parseFloat(data.c).toFixed(2);
+  const change = parseFloat(data.P).toFixed(2);
+
+  document.getElementById('btc-price').innerText = '$' + price;
+
+  const chg = document.getElementById('btc-change');
+
+  chg.innerText = change + '%';
+
+  if(change >= 0){
+
+    chg.style.background = 'rgba(34,197,94,.15)';
+    chg.style.color = '#22c55e';
+
+  } else {
+
+    chg.style.background = 'rgba(239,68,68,.15)';
+    chg.style.color = '#ef4444';
+  }
+};
+
+// =====================================
+// TRADINGVIEW
+// =====================================
+
+new TradingView.widget({
+
+  container_id: 'tv-chart',
+
+  width: '100%',
+  height: '100%',
+
+  symbol: 'BINANCE:BTCUSDT',
+
+  interval: '15',
+
+  timezone: 'Europe/Rome',
+
+  theme: 'dark',
+
+  style: '1',
+
+  locale: 'it',
+
+  toolbar_bg: '#07070d',
+
+  enable_publishing: false,
+
+  hide_side_toolbar: false,
+
+  allow_symbol_change: true
+
+});
+
+</script>
+
+</body>
+</html>.view.active{display:block;animation:fadeIn 0.3s ease}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
 /* HOLDING CARDS (Specifiche come le volevi tu) */
