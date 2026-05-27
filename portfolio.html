@@ -1,11 +1,15 @@
+# portfolio.html completo con Supabase
+
+```html
 <!DOCTYPE html>
 <html lang="it">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>CryptoEdge AI — Portafoglio</title>
+<title>CryptoEdge AI — Portfolio</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 :root{
@@ -13,22 +17,16 @@
     --bg2:#171923;
     --bg3:#1e2230;
     --bg4:#262c3d;
-
     --border:#2b3245;
     --border2:#3b435b;
-
     --text:#ffffff;
     --text2:#b8bfd3;
     --text3:#7f8799;
-
     --accent:#f7931a;
     --accent2:#ff6b35;
-
     --green:#16c784;
     --red:#ea3943;
-
     --radius:18px;
-    --shadow:0 12px 35px rgba(0,0,0,.35);
 }
 
 *{
@@ -39,8 +37,8 @@
 
 body{
     font-family:'Inter',sans-serif;
-    background:linear-gradient(135deg,#0b0d13,#141824);
-    color:var(--text);
+    background:#0f1117;
+    color:white;
     min-height:100vh;
 }
 
@@ -49,8 +47,6 @@ body{
     margin:auto;
     padding:28px;
 }
-
-/* TOPBAR */
 
 .topbar{
     display:flex;
@@ -61,8 +57,8 @@ body{
 
 .logo{
     display:flex;
-    align-items:center;
     gap:14px;
+    align-items:center;
 }
 
 .logo-box{
@@ -75,16 +71,6 @@ body{
     justify-content:center;
     font-size:24px;
     font-weight:800;
-    box-shadow:0 10px 25px rgba(247,147,26,.35);
-}
-
-.logo h1{
-    font-size:24px;
-}
-
-.logo p{
-    font-size:13px;
-    color:var(--text3);
 }
 
 .top-actions{
@@ -98,114 +84,41 @@ body{
     border-radius:12px;
     cursor:pointer;
     font-weight:700;
-    transition:.2s;
 }
 
 .btn-primary{
     background:linear-gradient(135deg,var(--accent),var(--accent2));
     color:white;
-    box-shadow:0 8px 20px rgba(247,147,26,.25);
 }
 
-.btn-primary:hover{
-    transform:translateY(-2px);
-}
-
-.btn-secondary{
+.dashboard-btn{
+    text-decoration:none;
+    padding:12px 18px;
+    border-radius:12px;
     background:var(--bg2);
-    color:var(--text);
     border:1px solid var(--border);
+    color:white;
+    font-weight:700;
 }
-
-.btn-secondary:hover{
-    background:var(--bg3);
-}
-
-/* GRID */
 
 .grid{
     display:grid;
-    grid-template-columns:1.2fr .8fr;
+    grid-template-columns:1fr;
     gap:22px;
 }
 
-/* CARD */
-
 .card{
-    background:rgba(23,25,35,.92);
+    background:var(--bg2);
     border:1px solid var(--border);
-    border-radius:var(--radius);
+    border-radius:20px;
     padding:24px;
-    box-shadow:var(--shadow);
-    backdrop-filter:blur(10px);
 }
-
-.card-title{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:22px;
-}
-
-.card-title h2{
-    font-size:20px;
-}
-
-.card-title p{
-    color:var(--text3);
-    font-size:13px;
-    margin-top:4px;
-}
-
-/* TOTAL */
 
 .total-balance{
     font-size:42px;
     font-weight:800;
-    margin-bottom:12px;
+    margin-bottom:20px;
 }
-
-.balance-change{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-bottom:30px;
-}
-
-.green{
-    color:var(--green);
-}
-
-.red{
-    color:var(--red);
-}
-
-/* STATS */
-
-.stats{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:16px;
-}
-
-.stat-box{
-    background:var(--bg3);
-    border:1px solid var(--border);
-    border-radius:16px;
-    padding:18px;
-}
-
-.stat-box span{
-    color:var(--text3);
-    font-size:12px;
-}
-
-.stat-box h3{
-    margin-top:10px;
-    font-size:22px;
-}
-
-/* ASSETS */
 
 .asset-list{
     display:flex;
@@ -221,12 +134,6 @@ body{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    transition:.2s;
-}
-
-.asset:hover{
-    transform:translateY(-2px);
-    border-color:var(--border2);
 }
 
 .asset-left{
@@ -243,181 +150,22 @@ body{
     align-items:center;
     justify-content:center;
     font-weight:800;
-    font-size:18px;
     color:white;
-}
-
-.btc{
     background:linear-gradient(135deg,#f7931a,#ffb347);
 }
 
-.eth{
-    background:linear-gradient(135deg,#627eea,#8fa8ff);
-}
-
-.sol{
-    background:linear-gradient(135deg,#9945ff,#14f195);
-}
-
-.asset-info h3{
-    font-size:16px;
-    margin-bottom:4px;
-}
-
 .asset-info p{
-    font-size:13px;
-    color:var(--text3);
-}
-
-.asset-right{
-    text-align:right;
-}
-
-.asset-right h4{
-    font-size:18px;
-    margin-bottom:4px;
-}
-
-.asset-right p{
+    color:#7f8799;
     font-size:13px;
 }
-
-/* ALLOCATION */
-
-.allocations{
-    display:flex;
-    flex-direction:column;
-    gap:18px;
-}
-
-.alloc{
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-}
-
-.alloc-top{
-    display:flex;
-    justify-content:space-between;
-    font-size:14px;
-}
-
-.bar{
-    height:12px;
-    background:var(--bg4);
-    border-radius:999px;
-    overflow:hidden;
-}
-
-.fill{
-    height:100%;
-    border-radius:999px;
-}
-
-.fill-btc{
-    width:52%;
-    background:linear-gradient(90deg,#f7931a,#ffb347);
-}
-
-.fill-eth{
-    width:31%;
-    background:linear-gradient(90deg,#627eea,#8fa8ff);
-}
-
-.fill-sol{
-    width:17%;
-    background:linear-gradient(90deg,#9945ff,#14f195);
-}
-
-/* TRANSACTIONS */
-
-.transactions{
-    display:flex;
-    flex-direction:column;
-    gap:14px;
-}
-
-.tx{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:14px;
-    background:var(--bg3);
-    border-radius:14px;
-    border:1px solid var(--border);
-}
-
-.tx-left{
-    display:flex;
-    align-items:center;
-    gap:12px;
-}
-
-.tx-icon{
-    width:42px;
-    height:42px;
-    border-radius:12px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:rgba(247,147,26,.12);
-    color:var(--accent);
-    font-weight:700;
-}
-
-.tx-left h4{
-    font-size:14px;
-    margin-bottom:4px;
-}
-
-.tx-left p{
-    font-size:12px;
-    color:var(--text3);
-}
-
-.tx-right{
-    text-align:right;
-}
-
-.tx-right h4{
-    font-size:15px;
-    margin-bottom:4px;
-}
-
-.tx-right p{
-    font-size:12px;
-}
-
-/* RESPONSIVE */
-/* DASHBOARD BUTTON */
-
-.dashboard-btn{
-    text-decoration:none;
-    padding:12px 18px;
-    border-radius:12px;
-    background:var(--bg2);
-    border:1px solid var(--border);
-    color:var(--text);
-    font-weight:700;
-    transition:.2s;
-}
-
-.dashboard-btn:hover{
-    background:var(--bg3);
-    border-color:var(--border2);
-}
-
-/* ASSET MODAL */
 
 .asset-modal{
     position:fixed;
     inset:0;
-    background:rgba(0,0,0,.65);
-    backdrop-filter:blur(6px);
+    background:rgba(0,0,0,.7);
     display:none;
     align-items:center;
     justify-content:center;
-    z-index:999;
 }
 
 .asset-modal.active{
@@ -426,38 +174,9 @@ body{
 
 .asset-box{
     width:520px;
-    max-width:95%;
-    background:var(--bg2);
-    border:1px solid var(--border);
-    border-radius:24px;
-    padding:26px;
-    box-shadow:0 20px 50px rgba(0,0,0,.45);
-}
-
-.asset-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:24px;
-}
-
-.asset-header h2{
-    font-size:24px;
-}
-
-.close-btn{
-    width:42px;
-    height:42px;
-    border:none;
-    border-radius:12px;
-    background:var(--bg3);
-    color:var(--text);
-    cursor:pointer;
-    font-size:18px;
-}
-
-.close-btn:hover{
-    background:var(--bg4);
+    background:#171923;
+    border-radius:20px;
+    padding:24px;
 }
 
 .crypto-grid{
@@ -467,159 +186,137 @@ body{
 }
 
 .crypto-item{
-    background:var(--bg3);
-    border:1px solid var(--border);
+    background:#1e2230;
+    padding:18px;
     border-radius:18px;
-    padding:16px;
-    display:flex;
-    align-items:center;
-    gap:14px;
     cursor:pointer;
-    transition:.2s;
+    border:1px solid #2b3245;
 }
 
 .crypto-item:hover{
-    transform:translateY(-2px);
-    border-color:var(--accent);
-    background:#202638;
+    border-color:#f7931a;
 }
 
-.crypto-icon{
-    width:48px;
-    height:48px;
-    border-radius:14px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+.close-btn{
+    width:42px;
+    height:42px;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    background:#262c3d;
     color:white;
-    font-weight:800;
-    font-size:18px;
 }
 
-.crypto-info h4{
-    margin-bottom:4px;
-}
-
-.crypto-info p{
-    font-size:12px;
-    color:var(--text3);
-}
-@media(max-width:1000px){
-
-    .grid{
-        grid-template-columns:1fr;
-    }
-
-    .stats{
-        grid-template-columns:1fr;
-    }
-
-}
-
-@media(max-width:700px){
-
-    .topbar{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:20px;
-    }
-
-    .asset{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:16px;
-    }
-
-    .asset-right{
-        text-align:left;
-    }
-
+.asset-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
 }
 </style>
 </head>
-<!-- ASSET MODAL -->
+<body>
 
-<div class="asset-modal" id="assetModal">
+<div class="page">
 
-    <div class="asset-box">
+<div class="topbar">
 
-        <div class="asset-header">
-            <h2>Aggiungi Asset</h2>
+<div class="logo">
+<div class="logo-box">₿</div>
+<div>
+<h1>Portfolio</h1>
+<p>Gestione avanzata del capitale</p>
+</div>
+</div>
 
-            <button class="close-btn" onclick="closeAssetMenu()">
-                ✕
-            </button>
-        </div>
+<div class="top-actions">
+<a href="index.html" class="dashboard-btn">← Dashboard</a>
 
-        <div class="crypto-grid">
-
-            <div class="crypto-item">
-                <div class="crypto-icon btc">₿</div>
-
-                <div class="crypto-info">
-                    <h4>Bitcoin</h4>
-                    <p>BTC</p>
-                </div>
-            </div>
-
-            <div class="crypto-item">
-                <div class="crypto-icon eth">Ξ</div>
-
-                <div class="crypto-info">
-                    <h4>Ethereum</h4>
-                    <p>ETH</p>
-                </div>
-            </div>
-
-            <div class="crypto-item">
-                <div class="crypto-icon sol">S</div>
-
-                <div class="crypto-info">
-                    <h4>Solana</h4>
-                    <p>SOL</p>
-                </div>
-            </div>
-
-            <div class="crypto-item">
-                <div class="crypto-icon" style="background:linear-gradient(135deg,#0052ff,#4f7cff);">
-                    X
-                </div>
-
-                <div class="crypto-info">
-                    <h4>XRP</h4>
-                    <p>Ripple</p>
-                </div>
-            </div>
-
-            <div class="crypto-item">
-                <div class="crypto-icon" style="background:linear-gradient(135deg,#00ffa3,#00c896);">
-                    A
-                </div>
-
-                <div class="crypto-info">
-                    <h4>Cardano</h4>
-                    <p>ADA</p>
-                </div>
-            </div>
-
-            <div class="crypto-item">
-                <div class="crypto-icon" style="background:linear-gradient(135deg,#ff007a,#ff4da6);">
-                    D
-                </div>
-
-                <div class="crypto-info">
-                    <h4>Dogecoin</h4>
-                    <p>DOGE</p>
-                </div>
-            </div>
-
-        </div>
-
-    </div>
+<button class="btn btn-primary" onclick="openAssetMenu()">
++ Aggiungi Asset
+</button>
+</div>
 
 </div>
 
+<div class="grid">
+
+<div class="card">
+<h2>Valore Totale</h2>
+
+<div class="total-balance" id="totalBalance">
+€0
+</div>
+</div>
+
+<div class="card">
+<h2 style="margin-bottom:20px;">I Tuoi Asset</h2>
+
+<div class="asset-list" id="assetList">
+</div>
+</div>
+
+</div>
+
+</div>
+
+<div class="asset-modal" id="assetModal">
+
+<div class="asset-box">
+
+<div class="asset-header">
+<h2>Aggiungi Asset</h2>
+
+<button class="close-btn" onclick="closeAssetMenu()">
+✕
+</button>
+</div>
+
+<div class="crypto-grid">
+
+<div class="crypto-item" onclick="addAsset('BTC')">
+<h3>Bitcoin</h3>
+<p>BTC</p>
+</div>
+
+<div class="crypto-item" onclick="addAsset('ETH')">
+<h3>Ethereum</h3>
+<p>ETH</p>
+</div>
+
+<div class="crypto-item" onclick="addAsset('SOL')">
+<h3>Solana</h3>
+<p>SOL</p>
+</div>
+
+<div class="crypto-item" onclick="addAsset('XRP')">
+<h3>XRP</h3>
+<p>Ripple</p>
+</div>
+
+<div class="crypto-item" onclick="addAsset('ADA')">
+<h3>Cardano</h3>
+<p>ADA</p>
+</div>
+
+<div class="crypto-item" onclick="addAsset('DOGE')">
+<h3>Dogecoin</h3>
+<p>DOGE</p>
+</div>
+
+</div>
+</div>
+</div>
+
 <script>
+
+const supabaseUrl = 'INSERISCI_URL_SUPABASE';
+const supabaseKey = 'INSERISCI_ANON_KEY';
+
+const supabaseClient = supabase.createClient(
+    supabaseUrl,
+    supabaseKey
+);
 
 function openAssetMenu(){
     document.getElementById('assetModal').classList.add('active');
@@ -639,342 +336,145 @@ window.addEventListener('click', function(e){
 
 });
 
-</script>
-<body>
-
-<div class="page">
-
-    <!-- TOPBAR -->
-
-    <div class="topbar">
-
-        <div class="logo">
-            <div class="logo-box">₿</div>
-
-            <div>
-                <h1>Portfolio</h1>
-                <p>Gestione avanzata del tuo capitale</p>
-            </div>
-        </div>
-
-      <div class="top-actions">
-
-    <a href="index.html" class="dashboard-btn">
-        ← Dashboard
-    </a>
-
-    <button class="btn btn-secondary">
-        Esporta
-    </button>
-
-    <button class="btn btn-primary" onclick="openAssetMenu()">
-        + Aggiungi Asset
-    </button>
-
-</div>
-    </div>
-
-    <!-- GRID -->
-
-    <div class="grid">
-
-        <!-- LEFT -->
-
-        <div style="display:flex; flex-direction:column; gap:22px;">
-
-            <!-- TOTAL -->
-
-            <div class="card">
-
-                <div class="card-title">
-                    <div>
-                        <h2>Valore Totale</h2>
-                        <p>Aggiornato in tempo reale</p>
-                    </div>
-                </div>
-
-                <div class="total-balance">
-                    €24.582,43
-                </div>
-
-                <div class="balance-change">
-                    <span class="green">▲ +8.42%</span>
-                    <span style="color:var(--text3);">
-                        Ultimi 30 giorni
-                    </span>
-                </div>
-
-                <div class="stats">
-
-                    <div class="stat-box">
-                        <span>Profitto Totale</span>
-                        <h3 class="green">+€3.412</h3>
-                    </div>
-
-                    <div class="stat-box">
-                        <span>Asset Attivi</span>
-                        <h3>12</h3>
-                    </div>
-
-                    <div class="stat-box">
-                        <span>ROI Medio</span>
-                        <h3 class="green">+18.6%</h3>
-                    </div>
-
-                </div>
-
-            </div>
-
-            <!-- ASSETS -->
-
-            <div class="card">
-
-                <div class="card-title">
-                    <div>
-                        <h2>I Tuoi Asset</h2>
-                        <p>Criptovalute nel portafoglio</p>
-                    </div>
-                </div>
-
-                <div class="asset-list">
-
-                    <div class="asset">
-
-                        <div class="asset-left">
-
-                            <div class="coin btc">₿</div>
-
-                            <div class="asset-info">
-                                <h3>Bitcoin</h3>
-                                <p>0.245 BTC</p>
-                            </div>
-
-                        </div>
-
-                        <div class="asset-right">
-                            <h4>€12.804</h4>
-                            <p class="green">+4.21%</p>
-                        </div>
-
-                    </div>
-
-                    <div class="asset">
-
-                        <div class="asset-left">
-
-                            <div class="coin eth">Ξ</div>
-
-                            <div class="asset-info">
-                                <h3>Ethereum</h3>
-                                <p>3.41 ETH</p>
-                            </div>
-
-                        </div>
-
-                        <div class="asset-right">
-                            <h4>€7.542</h4>
-                            <p class="green">+2.81%</p>
-                        </div>
-
-                    </div>
-
-                    <div class="asset">
-
-                        <div class="asset-left">
-
-                            <div class="coin sol">S</div>
-
-                            <div class="asset-info">
-                                <h3>Solana</h3>
-                                <p>28.4 SOL</p>
-                            </div>
-
-                        </div>
-
-                        <div class="asset-right">
-                            <h4>€4.236</h4>
-                            <p class="red">-1.33%</p>
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- RIGHT -->
-
-        <div style="display:flex; flex-direction:column; gap:22px;">
-
-            <!-- ALLOCATION -->
-
-            <div class="card">
-
-                <div class="card-title">
-                    <div>
-                        <h2>Allocazione</h2>
-                        <p>Diversificazione portafoglio</p>
-                    </div>
-                </div>
-
-                <div class="allocations">
-
-                    <div class="alloc">
-
-                        <div class="alloc-top">
-                            <span>Bitcoin</span>
-                            <span>52%</span>
-                        </div>
-
-                        <div class="bar">
-                            <div class="fill fill-btc"></div>
-                        </div>
-
-                    </div>
-
-                    <div class="alloc">
-
-                        <div class="alloc-top">
-                            <span>Ethereum</span>
-                            <span>31%</span>
-                        </div>
-
-                        <div class="bar">
-                            <div class="fill fill-eth"></div>
-                        </div>
-
-                    </div>
-
-                    <div class="alloc">
-
-                        <div class="alloc-top">
-                            <span>Solana</span>
-                            <span>17%</span>
-                        </div>
-
-                        <div class="bar">
-                            <div class="fill fill-sol"></div>
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <!-- TRANSACTIONS -->
-
-            <div class="card">
-
-                <div class="card-title">
-                    <div>
-                        <h2>Ultime Transazioni</h2>
-                        <p>Storico operazioni recenti</p>
-                    </div>
-                </div>
-
-                <div class="transactions">
-
-                    <div class="tx">
-
-                        <div class="tx-left">
-
-                            <div class="tx-icon">↗</div>
-
-                            <div>
-                                <h4>Acquisto BTC</h4>
-                                <p>22 Mag 2026 • Binance</p>
-                            </div>
-
-                        </div>
-
-                        <div class="tx-right">
-                            <h4>+0.042 BTC</h4>
-                            <p class="green">€2.134</p>
-                        </div>
-
-                    </div>
-
-                    <div class="tx">
-
-                        <div class="tx-left">
-
-                            <div class="tx-icon">↘</div>
-
-                            <div>
-                                <h4>Vendita ETH</h4>
-                                <p>21 Mag 2026 • Coinbase</p>
-                            </div>
-
-                        </div>
-
-                        <div class="tx-right">
-                            <h4>-1.20 ETH</h4>
-                            <p class="red">€1.842</p>
-                        </div>
-
-                    </div>
-
-                    <div class="tx">
-
-                        <div class="tx-left">
-
-                            <div class="tx-icon">↗</div>
-
-                            <div>
-                                <h4>Acquisto SOL</h4>
-                                <p>20 Mag 2026 • Kraken</p>
-                            </div>
-
-                        </div>
-
-                        <div class="tx-right">
-                            <h4>+12 SOL</h4>
-                            <p class="green">€1.012</p>
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-    <script>
-const supabaseUrl = 'IL_TUO_URL';
-const supabaseKey = 'LA_TUA_ANON_KEY';
-
-const supabase = window.supabase.createClient(
-  supabaseUrl,
-  supabaseKey
-);
-</script>
-    async function addAsset() {
-  const { data, error } = await supabase
-    .from('portfolio')
-    .insert([
-      {
-        symbol: 'BTC',
-        amount: 0.5,
-        buy_price: 60000
-      }
-    ]);
-
-  console.log(data, error);
+async function addAsset(symbol){
+
+    const amount = prompt(`Quantità ${symbol}`);
+    if(!amount) return;
+
+    const buyPrice = prompt(`Prezzo acquisto ${symbol}`);
+    if(!buyPrice) return;
+
+    const walletAddress = prompt(`Wallet address ${symbol}`);
+
+    const {
+        data: { user }
+    } = await supabaseClient.auth.getUser();
+
+    if(!user){
+        alert('Devi fare il login');
+        return;
+    }
+
+    const { error } = await supabaseClient
+        .from('portfolio')
+        .insert([
+            {
+                user_id:user.id,
+                symbol:symbol,
+                amount:parseFloat(amount),
+                buy_price:parseFloat(buyPrice),
+                wallet_address:walletAddress
+            }
+        ]);
+
+    if(error){
+        console.error(error);
+        alert('Errore salvataggio asset');
+        return;
+    }
+
+    closeAssetMenu();
+
+    await loadPortfolio();
 }
-    async function loadPortfolio() {
-  const { data, error } = await supabase
-    .from('portfolio')
-    .select('*');
 
-  console.log(data);
+async function loadPortfolio(){
+
+    const assetList = document.getElementById('assetList');
+
+    assetList.innerHTML = '';
+
+    const {
+        data: { user }
+    } = await supabaseClient.auth.getUser();
+
+    if(!user){
+        assetList.innerHTML = '<p>Login richiesto</p>';
+        return;
+    }
+
+    const { data, error } = await supabaseClient
+        .from('portfolio')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending:false });
+
+    if(error){
+        console.error(error);
+        return;
+    }
+
+    let total = 0;
+
+    data.forEach(asset => {
+
+        const value = asset.amount * asset.buy_price;
+
+        total += value;
+
+        const div = document.createElement('div');
+
+        div.className = 'asset';
+
+        div.innerHTML = `
+        <div class="asset-left">
+
+            <div class="coin">
+                ${asset.symbol[0]}
+            </div>
+
+            <div class="asset-info">
+                <h3>${asset.symbol}</h3>
+                <p>${asset.amount} ${asset.symbol}</p>
+                <p>Wallet: ${asset.wallet_address || 'Non inserito'}</p>
+            </div>
+
+        </div>
+
+        <div>
+            <h3>€${value.toLocaleString()}</h3>
+        </div>
+        `;
+
+        assetList.appendChild(div);
+
+    });
+
+    document.getElementById('totalBalance').innerHTML =
+        `€${total.toLocaleString()}`;
 }
+
+window.onload = async () => {
+    await loadPortfolio();
+}
+
+</script>
+
 </body>
 </html>
+```
+
+# SQL da creare su Supabase
+
+```sql
+create table portfolio (
+  id bigint generated always as identity primary key,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  user_id uuid references auth.users(id),
+  symbol text not null,
+  amount numeric not null,
+  buy_price numeric,
+  wallet_address text
+);
+```
+
+# Policy RLS
+
+```sql
+alter table portfolio enable row level security;
+
+create policy "Users can manage own portfolio"
+on portfolio
+for all
+using (auth.uid() = user_id);
+```
