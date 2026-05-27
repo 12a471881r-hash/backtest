@@ -3,38 +3,112 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>CryptoEdge AI — Live Portfolio Viewer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>CryptoEdge — Live Viewer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #0f1117;
-            --card: #171923;
-            --accent: #f7931a;
-            --text: #ffffff;
-            --text2: #b8bfd3;
-            --border: #2b3245;
-            --green: #16c784;
+        :root{ --bg:#0f1117; --card:#171923; --accent:#f7931a; --text:#ffffff; --text2:#b8bfd3; --border:#2b3245; }
+        body{ font-family:'Inter', sans-serif; background:var(--bg); color:white; padding:40px; display:flex; justify-content:center; }
+        .container{ width:100%; max-width:600px; }
+        .search-box{ background:var(--card); padding:20px; border-radius:20px; border:1px solid var(--border); margin-bottom:20px; }
+        input{ width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:#0f1117; color:white; margin-bottom:10px; box-sizing:border-box; }
+        button{ width:100%; padding:12px; border-radius:10px; border:none; background:var(--accent); color:white; font-weight:bold; cursor:pointer; }
+        .asset-card{ background:var(--card); padding:15px; border-radius:15px; border:1px solid var(--border); margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; }
+        .loading{ text-align:center; color:var(--accent); display:none; }
+        .total-header{ font-size:24px; font-weight:800; margin-bottom:20px; text-align:center; color:var(--accent); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="search-box">
+        <h2 style="margin-bottom:15px">🔍 Analizza Wallet</h2>
+        <input type="text" id="walletAddr" placeholder="Incolla indirizzo Ethereum (0x...)">
+        <button onclick="fetchWalletData()">Scarica Dati Live</button>
+    </div>
+
+    <div id="loading" class="loading">Interrogando la blockchain...</div>
+    <div id="totalVal" class="total-header"></div>
+    <div id="results"></div>
+</div>
+
+<script>
+    // 1. METTI QUI LA TUA CHIAVE MORALIS
+    const MORALIS_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6Ijk3MmNhZjVhLTIwM2YtNDNmNy1hNTYwLWNkMTE1OWY1YzA1ZSIsIm9yZ0lkIjoiNTE3Njk1IiwidXNlcklkIjoiNTMyNzcxIiwidHlwZUlkIjoiN2JlMTQzMDUtZjAwNy00YzZhLWJkZGQtNGJlOTk0MjAwMDIyIiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3Nzk4NjkyMTEsImV4cCI6NDkzNTYyOTIxMX0.U4XOdogEgRrMjlTiC6CBj7Nzo5cbJFV1-ZlIwgYF3Zg'; 
+
+    async function fetchWalletData() {
+        const address = document.getElementById('walletAddr').value.trim();
+        const resultsDiv = document.getElementById('results');
+        const loading = document.getElementById('loading');
+        const totalHeader = document.getElementById('totalVal');
+
+        if(!address.startsWith('0x') || address.length < 40) {
+            alert("Per favore inserisci un indirizzo Ethereum valido.");
+            return;
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            justify-content: center;
-        }
+        // Reset UI
+        resultsDiv.innerHTML = '';
+        totalHeader.innerText = '';
+        loading.style.display = 'block';
 
-        .container {
-            width: 100%;
-            max-width: 650px;
-        }
+        try {
+            // Chiamata API a Moralis (Chain: Ethereum)
+            const response = await fetch(`https://deep-index.moralis.io/api/v2.2/${address}/erc20?chain=eth`, {
+                method: 'GET',
+                headers: {
+                    'accept': 'application/json',
+                    'X-API-Key': MORALIS_KEY
+                }
+            });
 
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
+            if (!response.ok) throw new Error("Errore API o Chiave non valida");
+
+            const tokens = await response.json();
+            loading.style.display = 'none';
+
+            if (tokens.length === 0) {
+                resultsDiv.innerHTML = "<p style='text-align:center'>Nessun token trovato.</p>";
+                return;
+            }
+
+            let grandTotal = 0;
+
+            tokens.forEach(token => {
+                const balance = parseFloat(token.balance_formatted);
+                const price = parseFloat(token.usd_price || 0);
+                const usdValue = balance * price;
+                grandTotal += usdValue;
+
+                // Crea l'elemento grafico per ogni token
+                if(balance > 0) {
+                    const card = document.createElement('div');
+                    card.className = 'asset-card';
+                    card.innerHTML = `
+                        <div>
+                            <strong style="color:var(--accent)">${token.symbol}</strong><br>
+                            <small style="color:var(--text2)">${balance.toFixed(4)} ${token.symbol}</small>
+                        </div>
+                        <div style="text-align:right">
+                            <div>$${usdValue.toLocaleString(undefined, {minimumFractionDigits: 2})}</div>
+                            <small style="color:#16c784">$${price.toFixed(2)}</small>
+                        </div>
+                    `;
+                    resultsDiv.appendChild(card);
+                }
+            });
+
+            totalHeader.innerText = `Valore Totale: $${grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+
+        } catch (err) {
+            loading.style.display = 'none';
+            alert("Errore: " + err.message);
+            console.error(err);
         }
+    }
+</script>
+
+</body>
+</html>        }
 
         .logo-icon {
             font-size: 50px;
