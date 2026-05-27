@@ -1,40 +1,73 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>CryptoEdge AI — Live Tracker</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>CryptoEdge — CoinGecko Live</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #0f1117;
-            --card: #171923;
-            --accent: #f7931a;
-            --text: #ffffff;
-            --text2: #b8bfd3;
-            --border: #2b3245;
-            --green: #16c784;
-            --red: #ea3943;
-        }
+        body { font-family: 'Inter', sans-serif; background: #0f1117; color: white; text-align: center; padding: 50px; }
+        .card { background: #171923; padding: 30px; border-radius: 20px; border: 1px solid #2b3245; display: inline-block; }
+        input { padding: 12px; border-radius: 8px; border: 1px solid #2b3245; background: #0a0c10; color: white; width: 300px; }
+        button { padding: 12px 20px; border-radius: 8px; border: none; background: #f7931a; color: white; font-weight: bold; cursor: pointer; }
+        #result { margin-top: 20px; font-size: 24px; color: #16c784; }
+    </style>
+</head>
+<body>
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            justify-content: center;
-        }
+    <div class="card">
+        <h1>CoinGecko Live Tracker</h1>
+        <p>Valuta il bilancio ETH in tempo reale</p>
+        <input type="text" id="address" placeholder="Indirizzo Ethereum 0x...">
+        <button onclick="getLiveValue()">Calcola Valore</button>
+        <div id="result"></div>
+    </div>
 
-        .container { width: 100%; max-width: 600px; }
+<script>
+async function getLiveValue() {
+    const addr = document.getElementById('address').value;
+    const resDiv = document.getElementById('result');
+    resDiv.innerText = "Caricamento...";
 
-        .header { text-align: center; margin-bottom: 40px; }
+    try {
+        // 1. Otteniamo il bilancio (usiamo un'API pubblica di base)
+        // Nota: Questo esempio usa Cloudflare/Ethereum Gateway (gratis e senza key)
+        const ethRes = await fetch('https://cloudflare-eth.com', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                jsonrpc: "2.0",
+                method: "eth_getBalance",
+                params: [addr, "latest"],
+                id: 1
+            })
+        });
+        const ethData = await ethRes.json();
+        
+        // Convertiamo il valore da Wei a ETH
+        const balanceHex = ethData.result;
+        const balanceEth = parseInt(balanceHex, 16) / Math.pow(10, 18);
 
-        .search-box {
-            background: var(--card);
-            padding: 25px;
-            border-radius: 24px;
+        // 2. Otteniamo il prezzo da CoinGecko (Senza API Key!)
+        const priceRes = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=eur');
+        const priceData = await priceRes.json();
+        const priceEur = priceData.ethereum.eur;
+
+        // 3. Calcolo finale
+        const totalValue = balanceEth * priceEur;
+
+        resDiv.innerHTML = `
+            <div style="color:#b8bfd3; font-size:16px;">Bilancio: ${balanceEth.toFixed(4)} ETH</div>
+            <div style="margin-top:10px;">Valore: €${totalValue.toLocaleString(undefined, {minimumFractionDigits: 2})}</div>
+        `;
+
+    } catch (err) {
+        resDiv.innerText = "Errore: Indirizzo non valido o limite API raggiunto.";
+        console.error(err);
+    }
+}
+</script>
+</body>
+</html>            border-radius: 24px;
             border: 1px solid var(--border);
             margin-bottom: 30px;
         }
