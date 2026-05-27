@@ -946,6 +946,35 @@ window.addEventListener('click', function(e){
     </div>
 
 </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script>
+const supabaseUrl = 'IL_TUO_URL';
+const supabaseKey = 'LA_TUA_ANON_KEY';
 
+const supabase = window.supabase.createClient(
+  supabaseUrl,
+  supabaseKey
+);
+</script>
+    async function addAsset() {
+  const { data, error } = await supabase
+    .from('portfolio')
+    .insert([
+      {
+        symbol: 'BTC',
+        amount: 0.5,
+        buy_price: 60000
+      }
+    ]);
+
+  console.log(data, error);
+}
+    async function loadPortfolio() {
+  const { data, error } = await supabase
+    .from('portfolio')
+    .select('*');
+
+  console.log(data);
+}
 </body>
 </html>
