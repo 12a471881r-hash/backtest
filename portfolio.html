@@ -443,22 +443,58 @@ async function loadPortfolio(){
 }
 
 async function addWallet() {
+    const wallet = prompt('Inserisci indirizzo wallet (es. 0x...)');
+    if (!wallet) return;
 
-    const wallet = prompt('Inserisci indirizzo wallet');
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) { alert('Login richiesto'); return; }
 
-    if(!wallet) return;
-
-    const {
-        data: { user }
-    } = await supabaseClient.auth.getUser();
-
-    if(!user){
-        alert('Login richiesto');
-        return;
-    }
+    const apiKey = 'TUA_CHIAVE_MORALIS_QUI'; // <--- Incolla qui la chiave
 
     try {
+        // Questa API di Moralis restituisce tutti i token ERC20 del wallet
+        const response = await fetch(`https://deep-index.moralis.io/api/v2.2/${wallet}/erc20?chain=eth`, {
+            method: 'GET',
+            headers: {
+                'accept': 'application/json',
+                'X-API-Key': apiKey
+            }
+        });
 
+        const tokens = await response.json();
+
+        if (!tokens || tokens.length === 0) {
+            alert('Nessun asset trovato su questo wallet.');
+            return;
+        }
+
+        // Cicliamo i token trovati e li salviamo su Supabase
+        for (const token of tokens) {
+            const symbol = token.symbol;
+            const balance = parseFloat(token.balance_formatted);
+            const price = parseFloat(token.usd_price || 0); // Prezzo live in USD
+
+            await supabaseClient
+                .from('portfolio')
+                .insert([
+                    {
+                        user_id: user.id,
+                        symbol: symbol,
+                        amount: balance,
+                        buy_price: price, // Salviamo il prezzo attuale come "prezzo d'acquisto"
+                        wallet_address: wallet
+                    }
+                ]);
+        }
+
+        alert('Wallet importato con successo!');
+        await loadPortfolio();
+
+    } catch (err) {
+        console.error(err);
+        alert('Errore durante il recupero dei dati live.');
+    }
+}
         // ESEMPIO ETH WALLET
         const response = await fetch(
             `https://api.ethplorer.io/getAddressInfo/${wallet}?apiKey=freekey`
@@ -515,5 +551,4 @@ window.onload = async () => {
 
 </body>
 </html>
- user_id);
-```
+
