@@ -230,8 +230,8 @@ body{
 <div class="top-actions">
 <a href="index.html" class="dashboard-btn">← Dashboard</a>
 
-<button class="btn btn-primary" onclick="openAssetMenu()">
-+ Aggiungi Asset
+<button class="btn btn-primary" onclick="addWallet()">
++ Importa Wallet
 </button>
 </div>
 
@@ -442,6 +442,71 @@ async function loadPortfolio(){
         `€${total.toLocaleString()}`;
 }
 
+async function addWallet() {
+
+    const wallet = prompt('Inserisci indirizzo wallet');
+
+    if(!wallet) return;
+
+    const {
+        data: { user }
+    } = await supabaseClient.auth.getUser();
+
+    if(!user){
+        alert('Login richiesto');
+        return;
+    }
+
+    try {
+
+        // ESEMPIO ETH WALLET
+        const response = await fetch(
+            `https://api.ethplorer.io/getAddressInfo/${wallet}?apiKey=freekey`
+        );
+
+        const data = await response.json();
+
+        if(!data.tokens){
+            alert('Wallet non valido o nessun asset trovato');
+            return;
+        }
+
+        for(const token of data.tokens){
+
+            const symbol = token.tokenInfo.symbol || 'UNKNOWN';
+
+            const balance =
+                Number(token.balance) /
+                Math.pow(10, token.tokenInfo.decimals || 18);
+
+            const price =
+                token.tokenInfo.price?.rate || 0;
+
+            await supabaseClient
+                .from('portfolio')
+                .insert([
+                    {
+                        user_id:user.id,
+                        symbol:symbol,
+                        amount:balance,
+                        buy_price:price,
+                        wallet_address:wallet
+                    }
+                ]);
+        }
+
+        alert('Wallet importato');
+
+        closeAssetMenu();
+
+        await loadPortfolio();
+
+    } catch(err){
+        console.error(err);
+        alert('Errore import wallet');
+    }
+}
+
 window.onload = async () => {
     await loadPortfolio();
 }
@@ -450,4 +515,3 @@ window.onload = async () => {
 
 </body>
 </html>
-```
