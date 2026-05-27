@@ -1,36 +1,190 @@
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>CryptoEdge AI — Portfolio</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CryptoEdge AI — Portfolio Live</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root{
+            --bg:#0f1117; --bg2:#171923; --bg3:#1e2230; --border:#2b3245;
+            --text:#ffffff; --text2:#b8bfd3; --accent:#f7931a; --accent2:#ff6b35;
+            --green:#16c784; --red:#ea3943;
+        }
+        *{ margin:0; padding:0; box-sizing:border-box; }
+        body{ font-family:'Inter',sans-serif; background:var(--bg); color:white; min-height:100vh; padding:28px; }
+        .page{ max-width:1200px; margin:auto; }
+        .topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; }
+        .logo-box{ width:50px; height:50px; border-radius:12px; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:800; }
+        .grid{ display:grid; grid-template-columns: 1fr 2fr; gap:24px; }
+        .card{ background:var(--bg2); border:1px solid var(--border); border-radius:20px; padding:24px; }
+        .total-balance{ font-size:48px; font-weight:800; color:var(--accent); margin-top:10px; }
+        .asset-list{ display:flex; flex-direction:column; gap:12px; margin-top:20px; }
+        .asset{ background:var(--bg3); border:1px solid var(--border); border-radius:16px; padding:16px; display:flex; justify-content:space-between; align-items:center; transition: 0.2s; }
+        .asset:hover { border-color: var(--accent); }
+        .asset-left{ display:flex; align-items:center; gap:14px; }
+        .coin-img{ width:44px; height:44px; border-radius:50%; background:var(--bg4); display:flex; align-items:center; justify-content:center; font-weight:bold; border: 1px solid var(--border); }
+        .btn{ border:none; padding:12px 20px; border-radius:12px; cursor:pointer; font-weight:700; transition: 0.3s; }
+        .btn-primary{ background:linear-gradient(135deg,var(--accent),var(--accent2)); color:white; }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        /* Modal */
+        .modal{ position:fixed; inset:0; background:rgba(0,0,0,.8); display:none; align-items:center; justify-content:center; z-index:100; }
+        .modal.active{ display:flex; }
+        .modal-box{ width:400px; background:var(--bg2); padding:30px; border-radius:24px; border:1px solid var(--border); }
+        input{ width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:white; margin:15px 0; }
+    </style>
+</head>
+<body>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<div class="page">
+    <div class="topbar">
+        <div style="display:flex; gap:15px; align-items:center;">
+            <div class="logo-box">₿</div>
+            <div><h1>CryptoEdge</h1><p style="color:var(--text2)">AI Portfolio Manager</p></div>
+        </div>
+        <button class="btn btn-primary" onclick="toggleModal()">+ Importa Wallet</button>
+    </div>
 
-<style>
-:root{
-    --bg:#0f1117;
-    --bg2:#171923;
-    --bg3:#1e2230;
-    --bg4:#262c3d;
-    --border:#2b3245;
-    --border2:#3b435b;
-    --text:#ffffff;
-    --text2:#b8bfd3;
-    --text3:#7f8799;
-    --accent:#f7931a;
-    --accent2:#ff6b35;
-    --green:#16c784;
-    --red:#ea3943;
-    --radius:18px;
+    <div class="grid">
+        <div class="card">
+            <h3>Valore Stimato</h3>
+            <div class="total-balance" id="totalBalance">€0.00</div>
+            <p style="color:var(--text2); margin-top:10px; font-size:14px;">Basato sui prezzi correnti di mercato.</p>
+        </div>
+
+        <div class="card">
+            <h3>I Tuoi Asset</h3>
+            <div class="asset-list" id="assetList">
+                </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="walletModal">
+    <div class="modal-box">
+        <h2>Collega Blockchain</h2>
+        <p style="color:var(--text2); font-size:14px; margin-top:5px;">Inserisci il tuo indirizzo Ethereum (ERC20)</p>
+        <input type="text" id="walletAddress" placeholder="0x...">
+        <button class="btn btn-primary" id="importBtn" onclick="importFromMoralis()" style="width:100%">Analizza Wallet</button>
+        <button class="btn" onclick="toggleModal()" style="width:100%; background:transparent; color:white; margin-top:10px;">Annulla</button>
+    </div>
+</div>
+
+<script>
+// --- CONFIGURAZIONE (Sostituisci con i tuoi dati) ---
+const SB_URL = 'IL_TUO_URL_SUPABASE';
+const SB_KEY = 'LA_TUA_ANON_KEY';
+const MORALIS_KEY = 'LA_TUA_MORALIS_API_KEY';
+
+const supabase = supabase.createClient(SB_URL, SB_KEY);
+
+function toggleModal() {
+    document.getElementById('walletModal').classList.toggle('active');
 }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+// Funzione per importare dati live da Moralis
+async function importFromMoralis() {
+    const address = document.getElementById('walletAddress').value.trim();
+    const btn = document.getElementById('importBtn');
+    
+    if (!address.startsWith('0x')) {
+        alert("Inserisci un indirizzo Ethereum valido");
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerText = "Sincronizzazione...";
+
+    try {
+        // Chiamata a Moralis API per token ERC20
+        const response = await fetch(`https://deep-index.moralis.io/api/v2.2/${address}/erc20?chain=eth`, {
+            headers: { 'X-API-Key': MORALIS_KEY }
+        });
+        const tokens = await response.json();
+
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("Devi essere loggato");
+
+        // Prepariamo i dati per il bulk insert
+        const assetsToInsert = tokens.map(t => ({
+            user_id: user.id,
+            symbol: t.symbol,
+            amount: parseFloat(t.balance_formatted),
+            buy_price: parseFloat(t.usd_price || 0),
+            wallet_address: address
+        })).filter(t => t.amount > 0); // Importiamo solo token con saldo > 0
+
+        if (assetsToInsert.length > 0) {
+            const { error } = await supabase.from('portfolio').insert(assetsToInsert);
+            if (error) throw error;
+            alert(`Importati ${assetsToInsert.length} asset!`);
+        } else {
+            alert("Nessun token trovato in questo wallet.");
+        }
+
+        toggleModal();
+        loadPortfolio();
+
+    } catch (err) {
+        console.error(err);
+        alert("Errore durante l'importazione: " + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "Analizza Wallet";
+    }
 }
 
-body{
+async function loadPortfolio() {
+    const listEl = document.getElementById('assetList');
+    const totalEl = document.getElementById('totalBalance');
+    listEl.innerHTML = '<p>Caricamento...</p>';
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+        listEl.innerHTML = '<p>Effettua il login per vedere il portfolio.</p>';
+        return;
+    }
+
+    const { data, error } = await supabase
+        .from('portfolio')
+        .select('*')
+        .eq('user_id', user.id);
+
+    if (error) return;
+
+    let totalEUR = 0;
+    listEl.innerHTML = '';
+
+    data.forEach(item => {
+        const value = item.amount * item.buy_price;
+        totalEUR += value;
+
+        const div = document.createElement('div');
+        div.className = 'asset';
+        div.innerHTML = `
+            <div class="asset-left">
+                <div class="coin-img">${item.symbol[0]}</div>
+                <div>
+                    <h4 style="margin:0">${item.symbol}</h4>
+                    <small style="color:var(--text3)">${item.amount.toFixed(4)} unità</small>
+                </div>
+            </div>
+            <div style="text-align:right">
+                <div style="font-weight:bold">€${value.toLocaleString(undefined, {minimumFractionDigits: 2})}</div>
+                <small style="color:var(--green)">Live Price</small>
+            </div>
+        `;
+        listEl.appendChild(div);
+    });
+
+    totalEl.innerText = `€${totalEUR.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+}
+
+// Carica all'avvio
+window.onload = loadPortfolio;
+
+</script>
+</body>
+</html>
