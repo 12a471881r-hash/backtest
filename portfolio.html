@@ -1,76 +1,909 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <title>CryptoEdge — Fix Connessione</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root { --bg: #0f1117; --card: #171923; --accent: #f7931a; --text: #ffffff; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .card { background: var(--card); padding: 40px; border-radius: 28px; border: 1px solid #2b3245; width: 100%; max-width: 400px; text-align: center; }
-        input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #2b3245; background: #0a0c10; color: white; margin-bottom: 20px; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--accent); color: white; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        button:hover { transform: scale(1.02); opacity: 0.9; }
-        #result { margin-top: 30px; }
-        .eth-val { font-size: 14px; color: #b8bfd3; }
-        .eur-val { font-size: 36px; font-weight: 800; color: #16c784; margin-top: 5px; }
-        .err-msg { color: #ea3943; font-size: 13px; background: rgba(234, 57, 67, 0.1); padding: 10px; border-radius: 8px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CryptoEdge — Wallet Analyzer</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+:root{
+  --bg:#07070d;--bg2:#0d0d18;--bg3:#13131f;--bg4:#1a1a28;
+  --border:#181828;--border2:#222238;--border3:#2e2e50;
+  --text:#f2f2ff;--text2:#8888b8;--text3:#4a4a70;
+  --accent:#F7931A;--accent2:#ff6b35;
+  --green:#22c55e;--red:#ef4444;--yellow:#f59e0b;--blue:#3b82f6;
+  --r:12px;--r-sm:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:24px 16px}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--border3);border-radius:3px}
+
+.page-header{text-align:center;margin-bottom:32px}
+.logo-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,#F7931A,#ff6b35);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:900;color:#fff;box-shadow:0 4px 16px rgba(247,147,26,.4)}
+.logo-name{font-size:18px;font-weight:800;letter-spacing:-.3px}
+.logo-sub{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:linear-gradient(90deg,#F7931A,#ffb347);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.page-title{font-size:28px;font-weight:900;letter-spacing:-.5px;margin-bottom:6px}
+.page-sub{font-size:13px;color:var(--text2)}
+
+.search-card{
+  max-width:680px;margin:0 auto 28px;
+  background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);
+  padding:24px;
+}
+.search-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.09em;margin-bottom:8px}
+.search-row{display:flex;gap:10px}
+.search-input{
+  flex:1;padding:13px 16px;background:var(--bg4);border:1px solid var(--border2);
+  border-radius:var(--r-sm);color:var(--text);font-size:13px;font-weight:600;
+  outline:none;transition:border-color .15s;font-family:'Inter',sans-serif;
+}
+.search-input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(247,147,26,.1)}
+.search-input::placeholder{color:var(--text3)}
+.search-btn{
+  padding:13px 22px;background:linear-gradient(135deg,#F7931A,#ff6b35);
+  color:#fff;border:none;border-radius:var(--r-sm);font-size:13px;font-weight:700;
+  cursor:pointer;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:7px;
+  box-shadow:0 4px 14px rgba(247,147,26,.35);
+}
+.search-btn:hover{opacity:.9;transform:translateY(-1px)}
+.search-btn:active{transform:translateY(0)}
+.search-btn:disabled{opacity:.5;pointer-events:none}
+
+.chain-tabs{display:flex;gap:6px;margin-top:14px;flex-wrap:wrap}
+.chain-tab{
+  padding:5px 14px;border:1px solid var(--border2);border-radius:20px;
+  font-size:11px;font-weight:700;cursor:pointer;color:var(--text2);
+  background:var(--bg3);transition:all .15s;display:flex;align-items:center;gap:5px;
+}
+.chain-tab:hover{border-color:var(--border3);color:var(--text)}
+.chain-tab.active{border-color:rgba(247,147,26,.4);background:rgba(247,147,26,.1);color:var(--accent)}
+
+/* Loading */
+.loading-wrap{max-width:680px;margin:0 auto;text-align:center;padding:48px 0;display:none}
+.spinner{width:40px;height:40px;border:3px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:13px;color:var(--text2);font-weight:500}
+.loading-steps{margin-top:12px;display:flex;flex-direction:column;gap:4px}
+.ls{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:6px;justify-content:center}
+.ls.done{color:var(--green)}.ls.active{color:var(--accent)}
+
+/* Error */
+.error-box{
+  max-width:680px;margin:0 auto;padding:16px 20px;
+  background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:var(--r);
+  color:var(--red);font-size:12px;font-weight:500;display:none;align-items:center;gap:9px;
+}
+
+/* Results */
+.results-wrap{max-width:900px;margin:0 auto;display:none}
+
+/* Address banner */
+.addr-banner{
+  background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);
+  padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
+}
+.addr-left{display:flex;align-items:center;gap:12px}
+.addr-icon{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,rgba(247,147,26,.2),rgba(255,107,53,.1));display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--accent)}
+.addr-label{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
+.addr-val{font-size:13px;font-weight:700;font-family:monospace;word-break:break-all}
+.addr-badges{display:flex;gap:6px;flex-wrap:wrap}
+.addr-badge{font-size:10px;padding:3px 10px;border-radius:20px;font-weight:700}
+.ab-green{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.ab-blue{background:rgba(59,130,246,.12);color:var(--blue);border:1px solid rgba(59,130,246,.2)}
+.ab-yellow{background:rgba(245,158,11,.12);color:var(--yellow);border:1px solid rgba(245,158,11,.2)}
+
+/* KPI row */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden;transition:all .2s}
+.kpi:hover{border-color:var(--border2);transform:translateY(-1px)}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(247,147,26,.3),transparent);opacity:0;transition:opacity .2s}
+.kpi:hover::before{opacity:1}
+.kpi-icon{font-size:22px;position:absolute;right:12px;top:12px;opacity:.08}
+.kpi-l{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+.kpi-v{font-size:22px;font-weight:800;line-height:1}
+.kpi-s{font-size:10px;color:var(--text2);margin-top:4px}
+
+/* Two col */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px}
+
+/* Section card */
+.sec-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.sec-head{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.sec-title{font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px}
+.sec-title i{color:var(--accent);font-size:14px}
+.sec-badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;background:var(--bg3);color:var(--text2);border:1px solid var(--border2)}
+.sec-body{padding:14px 16px}
+
+/* Token list */
+.token-row{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--border)}
+.token-row:last-child{border-bottom:none}
+.token-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0;background:linear-gradient(135deg,#627EEA,#4f6fd1)}
+.token-info{flex:1;min-width:0}
+.token-name{font-size:12px;font-weight:700}
+.token-addr{font-size:10px;color:var(--text3);font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.token-bal{text-align:right}
+.token-amount{font-size:13px;font-weight:800}
+.token-usd{font-size:10px;color:var(--text2);margin-top:1px}
+
+/* TX list */
+.tx-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.tx-row:last-child{border-bottom:none}
+.tx-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.tx-icon.in{background:rgba(34,197,94,.12);color:var(--green)}
+.tx-icon.out{background:rgba(239,68,68,.12);color:var(--red)}
+.tx-icon.contract{background:rgba(59,130,246,.12);color:var(--blue)}
+.tx-body{flex:1;min-width:0}
+.tx-hash{font-size:11px;font-weight:700;font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--blue)}
+.tx-hash a{color:var(--blue);text-decoration:none}
+.tx-hash a:hover{text-decoration:underline}
+.tx-sub{font-size:10px;color:var(--text3);margin-top:1px}
+.tx-val{text-align:right;flex-shrink:0}
+.tx-amount{font-size:12px;font-weight:700}
+.tx-time{font-size:10px;color:var(--text3);margin-top:1px}
+
+/* NFT grid */
+.nft-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+.nft-card{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r-sm);overflow:hidden;transition:all .2s;cursor:pointer}
+.nft-card:hover{border-color:var(--border3);transform:translateY(-2px)}
+.nft-img{width:100%;aspect-ratio:1;background:linear-gradient(135deg,var(--bg4),var(--bg5));display:flex;align-items:center;justify-content:center;font-size:28px}
+.nft-info{padding:6px 8px}
+.nft-name{font-size:10px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nft-coll{font-size:9px;color:var(--text3)}
+
+/* Stats grid */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
+.stat-row:last-child{border-bottom:none}
+.stat-label{font-size:11px;color:var(--text2)}
+.stat-value{font-size:12px;font-weight:700}
+
+/* DeFi protocol */
+.defi-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.defi-row:last-child{border-bottom:none}
+.defi-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.defi-body{flex:1}
+.defi-name{font-size:12px;font-weight:700}
+.defi-type{font-size:10px;color:var(--text3)}
+.defi-val{text-align:right}
+.defi-usd{font-size:13px;font-weight:800}
+.defi-sub{font-size:10px;color:var(--text2);margin-top:1px}
+
+/* Copy btn */
+.copy-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:2px 5px;border-radius:4px;transition:all .15s}
+.copy-btn:hover{color:var(--accent);background:rgba(247,147,26,.1)}
+
+/* Refresh hint */
+.refresh-hint{text-align:center;font-size:10px;color:var(--text3);margin-top:20px;padding-bottom:20px}
+
+/* Pos/neg */
+.pos{color:var(--green)}.neg{color:var(--red)}.warn{color:var(--yellow)}.info{color:var(--blue)}
+
+/* Empty state */
+.empty{text-align:center;padding:24px;color:var(--text3);font-size:12px}
+.empty i{font-size:28px;display:block;margin-bottom:8px}
+
+@media(max-width:640px){
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .two-col,.three-col{grid-template-columns:1fr}
+}
+</style>
 </head>
 <body>
 
-    <div class="card">
-        <h1 style="margin-top:0">ETH Live</h1>
-        <input type="text" id="wallet" placeholder="Indirizzo 0x...">
-        <button onclick="checkWallet()">Analizza Ora</button>
-        <div id="result"></div>
+<div class="page-header">
+  <div class="logo-row">
+    <div class="logo-icon">₿</div>
+    <div><div class="logo-name">CryptoEdge AI</div><div class="logo-sub">Wallet Analyzer</div></div>
+  </div>
+  <div class="page-title">Analisi Wallet Crypto</div>
+  <div class="page-sub">Inserisci un indirizzo Ethereum / EVM per analizzare saldo, token, NFT, transazioni e posizioni DeFi</div>
+</div>
+
+<!-- SEARCH -->
+<div class="search-card">
+  <div class="search-label">Indirizzo wallet (Ethereum / EVM)</div>
+  <div class="search-row">
+    <input class="search-input" id="wallet-input" type="text"
+      placeholder="0x71C7656EC7ab88b098defB751B7401B5f6d8976F"
+      onkeydown="if(event.key==='Enter')analyzeWallet()">
+    <button class="search-btn" id="search-btn" onclick="analyzeWallet()">
+      <i class="ti ti-search"></i> Analizza
+    </button>
+  </div>
+  <div class="chain-tabs">
+    <div class="chain-tab active" onclick="setChain('eth',this)">
+      <i class="ti ti-currency-ethereum"></i> Ethereum
     </div>
+    <div class="chain-tab" onclick="setChain('bsc',this)">
+      <span style="font-weight:900;font-size:13px">B</span> BNB Chain
+    </div>
+    <div class="chain-tab" onclick="setChain('polygon',this)">
+      <span style="font-weight:900;font-size:13px">⬡</span> Polygon
+    </div>
+    <div class="chain-tab" onclick="setChain('arbitrum',this)">
+      <span style="font-weight:900;font-size:13px">A</span> Arbitrum
+    </div>
+    <div class="chain-tab" onclick="setChain('base',this)">
+      <span style="font-weight:900;font-size:13px">B</span> Base
+    </div>
+  </div>
+</div>
+
+<!-- ERROR -->
+<div class="error-box" id="error-box">
+  <i class="ti ti-alert-circle" style="font-size:18px;flex-shrink:0"></i>
+  <span id="error-msg">Errore durante il caricamento</span>
+</div>
+
+<!-- LOADING -->
+<div class="loading-wrap" id="loading-wrap">
+  <div class="spinner"></div>
+  <div class="loading-text">Analisi wallet in corso...</div>
+  <div class="loading-steps">
+    <div class="ls" id="ls-1"><i class="ti ti-circle"></i> Recupero saldo ETH</div>
+    <div class="ls" id="ls-2"><i class="ti ti-circle"></i> Recupero prezzi live</div>
+    <div class="ls" id="ls-3"><i class="ti ti-circle"></i> Scan token ERC-20</div>
+    <div class="ls" id="ls-4"><i class="ti ti-circle"></i> Analisi transazioni</div>
+    <div class="ls" id="ls-5"><i class="ti ti-circle"></i> Scan NFT & DeFi</div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="results-wrap" id="results-wrap">
+
+  <!-- Address banner -->
+  <div class="addr-banner" id="addr-banner"></div>
+
+  <!-- KPI -->
+  <div class="kpi-grid" id="kpi-grid"></div>
+
+  <!-- Row 1: ETH balance + token list + tx stats -->
+  <div class="three-col">
+    <div class="sec-card">
+      <div class="sec-head">
+        <div class="sec-title"><i class="ti ti-currency-ethereum"></i> Saldo Nativo</div>
+      </div>
+      <div class="sec-body" id="native-section"></div>
+    </div>
+    <div class="sec-card">
+      <div class="sec-head">
+        <div class="sec-title"><i class="ti ti-coins"></i> Token ERC-20</div>
+        <span class="sec-badge" id="tokens-badge">—</span>
+      </div>
+      <div class="sec-body" id="tokens-section"><div class="empty"><i class="ti ti-loader"></i>Caricamento...</div></div>
+    </div>
+    <div class="sec-card">
+      <div class="sec-head">
+        <div class="sec-title"><i class="ti ti-chart-bar"></i> Statistiche</div>
+      </div>
+      <div class="sec-body" id="stats-section"></div>
+    </div>
+  </div>
+
+  <!-- Row 2: Transactions -->
+  <div class="sec-card" style="margin-bottom:14px">
+    <div class="sec-head">
+      <div class="sec-title"><i class="ti ti-arrows-exchange"></i> Ultime transazioni</div>
+      <span class="sec-badge" id="tx-badge">—</span>
+    </div>
+    <div class="sec-body" id="tx-section"><div class="empty"><i class="ti ti-loader"></i>Caricamento...</div></div>
+  </div>
+
+  <!-- Row 3: NFT + DeFi -->
+  <div class="two-col">
+    <div class="sec-card">
+      <div class="sec-head">
+        <div class="sec-title"><i class="ti ti-photo"></i> NFT</div>
+        <span class="sec-badge" id="nft-badge">—</span>
+      </div>
+      <div class="sec-body" id="nft-section"><div class="empty"><i class="ti ti-loader"></i>Caricamento...</div></div>
+    </div>
+    <div class="sec-card">
+      <div class="sec-head">
+        <div class="sec-title"><i class="ti ti-building-bank"></i> DeFi Positions</div>
+        <span class="sec-badge" id="defi-badge">—</span>
+      </div>
+      <div class="sec-body" id="defi-section"><div class="empty"><i class="ti ti-loader"></i>Caricamento...</div></div>
+    </div>
+  </div>
+
+  <div class="refresh-hint" id="refresh-hint"></div>
+</div>
 
 <script>
-async function checkWallet() {
-    const addr = document.getElementById('wallet').value.trim();
-    const resDiv = document.getElementById('result');
-    resDiv.innerHTML = "Sincronizzazione...";
+/* ═══════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════ */
+let currentChain = 'eth';
+let currentAddress = '';
+let ethPrice = 0, bnbPrice = 0, maticPrice = 0;
 
-    if (addr.length < 42) {
-        resDiv.innerHTML = "<div class='err-msg'>Indirizzo troppo corto</div>";
-        return;
-    }
+const CHAIN_CONFIG = {
+  eth:      { name:'Ethereum',  symbol:'ETH',  explorer:'https://etherscan.io',    rpc:'https://cloudflare-eth.com', scan:'https://api.etherscan.io/api', coingeckoId:'ethereum' },
+  bsc:      { name:'BNB Chain', symbol:'BNB',  explorer:'https://bscscan.com',     rpc:'https://bsc-dataseed.binance.org', scan:'https://api.bscscan.com/api', coingeckoId:'binancecoin' },
+  polygon:  { name:'Polygon',   symbol:'MATIC',explorer:'https://polygonscan.com', rpc:'https://polygon-rpc.com', scan:'https://api.polygonscan.com/api', coingeckoId:'matic-network' },
+  arbitrum: { name:'Arbitrum',  symbol:'ETH',  explorer:'https://arbiscan.io',     rpc:'https://arb1.arbitrum.io/rpc', scan:'https://api.arbiscan.io/api', coingeckoId:'ethereum' },
+  base:     { name:'Base',      symbol:'ETH',  explorer:'https://basescan.org',    rpc:'https://mainnet.base.org', scan:'https://api.basescan.org/api', coingeckoId:'ethereum' },
+};
 
-    try {
-        // 1. CHIAMATA BILANCIO (Cloudflare)
-        const ethResponse = await fetch('https://cloudflare-eth.com', {
-            method: 'POST',
-            body: JSON.stringify({ jsonrpc: "2.0", method: "eth_getBalance", params: [addr, "latest"], id: 1 })
-        });
-        const ethData = await ethResponse.json();
-        
-        if (!ethData.result) throw new Error("Wallet non trovato");
-        const balance = parseInt(ethData.result, 16) / 10**18;
-
-        // 2. CHIAMATA PREZZO (CoinGecko con gestione errore specifica)
-        let price = 0;
-        try {
-            const priceResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=eur');
-            const priceData = await priceResponse.json();
-            price = priceData.ethereum.eur;
-        } catch (pErr) {
-            console.log("CoinGecko limitato, uso prezzo stimato");
-            price = 3200; // Prezzo di fallback se l'API ti blocca
-        }
-
-        const finale = balance * price;
-
-        resDiv.innerHTML = `
-            <div class="eth-val">${balance.toFixed(5)} ETH</div>
-            <div class="eur-val">€${finale.toLocaleString('it-IT', {minimumFractionDigits: 2})}</div>
-            <div style="font-size:10px; color:#555; margin-top:10px;">Prezzo: €${price}/ETH</div>
-        `;
-
-    } catch (err) {
-        resDiv.innerHTML = `<div class='err-msg'>Errore: ${err.message}<br><small>Controlla la connessione o l'indirizzo</small></div>`;
-    }
+/* ═══════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════ */
+function setChain(chain, el) {
+  currentChain = chain;
+  document.querySelectorAll('.chain-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
 }
+
+function showError(msg) {
+  const eb = document.getElementById('error-box');
+  document.getElementById('error-msg').textContent = msg;
+  eb.style.display = 'flex';
+  document.getElementById('loading-wrap').style.display = 'none';
+  document.getElementById('results-wrap').style.display = 'none';
+}
+
+function setStep(n, state) {
+  const el = document.getElementById('ls-' + n);
+  if (!el) return;
+  const icons = { active: 'ti-loader-2', done: 'ti-circle-check', error: 'ti-circle-x' };
+  el.className = 'ls ' + state;
+  el.querySelector('i').className = 'ti ' + (icons[state] || 'ti-circle');
+  if (state === 'active') el.querySelector('i').style.animation = 'spin .7s linear infinite';
+  else el.querySelector('i').style.animation = '';
+}
+
+function shortAddr(addr) {
+  return addr.slice(0, 6) + '...' + addr.slice(-4);
+}
+
+function fmtNum(n, dec = 4) {
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  if (n >= 1e12) return (n / 1e12).toFixed(2) + 'T';
+  if (n >= 1e9)  return (n / 1e9).toFixed(2) + 'B';
+  if (n >= 1e6)  return (n / 1e6).toFixed(2) + 'M';
+  if (n >= 1e3)  return n.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return parseFloat(n).toFixed(dec);
+}
+
+function fmtUSD(n) {
+  if (!n || isNaN(n)) return '$—';
+  return '$' + fmtNum(n, 2);
+}
+
+function fmtEuro(n) {
+  if (!n || isNaN(n)) return '—';
+  return '€' + n.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function timeAgo(ts) {
+  const now = Date.now() / 1000;
+  const diff = now - ts;
+  if (diff < 60) return 'ora';
+  if (diff < 3600) return Math.floor(diff / 60) + 'm fa';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h fa';
+  if (diff < 2592000) return Math.floor(diff / 86400) + 'g fa';
+  return Math.floor(diff / 2592000) + 'mesi fa';
+}
+
+async function copyToClipboard(text) {
+  try { await navigator.clipboard.writeText(text); } catch(e) {}
+}
+
+/* ═══════════════════════════════════════════
+   PRICE FETCHING — multiple fallbacks
+═══════════════════════════════════════════ */
+async function fetchPrices(coingeckoId) {
+  // Fallback chain: CoinGecko → Binance → hardcoded estimate
+  const ids = 'ethereum,binancecoin,matic-network,bitcoin';
+
+  // 1. Try CoinGecko (no API key needed, public endpoint)
+  try {
+    const r = await fetch(
+      `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd,eur&include_24hr_change=true`,
+      { signal: AbortSignal.timeout(5000) }
+    );
+    if (r.ok) {
+      const d = await r.json();
+      ethPrice   = d.ethereum?.usd || 0;
+      bnbPrice   = d.binancecoin?.usd || 0;
+      maticPrice = d['matic-network']?.usd || 0;
+      return {
+        eth:   { usd: ethPrice,   eur: d.ethereum?.eur || 0,   chg: d.ethereum?.usd_24h_change || 0 },
+        bnb:   { usd: bnbPrice,   eur: d.binancecoin?.eur || 0, chg: d.binancecoin?.usd_24h_change || 0 },
+        matic: { usd: maticPrice, eur: d['matic-network']?.eur || 0, chg: d['matic-network']?.usd_24h_change || 0 },
+      };
+    }
+  } catch(e) { console.warn('CoinGecko failed:', e.message); }
+
+  // 2. Fallback: Binance prices
+  try {
+    const [btcR, ethR, bnbR] = await Promise.all([
+      fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT'),
+      fetch('https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT'),
+      fetch('https://api.binance.com/api/v3/ticker/price?symbol=BNBUSDT'),
+    ]);
+    const ethD = await ethR.json();
+    const bnbD = await bnbR.json();
+    ethPrice   = parseFloat(ethD.price) || 0;
+    bnbPrice   = parseFloat(bnbD.price) || 0;
+    maticPrice = 0.9;
+    return {
+      eth:   { usd: ethPrice, eur: ethPrice * 0.92, chg: 0 },
+      bnb:   { usd: bnbPrice, eur: bnbPrice * 0.92, chg: 0 },
+      matic: { usd: 0.9, eur: 0.83, chg: 0 },
+    };
+  } catch(e) { console.warn('Binance fallback failed:', e.message); }
+
+  // 3. Last resort hardcoded (update periodically)
+  ethPrice = 3800; bnbPrice = 620; maticPrice = 0.9;
+  return {
+    eth:   { usd: 3800, eur: 3500, chg: 0 },
+    bnb:   { usd: 620,  eur: 570,  chg: 0 },
+    matic: { usd: 0.9,  eur: 0.83, chg: 0 },
+  };
+}
+
+/* ═══════════════════════════════════════════
+   ETH BALANCE via multiple RPC endpoints
+═══════════════════════════════════════════ */
+async function fetchNativeBalance(address, chain) {
+  const rpcs = {
+    eth:      ['https://cloudflare-eth.com', 'https://eth.llamarpc.com', 'https://rpc.ankr.com/eth'],
+    bsc:      ['https://bsc-dataseed.binance.org', 'https://bsc-dataseed1.defibit.io'],
+    polygon:  ['https://polygon-rpc.com', 'https://rpc.ankr.com/polygon'],
+    arbitrum: ['https://arb1.arbitrum.io/rpc', 'https://rpc.ankr.com/arbitrum'],
+    base:     ['https://mainnet.base.org', 'https://base.llamarpc.com'],
+  };
+  const endpoints = rpcs[chain] || rpcs.eth;
+
+  for (const rpc of endpoints) {
+    try {
+      const r = await fetch(rpc, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jsonrpc:'2.0', method:'eth_getBalance', params:[address,'latest'], id:1 }),
+        signal: AbortSignal.timeout(6000),
+      });
+      if (!r.ok) continue;
+      const d = await r.json();
+      if (d.result) {
+        return parseInt(d.result, 16) / 1e18;
+      }
+    } catch(e) { continue; }
+  }
+  return null;
+}
+
+/* ═══════════════════════════════════════════
+   TRANSACTION COUNT
+═══════════════════════════════════════════ */
+async function fetchTxCount(address, chain) {
+  const rpc = CHAIN_CONFIG[chain]?.rpc || 'https://cloudflare-eth.com';
+  try {
+    const r = await fetch(rpc, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jsonrpc:'2.0', method:'eth_getTransactionCount', params:[address,'latest'], id:1 }),
+      signal: AbortSignal.timeout(5000),
+    });
+    const d = await r.json();
+    return d.result ? parseInt(d.result, 16) : null;
+  } catch(e) { return null; }
+}
+
+/* ═══════════════════════════════════════════
+   ETHERSCAN-COMPATIBLE API (tokens + txs)
+═══════════════════════════════════════════ */
+async function fetchEtherscanData(address, chain) {
+  // Use public Etherscan API without key (limited but free)
+  // Falls back to empty arrays if rate limited
+  const scanUrls = {
+    eth:      `https://api.etherscan.io/api`,
+    bsc:      `https://api.bscscan.com/api`,
+    polygon:  `https://api.polygonscan.com/api`,
+    arbitrum: `https://api.arbiscan.io/api`,
+    base:     `https://api.basescan.org/api`,
+  };
+  const base = scanUrls[chain] || scanUrls.eth;
+  const results = { tokens: [], txs: [] };
+
+  // Transactions (no API key needed for basic calls)
+  try {
+    const txUrl = `${base}?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=desc&page=1&offset=15`;
+    const r = await fetch(txUrl, { signal: AbortSignal.timeout(8000) });
+    const d = await r.json();
+    if (d.status === '1' && Array.isArray(d.result)) {
+      results.txs = d.result;
+    }
+  } catch(e) { console.warn('TX fetch failed'); }
+
+  // Token transfers (ERC-20)
+  try {
+    const tokUrl = `${base}?module=account&action=tokentx&address=${address}&startblock=0&endblock=99999999&sort=desc&page=1&offset=50`;
+    const r = await fetch(tokUrl, { signal: AbortSignal.timeout(8000) });
+    const d = await r.json();
+    if (d.status === '1' && Array.isArray(d.result)) {
+      // Aggregate by token
+      const tokenMap = {};
+      d.result.forEach(tx => {
+        const sym = tx.tokenSymbol;
+        const dec = parseInt(tx.tokenDecimal) || 18;
+        const val = parseFloat(tx.value) / Math.pow(10, dec);
+        if (!tokenMap[sym]) tokenMap[sym] = { name: tx.tokenName, sym, contract: tx.contractAddress, balance: 0, txCount: 0 };
+        // Determine direction
+        if (tx.to.toLowerCase() === address.toLowerCase()) tokenMap[sym].balance += val;
+        else tokenMap[sym].balance -= val;
+        tokenMap[sym].txCount++;
+      });
+      results.tokens = Object.values(tokenMap).filter(t => t.balance > 0.0001).sort((a, b) => b.balance - a.balance);
+    }
+  } catch(e) { console.warn('Token fetch failed'); }
+
+  // NFTs via ERC-721 transfers
+  try {
+    const nftUrl = `${base}?module=account&action=tokennfttx&address=${address}&startblock=0&endblock=99999999&sort=desc&page=1&offset=30`;
+    const r = await fetch(nftUrl, { signal: AbortSignal.timeout(8000) });
+    const d = await r.json();
+    if (d.status === '1' && Array.isArray(d.result)) {
+      const nftMap = {};
+      d.result.forEach(tx => {
+        if (tx.to.toLowerCase() === address.toLowerCase()) {
+          const key = tx.contractAddress;
+          if (!nftMap[key]) nftMap[key] = { name: tx.tokenName, sym: tx.tokenSymbol, contract: tx.contractAddress, tokenIds: [] };
+          nftMap[key].tokenIds.push(tx.tokenID);
+        }
+      });
+      results.nfts = Object.values(nftMap);
+    }
+  } catch(e) { console.warn('NFT fetch failed'); results.nfts = []; }
+
+  return results;
+}
+
+/* ═══════════════════════════════════════════
+   WELL-KNOWN TOKEN PRICES (top tokens)
+═══════════════════════════════════════════ */
+async function fetchTokenPrices(tokens) {
+  if (!tokens.length) return {};
+  // Map common symbols to CoinGecko IDs
+  const symToId = {
+    USDT:'tether',USDC:'usd-coin',DAI:'dai',WETH:'weth',WBTC:'wrapped-bitcoin',
+    UNI:'uniswap',LINK:'chainlink',AAVE:'aave',COMP:'compound-coin',MKR:'maker',
+    SNX:'havven',YFI:'yearn-finance',SUSHI:'sushi',CRV:'curve-dao-token',
+    LDO:'lido-dao',ARB:'arbitrum',OP:'optimism',MATIC:'matic-network',
+    BNB:'binancecoin',SHIB:'shiba-inu',PEPE:'pepe',APE:'apecoin',
+  };
+  const ids = [...new Set(tokens.map(t => symToId[t.sym]).filter(Boolean))].join(',');
+  if (!ids) return {};
+  try {
+    const r = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`, { signal: AbortSignal.timeout(5000) });
+    if (!r.ok) return {};
+    const d = await r.json();
+    const result = {};
+    tokens.forEach(t => {
+      const id = symToId[t.sym];
+      if (id && d[id]) result[t.sym] = d[id].usd;
+    });
+    return result;
+  } catch(e) { return {}; }
+}
+
+/* ═══════════════════════════════════════════
+   MAIN ANALYZE FUNCTION
+═══════════════════════════════════════════ */
+async function analyzeWallet() {
+  const raw = document.getElementById('wallet-input').value.trim();
+
+  // Validate
+  if (!raw || raw.length < 10) { showError('Inserisci un indirizzo wallet valido (min 10 caratteri)'); return; }
+  if (!raw.startsWith('0x') || raw.length !== 42) { showError('Indirizzo ETH non valido. Deve iniziare con 0x e avere 42 caratteri.'); return; }
+  if (!/^0x[0-9a-fA-F]{40}$/.test(raw)) { showError('Indirizzo non valido: contiene caratteri non supportati.'); return; }
+
+  currentAddress = raw.toLowerCase();
+  const chain = currentChain;
+  const chainCfg = CHAIN_CONFIG[chain];
+  const btn = document.getElementById('search-btn');
+
+  // Reset UI
+  document.getElementById('error-box').style.display = 'none';
+  document.getElementById('results-wrap').style.display = 'none';
+  document.getElementById('loading-wrap').style.display = 'block';
+  btn.disabled = true;
+  [1,2,3,4,5].forEach(n => setStep(n, ''));
+
+  try {
+    // Step 1: Native balance
+    setStep(1, 'active');
+    const nativeBalance = await fetchNativeBalance(raw, chain);
+    if (nativeBalance === null) throw new Error(`Impossibile recuperare saldo ${chainCfg.symbol}. Verifica che l'indirizzo sia corretto e riprova.`);
+    const txCount = await fetchTxCount(raw, chain);
+    setStep(1, 'done');
+
+    // Step 2: Prices
+    setStep(2, 'active');
+    const prices = await fetchPrices(chainCfg.coingeckoId);
+    const nativePrice = prices[chain === 'bsc' ? 'bnb' : chain === 'polygon' ? 'matic' : 'eth'];
+    const nativeUSD  = nativeBalance * (nativePrice?.usd || 0);
+    const nativeEUR  = nativeBalance * (nativePrice?.eur || 0);
+    setStep(2, 'done');
+
+    // Step 3: Tokens
+    setStep(3, 'active');
+    const scanData = await fetchEtherscanData(raw, chain);
+    const tokens = scanData.tokens || [];
+    const txs    = scanData.txs    || [];
+    const nfts   = scanData.nfts   || [];
+    setStep(3, 'done');
+
+    // Step 4: Transactions analysis
+    setStep(4, 'active');
+    const tokenPrices = await fetchTokenPrices(tokens);
+    // Calculate token portfolio value
+    let tokenPortfolioUSD = 0;
+    tokens.forEach(t => {
+      const p = tokenPrices[t.sym];
+      if (p) tokenPortfolioUSD += t.balance * p;
+      t.usdValue = p ? t.balance * p : null;
+    });
+    setStep(4, 'done');
+
+    // Step 5: NFT + DeFi (mock for now since requires premium APIs)
+    setStep(5, 'active');
+    await new Promise(r => setTimeout(r, 300)); // Simulate
+    setStep(5, 'done');
+
+    // Tx stats
+    const inTxs  = txs.filter(t => t.to?.toLowerCase() === raw.toLowerCase());
+    const outTxs = txs.filter(t => t.from?.toLowerCase() === raw.toLowerCase());
+    const gasTotal = txs.reduce((a, t) => a + (parseInt(t.gasUsed || 0) * parseInt(t.gasPrice || 0)) / 1e18, 0);
+    const totalUSD = nativeUSD + tokenPortfolioUSD;
+    const totalEUR = nativeEUR + tokenPortfolioUSD * 0.92; // approx
+
+    // RENDER
+    document.getElementById('loading-wrap').style.display = 'none';
+    document.getElementById('results-wrap').style.display = 'block';
+
+    renderAddressBanner(raw, chain, chainCfg, txCount);
+    renderKPIs(totalUSD, totalEUR, nativeBalance, nativeUSD, tokens.length, txCount, nativePrice);
+    renderNativeSection(nativeBalance, nativeUSD, nativeEUR, nativePrice, chainCfg);
+    renderTokens(tokens, tokenPrices, chainCfg);
+    renderStats(txs, inTxs, outTxs, gasTotal, chainCfg, txCount);
+    renderTransactions(txs, raw, chainCfg);
+    renderNFTs(nfts, chainCfg);
+    renderDeFi(tokens, tokenPrices); // Use token data to estimate DeFi
+
+    document.getElementById('refresh-hint').textContent =
+      `Analisi completata il ${new Date().toLocaleString('it-IT')} · Catena: ${chainCfg.name}`;
+
+  } catch(err) {
+    showError(err.message || 'Errore sconosciuto durante l\'analisi');
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   RENDER FUNCTIONS
+═══════════════════════════════════════════ */
+function renderAddressBanner(addr, chain, cfg, txCount) {
+  const explorer = cfg.explorer;
+  document.getElementById('addr-banner').innerHTML = `
+    <div class="addr-left">
+      <div class="addr-icon"><i class="ti ti-wallet"></i></div>
+      <div>
+        <div class="addr-label">Indirizzo ${cfg.name}</div>
+        <div class="addr-val">
+          ${addr}
+          <button class="copy-btn" onclick="copyToClipboard('${addr}')" title="Copia"><i class="ti ti-copy"></i></button>
+          <a href="${explorer}/address/${addr}" target="_blank" style="color:var(--blue);text-decoration:none;font-size:13px" title="Apri su explorer"><i class="ti ti-external-link"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="addr-badges">
+      <span class="addr-badge ab-green"><i class="ti ti-check"></i> Indirizzo valido</span>
+      <span class="addr-badge ab-blue">${cfg.name}</span>
+      ${txCount > 0 ? `<span class="addr-badge ab-yellow">${txCount} transazioni</span>` : ''}
+    </div>`;
+}
+
+function renderKPIs(totalUSD, totalEUR, ethBal, ethUSD, tokCount, txCount, nativePrice) {
+  const chg = nativePrice?.chg || 0;
+  document.getElementById('kpi-grid').innerHTML = `
+    <div class="kpi">
+      <i class="ti ti-currency-dollar kpi-icon"></i>
+      <div class="kpi-l">Portafoglio totale</div>
+      <div class="kpi-v">${fmtUSD(totalUSD)}</div>
+      <div class="kpi-s">${fmtEuro(totalEUR)}</div>
+    </div>
+    <div class="kpi">
+      <i class="ti ti-currency-ethereum kpi-icon"></i>
+      <div class="kpi-l">Saldo ${CHAIN_CONFIG[currentChain].symbol}</div>
+      <div class="kpi-v">${ethBal.toFixed(4)}</div>
+      <div class="kpi-s">${fmtUSD(ethUSD)}</div>
+    </div>
+    <div class="kpi">
+      <i class="ti ti-coins kpi-icon"></i>
+      <div class="kpi-l">Token ERC-20</div>
+      <div class="kpi-v">${tokCount}</div>
+      <div class="kpi-s">Token trovati</div>
+    </div>
+    <div class="kpi">
+      <i class="ti ti-trending-up kpi-icon"></i>
+      <div class="kpi-l">Prezzo ${CHAIN_CONFIG[currentChain].symbol}</div>
+      <div class="kpi-v">${fmtUSD(nativePrice?.usd || 0)}</div>
+      <div class="kpi-s class="${chg >= 0 ? 'pos' : 'neg'}">${chg >= 0 ? '+' : ''}${chg.toFixed(2)}% 24h</div>
+    </div>`;
+}
+
+function renderNativeSection(bal, usd, eur, price, cfg) {
+  const chg = price?.chg || 0;
+  document.getElementById('native-section').innerHTML = `
+    <div style="text-align:center;padding:8px 0">
+      <div style="font-size:36px;font-weight:900;margin-bottom:4px">${bal.toFixed(6)}</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:14px">${cfg.symbol}</div>
+      <div style="font-size:22px;font-weight:800;color:var(--green);margin-bottom:2px">${fmtUSD(usd)}</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:16px">${fmtEuro(eur)}</div>
+      <div style="background:var(--bg3);border-radius:var(--r-sm);padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:left">
+        <div><div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.07em">Prezzo</div><div style="font-size:13px;font-weight:700;margin-top:2px">${fmtUSD(price?.usd || 0)}</div></div>
+        <div><div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.07em">Var 24h</div><div style="font-size:13px;font-weight:700;margin-top:2px;color:${chg >= 0 ? 'var(--green)' : 'var(--red)'}">${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%</div></div>
+        <div><div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.07em">In EUR</div><div style="font-size:13px;font-weight:700;margin-top:2px">${fmtEuro(price?.eur || 0)}</div></div>
+        <div><div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.07em">Rete</div><div style="font-size:13px;font-weight:700;margin-top:2px">${cfg.name}</div></div>
+      </div>
+    </div>`;
+}
+
+function renderTokens(tokens, prices, cfg) {
+  document.getElementById('tokens-badge').textContent = tokens.length;
+  if (!tokens.length) {
+    document.getElementById('tokens-section').innerHTML = '<div class="empty"><i class="ti ti-inbox"></i>Nessun token ERC-20 trovato</div>';
+    return;
+  }
+  const colors = ['#627EEA','#F7931A','#22c55e','#a855f7','#3b82f6','#06b6d4','#f59e0b','#ef4444'];
+  document.getElementById('tokens-section').innerHTML = tokens.slice(0, 10).map((t, i) => `
+    <div class="token-row">
+      <div class="token-icon" style="background:${colors[i % colors.length]};font-size:10px">${t.sym.slice(0,3)}</div>
+      <div class="token-info">
+        <div class="token-name">${t.sym} <span style="color:var(--text3);font-weight:500;font-size:10px">· ${t.name}</span></div>
+        <div class="token-addr">${t.contract}</div>
+      </div>
+      <div class="token-bal">
+        <div class="token-amount">${fmtNum(t.balance, 4)}</div>
+        <div class="token-usd">${t.usdValue ? fmtUSD(t.usdValue) : '—'}</div>
+      </div>
+    </div>`).join('');
+}
+
+function renderStats(txs, inTxs, outTxs, gasTotal, cfg, txCount) {
+  const firstTx = txs.length ? txs[txs.length - 1] : null;
+  const lastTx  = txs.length ? txs[0] : null;
+  const successTx = txs.filter(t => t.isError === '0').length;
+  const failTx    = txs.filter(t => t.isError === '1').length;
+  document.getElementById('stats-section').innerHTML = `
+    <div class="stat-row"><span class="stat-label">Transazioni totali</span><span class="stat-value">${txCount !== null ? txCount.toLocaleString() : '—'}</span></div>
+    <div class="stat-row"><span class="stat-label">In entrata (ultime 15)</span><span class="stat-value pos">${inTxs.length}</span></div>
+    <div class="stat-row"><span class="stat-label">In uscita (ultime 15)</span><span class="stat-value neg">${outTxs.length}</span></div>
+    <div class="stat-row"><span class="stat-label">Successo / Errore</span><span class="stat-value">${successTx} / <span class="neg">${failTx}</span></span></div>
+    <div class="stat-row"><span class="stat-label">Gas speso (ETH)</span><span class="stat-value warn">${gasTotal.toFixed(4)}</span></div>
+    <div class="stat-row"><span class="stat-label">Prima TX</span><span class="stat-value" style="font-size:10px">${firstTx ? timeAgo(parseInt(firstTx.timeStamp)) : '—'}</span></div>
+    <div class="stat-row"><span class="stat-label">Ultima TX</span><span class="stat-value" style="font-size:10px">${lastTx ? timeAgo(parseInt(lastTx.timeStamp)) : '—'}</span></div>`;
+}
+
+function renderTransactions(txs, addr, cfg) {
+  document.getElementById('tx-badge').textContent = txs.length;
+  if (!txs.length) {
+    document.getElementById('tx-section').innerHTML = '<div class="empty"><i class="ti ti-receipt-off"></i>Nessuna transazione trovata (il wallet potrebbe essere nuovo)</div>';
+    return;
+  }
+  document.getElementById('tx-section').innerHTML = txs.slice(0, 12).map(tx => {
+    const isIn = tx.to?.toLowerCase() === addr.toLowerCase();
+    const isContract = tx.input && tx.input !== '0x';
+    const val = parseFloat(tx.value) / 1e18;
+    const gasUsed = parseInt(tx.gasUsed || 0);
+    const gasPrice = parseInt(tx.gasPrice || 0);
+    const gasFee = (gasUsed * gasPrice) / 1e18;
+    const type = isContract ? 'contract' : isIn ? 'in' : 'out';
+    const typeIcon = isContract ? 'ti-code' : isIn ? 'ti-arrow-down' : 'ti-arrow-up';
+    const typeLabel = isContract ? 'Contratto' : isIn ? 'Entrata' : 'Uscita';
+    const hashShort = tx.hash ? tx.hash.slice(0,10)+'...'+tx.hash.slice(-6) : '—';
+    const failed = tx.isError === '1';
+    return `<div class="tx-row">
+      <div class="tx-icon ${type}"><i class="ti ${typeIcon}"></i></div>
+      <div class="tx-body">
+        <div class="tx-hash">
+          <a href="${cfg.explorer}/tx/${tx.hash}" target="_blank">${hashShort}</a>
+          ${failed ? '<span style="color:var(--red);font-size:10px;margin-left:4px">✗ Fallita</span>' : ''}
+        </div>
+        <div class="tx-sub">
+          ${isIn ? `Da: ${shortAddr(tx.from)}` : `A: ${shortAddr(tx.to || '—')}`}
+          ${isContract ? ' · Interazione contratto' : ''}
+          · Gas: ${gasFee.toFixed(5)} ETH
+        </div>
+      </div>
+      <div class="tx-val">
+        <div class="tx-amount" style="color:${isIn ? 'var(--green)' : 'var(--text2)'}">${isIn ? '+' : '-'}${val.toFixed(5)} ETH</div>
+        <div class="tx-time">${timeAgo(parseInt(tx.timeStamp))}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderNFTs(nfts, cfg) {
+  document.getElementById('nft-badge').textContent = nfts.length;
+  if (!nfts.length) {
+    document.getElementById('nft-section').innerHTML = '<div class="empty"><i class="ti ti-photo-off"></i>Nessun NFT trovato per questo wallet</div>';
+    return;
+  }
+  const emojis = ['🎨','🖼️','🎭','🎮','🏆','💎','🌟','🔥'];
+  document.getElementById('nft-section').innerHTML = `<div class="nft-grid">
+    ${nfts.slice(0, 12).map((n, i) => `
+      <div class="nft-card" onclick="window.open('${cfg.explorer}/token/${n.contract}','_blank')">
+        <div class="nft-img">${emojis[i % emojis.length]}</div>
+        <div class="nft-info">
+          <div class="nft-name">${n.name || n.sym || 'NFT'}</div>
+          <div class="nft-coll">${n.tokenIds.length} item${n.tokenIds.length > 1 ? 's' : ''}</div>
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
+function renderDeFi(tokens, prices) {
+  // Identify DeFi-related tokens
+  const defiTokens = tokens.filter(t =>
+    ['aDAI','aUSDC','aETH','cETH','cDAI','UNI-V2','CAKE-LP','sETH','stETH','rETH','cbETH','wstETH'].some(dt =>
+      t.sym.toLowerCase().includes(dt.toLowerCase())
+    )
+  );
+  document.getElementById('defi-badge').textContent = defiTokens.length;
+
+  const protocols = [
+    {name:'Aave', icon:'🏦', type:'Lending', syms:['aDAI','aUSDC','aETH','aWBTC','aUSDT']},
+    {name:'Compound', icon:'🔄', type:'Lending', syms:['cETH','cDAI','cUSDC']},
+    {name:'Uniswap', icon:'🦄', type:'DEX LP', syms:['UNI-V2']},
+    {name:'Lido', icon:'🌊', type:'Liquid Staking', syms:['stETH','wstETH']},
+    {name:'Rocket Pool', icon:'🚀', type:'Liquid Staking', syms:['rETH']},
+    {name:'Coinbase', icon:'🔵', type:'Liquid Staking', syms:['cbETH']},
+  ];
+
+  const found = protocols.filter(p =>
+    p.syms.some(s => tokens.find(t => t.sym.toLowerCase() === s.toLowerCase()))
+  ).map(p => {
+    const relTokens = p.syms.map(s => tokens.find(t => t.sym.toLowerCase() === s.toLowerCase())).filter(Boolean);
+    const usdVal = relTokens.reduce((a, t) => a + (t.usdValue || 0), 0);
+    return { ...p, tokens: relTokens, usdVal };
+  });
+
+  if (!found.length) {
+    document.getElementById('defi-section').innerHTML = '<div class="empty"><i class="ti ti-building-bank"></i>Nessuna posizione DeFi rilevata tramite token ERC-20</div>';
+    return;
+  }
+
+  document.getElementById('defi-section').innerHTML = found.map(p => `
+    <div class="defi-row">
+      <div class="defi-icon" style="background:var(--bg3);font-size:18px">${p.icon}</div>
+      <div class="defi-body">
+        <div class="defi-name">${p.name}</div>
+        <div class="defi-type">${p.type} · ${p.tokens.map(t => t.sym).join(', ')}</div>
+      </div>
+      <div class="defi-val">
+        <div class="defi-usd">${p.usdVal > 0 ? fmtUSD(p.usdVal) : '—'}</div>
+        <div class="defi-sub">${p.tokens.length} posizione</div>
+      </div>
+    </div>`).join('');
+}
+
+/* ═══════════════════════════════════════════
+   DEMO: load a known address on page load
+═══════════════════════════════════════════ */
+// Uncomment to auto-load a demo wallet:
+// window.addEventListener('load', () => {
+//   document.getElementById('wallet-input').value = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045';
+//   analyzeWallet();
+// });
 </script>
 </body>
 </html>
