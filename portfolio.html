@@ -3,162 +3,287 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CryptoEdge — Wallet Analyzer</title>
+<title>Nexora — Wallet Analyzer</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 :root{
-  --bg:#07070d;--bg2:#0d0d18;--bg3:#13131f;--bg4:#1a1a28;--bg5:#21213a;
-  --border:#181828;--border2:#222238;--border3:#2e2e50;
-  --text:#f2f2ff;--text2:#8888b8;--text3:#4a4a70;
-  --accent:#F7931A;--accent2:#ff6b35;--accent3:#ffb347;
-  --green:#22c55e;--red:#ef4444;--yellow:#f59e0b;--blue:#3b82f6;--purple:#a855f7;
-  --r:12px;--r-sm:8px;--r-lg:16px;
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#18181f;--bg4:#1f1f2a;--bg5:#252535;
+  --border:#1e1e2e;--border2:#28283a;--border3:#333350;
+  --text:#f0f0fa;--text2:#8080a8;--text3:#40405a;
+  --green:#00e676;--green2:#00c853;--red:#ff5252;
+  --yellow:#ffca28;--blue:#448aff;--purple:#e040fb;--cyan:#18ffff;
+  --acc:#00e676;
+  --r:14px;--r-sm:8px;--r-lg:20px;--r-xl:28px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:28px 16px 48px}
-::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--border3);border-radius:3px}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:13px}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-thumb{background:var(--border3);border-radius:3px}
 
-/* ── HEADER ── */
-.page-header{text-align:center;margin-bottom:36px}
-.logo-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px}
-.logo-icon{width:38px;height:38px;background:linear-gradient(135deg,#F7931A,#ff6b35);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#fff;box-shadow:0 4px 18px rgba(247,147,26,.4)}
-.logo-name{font-size:19px;font-weight:800;letter-spacing:-.3px}
-.logo-sub{font-size:9px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;background:linear-gradient(90deg,#F7931A,#ffb347);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.page-title{font-size:30px;font-weight:900;letter-spacing:-.5px;margin-bottom:7px}
-.page-sub{font-size:13px;color:var(--text2);max-width:520px;margin:0 auto}
-
-/* ── SEARCH ── */
-.search-card{max-width:700px;margin:0 auto 28px;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r-lg);padding:26px}
-.search-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.09em;margin-bottom:8px}
-.search-row{display:flex;gap:10px}
-.search-input{
-  flex:1;padding:14px 16px;background:var(--bg4);border:1px solid var(--border2);
-  border-radius:var(--r-sm);color:var(--text);font-size:13px;font-weight:600;
-  outline:none;transition:all .15s;font-family:'Inter',sans-serif;
-}
-.search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(247,147,26,.1)}
-.search-input::placeholder{color:var(--text3)}
-.search-btn{
-  padding:14px 24px;background:linear-gradient(135deg,#F7931A,#ff6b35);
-  color:#fff;border:none;border-radius:var(--r-sm);font-size:13px;font-weight:800;
-  cursor:pointer;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:7px;
-  box-shadow:0 4px 16px rgba(247,147,26,.35);letter-spacing:.02em;
-}
-.search-btn:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 6px 20px rgba(247,147,26,.4)}
-.search-btn:active{transform:translateY(0)}
-.search-btn:disabled{opacity:.45;pointer-events:none}
-.chain-tabs{display:flex;gap:6px;margin-top:14px;flex-wrap:wrap}
-.chain-tab{padding:5px 14px;border:1px solid var(--border2);border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;color:var(--text2);background:var(--bg3);transition:all .15s;display:flex;align-items:center;gap:5px}
-.chain-tab:hover{border-color:var(--border3);color:var(--text)}
-.chain-tab.active{border-color:rgba(247,147,26,.4);background:rgba(247,147,26,.1);color:var(--accent)}
-
-/* ── LOADING ── */
-.loading-wrap{max-width:700px;margin:0 auto;text-align:center;padding:52px 20px;display:none}
-.spinner{width:44px;height:44px;border:3px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 18px}
+/* ═══ KEYFRAMES ═══ */
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading-title{font-size:15px;font-weight:700;margin-bottom:6px}
-.loading-sub{font-size:12px;color:var(--text2);margin-bottom:20px}
-.steps-list{display:flex;flex-direction:column;gap:6px;text-align:left;max-width:280px;margin:0 auto}
-.step-item{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:600;color:var(--text3);padding:6px 10px;border-radius:var(--r-sm);transition:all .2s}
-.step-item.active{color:var(--accent);background:rgba(247,147,26,.06)}
-.step-item.done{color:var(--green)}
-.step-item.error{color:var(--red)}
-.step-icon{font-size:14px;flex-shrink:0;width:16px;text-align:center}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes glow{0%,100%{box-shadow:0 0 20px rgba(0,230,118,.15)}50%{box-shadow:0 0 40px rgba(0,230,118,.35)}}
 
-/* ── ERROR ── */
-.error-wrap{max-width:700px;margin:0 auto 20px;display:none}
-.error-box{padding:14px 18px;background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:var(--r-sm);color:var(--red);font-size:12px;font-weight:600;display:flex;align-items:flex-start;gap:10px}
-.error-box i{font-size:18px;flex-shrink:0;margin-top:1px}
-.error-detail{font-size:11px;color:rgba(239,68,68,.7);margin-top:4px;font-weight:400}
+/* ═══ LAYOUT ═══ */
+.app{display:grid;grid-template-columns:70px 1fr;height:100vh;overflow:hidden}
 
-/* ── RESULTS ── */
-.results-wrap{max-width:980px;margin:0 auto;display:none;animation:fadeIn .3s ease}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+/* ═══ LEFT NAV ═══ */
+.leftnav{
+  background:var(--bg2);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;padding:16px 0;gap:6px;
+  position:relative;z-index:10;
+}
+.nav-logo{
+  width:40px;height:40px;border-radius:12px;
+  background:linear-gradient(135deg,var(--green),#00bcd4);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:900;color:var(--bg);
+  margin-bottom:12px;box-shadow:0 4px 16px rgba(0,230,118,.3);
+  animation:glow 3s ease infinite;cursor:pointer;
+  text-decoration:none;flex-shrink:0;
+}
+.nav-sep{width:32px;height:1px;background:var(--border);margin:6px 0}
+.nav-btn{
+  width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-size:18px;color:var(--text3);cursor:pointer;transition:all .2s;border:1px solid transparent;
+  text-decoration:none;
+}
+.nav-btn:hover{background:var(--bg3);color:var(--text2);border-color:var(--border2)}
+.nav-btn.active{background:rgba(0,230,118,.1);color:var(--green);border-color:rgba(0,230,118,.2)}
+.nav-spacer{flex:1}
+.nav-avatar{
+  width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#7c4dff,#e040fb);
+  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;cursor:pointer;
+}
+
+/* ═══ MAIN ═══ */
+.main{display:flex;flex-direction:column;overflow:hidden}
+
+/* ═══ TOPBAR ═══ */
+.topbar{
+  display:flex;align-items:center;gap:12px;padding:12px 20px;
+  background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.topbar-back{
+  display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text2);
+  padding:6px 12px;border:1px solid var(--border2);border-radius:var(--r-sm);
+  cursor:pointer;transition:all .15s;text-decoration:none;background:var(--bg3);
+}
+.topbar-back:hover{border-color:var(--green);color:var(--green)}
+.topbar-title{font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px}
+.topbar-title .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.search-box{
+  display:flex;align-items:center;gap:8px;padding:7px 14px;
+  background:var(--bg3);border:1px solid var(--border2);border-radius:24px;
+  min-width:280px;transition:border-color .15s;
+}
+.search-box:focus-within{border-color:var(--green);box-shadow:0 0 0 2px rgba(0,230,118,.08)}
+.search-box i{color:var(--text3);font-size:14px}
+.search-box input{background:none;border:none;outline:none;color:var(--text);font-size:12px;font-weight:500;font-family:inherit;flex:1}
+.search-box input::placeholder{color:var(--text3)}
+.tb-btn{
+  width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  background:var(--bg3);border:1px solid var(--border2);cursor:pointer;font-size:16px;color:var(--text2);transition:all .15s;
+}
+.tb-btn:hover{border-color:var(--green);color:var(--green)}
+.live-pill{display:flex;align-items:center;gap:5px;padding:5px 12px;background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.18);border-radius:20px;font-size:10px;font-weight:700;color:var(--green)}
+.live-pill::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite}
+
+/* ═══ CONTENT ═══ */
+.content{flex:1;overflow-y:auto;padding:20px}
+
+/* ═══ SEARCH HERO ═══ */
+.search-hero{
+  background:linear-gradient(135deg,var(--bg2) 0%,var(--bg3) 100%);
+  border:1px solid var(--border2);border-radius:var(--r-xl);
+  padding:32px 36px;margin-bottom:20px;position:relative;overflow:hidden;
+}
+.search-hero::before{
+  content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;
+  background:radial-gradient(circle,rgba(0,230,118,.12),transparent 70%);pointer-events:none;
+}
+.search-hero::after{
+  content:'';position:absolute;bottom:-40px;left:20%;width:160px;height:160px;
+  background:radial-gradient(circle,rgba(0,188,212,.07),transparent 70%);pointer-events:none;
+}
+.hero-label{font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.hero-title{font-size:26px;font-weight:900;letter-spacing:-.4px;margin-bottom:6px}
+.hero-sub{font-size:13px;color:var(--text2);margin-bottom:22px}
+.hero-input-row{display:flex;gap:10px;margin-bottom:14px}
+.hero-input{
+  flex:1;padding:14px 18px;background:var(--bg4);border:1px solid var(--border2);
+  border-radius:var(--r-sm);color:var(--text);font-size:13px;font-weight:600;
+  outline:none;transition:all .15s;font-family:inherit;
+}
+.hero-input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(0,230,118,.08)}
+.hero-input::placeholder{color:var(--text3)}
+.hero-btn{
+  padding:14px 26px;background:linear-gradient(135deg,var(--green),#00bcd4);
+  color:var(--bg);border:none;border-radius:var(--r-sm);font-size:13px;font-weight:800;
+  cursor:pointer;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:7px;
+  box-shadow:0 4px 18px rgba(0,230,118,.3);letter-spacing:.02em;
+}
+.hero-btn:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,230,118,.4)}
+.hero-btn:disabled{opacity:.4;pointer-events:none}
+.chain-pills{display:flex;gap:7px;flex-wrap:wrap}
+.cpill{
+  padding:6px 16px;border:1px solid var(--border2);border-radius:20px;
+  font-size:11px;font-weight:700;cursor:pointer;color:var(--text2);
+  background:var(--bg4);transition:all .15s;display:flex;align-items:center;gap:5px;
+}
+.cpill:hover{border-color:var(--green);color:var(--green)}
+.cpill.active{border-color:var(--green);background:rgba(0,230,118,.1);color:var(--green)}
+
+/* ═══ PORTFOLIO STRIP (wallet portfolio added) ═══ */
+.portfolio-strip{
+  display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:20px;
+  animation:fadeUp .4s ease;
+}
+.pstrip-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  padding:14px 16px;transition:all .2s;cursor:default;position:relative;overflow:hidden;
+}
+.pstrip-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.pstrip-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,230,118,.4),transparent);opacity:0;transition:opacity .2s}
+.pstrip-card:hover::after{opacity:1}
+.psc-label{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+.psc-val{font-size:22px;font-weight:800;line-height:1}
+.psc-sub{font-size:10px;color:var(--text2);margin-top:4px}
+.psc-icon{position:absolute;right:12px;top:12px;font-size:22px;opacity:.07}
+.psc-chg{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;margin-top:5px}
+.psc-chg.up{background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.2)}
+.psc-chg.dn{background:rgba(255,82,82,.12);color:var(--red);border:1px solid rgba(255,82,82,.2)}
+
+/* ═══ LOADING ═══ */
+.loading-wrap{text-align:center;padding:60px 20px;display:none;animation:fadeUp .3s ease}
+.spinner{width:48px;height:48px;border:3px solid var(--border2);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 20px}
+.loading-title{font-size:16px;font-weight:700;margin-bottom:6px}
+.loading-sub{font-size:12px;color:var(--text2);margin-bottom:24px}
+.steps{display:flex;flex-direction:column;gap:5px;max-width:260px;margin:0 auto;text-align:left}
+.step{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:600;color:var(--text3);padding:7px 10px;border-radius:var(--r-sm);transition:all .2s}
+.step.active{color:var(--green);background:rgba(0,230,118,.06)}
+.step.done{color:var(--green)}
+.step.err{color:var(--red)}
+.step-ic{font-size:14px;width:16px;text-align:center;flex-shrink:0}
+
+/* ═══ ERROR ═══ */
+.err-box{
+  padding:14px 18px;background:rgba(255,82,82,.07);border:1px solid rgba(255,82,82,.2);
+  border-radius:var(--r-sm);color:var(--red);font-size:12px;font-weight:600;
+  display:none;align-items:flex-start;gap:10px;margin-bottom:16px;animation:fadeUp .3s ease;
+}
+.err-box i{font-size:18px;flex-shrink:0;margin-top:1px}
+.err-detail{font-size:11px;color:rgba(255,82,82,.7);margin-top:3px;font-weight:400}
+
+/* ═══ RESULTS ═══ */
+.results{display:none;animation:fadeUp .3s ease}
 
 /* Address banner */
-.addr-banner{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.addr-bar{
+  background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r-lg);
+  padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+}
 .addr-left{display:flex;align-items:center;gap:13px}
-.addr-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,rgba(247,147,26,.18),rgba(255,107,53,.08));border:1px solid rgba(247,147,26,.2);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--accent);flex-shrink:0}
-.addr-label{font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.addr-ico{
+  width:46px;height:46px;border-radius:13px;flex-shrink:0;
+  background:linear-gradient(135deg,rgba(0,230,118,.18),rgba(0,188,212,.08));
+  border:1px solid rgba(0,230,118,.2);display:flex;align-items:center;justify-content:center;
+  font-size:20px;color:var(--green);
+}
+.addr-lbl{font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
 .addr-val{font-size:12px;font-weight:700;font-family:'Courier New',monospace;word-break:break-all;display:flex;align-items:center;gap:6px}
-.addr-badges{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.addr-badges{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
 .badge{font-size:10px;padding:3px 10px;border-radius:20px;font-weight:700;display:inline-flex;align-items:center;gap:4px}
-.badge-green{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.2)}
-.badge-blue{background:rgba(59,130,246,.12);color:var(--blue);border:1px solid rgba(59,130,246,.2)}
-.badge-yellow{background:rgba(245,158,11,.12);color:var(--yellow);border:1px solid rgba(245,158,11,.2)}
-.badge-orange{background:rgba(247,147,26,.12);color:var(--accent);border:1px solid rgba(247,147,26,.2)}
+.badge-g{background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.2)}
+.badge-b{background:rgba(68,138,255,.12);color:var(--blue);border:1px solid rgba(68,138,255,.2)}
+.badge-y{background:rgba(255,202,40,.12);color:var(--yellow);border:1px solid rgba(255,202,40,.2)}
+
+/* Add to portfolio btn */
+.add-portfolio-btn{
+  display:flex;align-items:center;gap:7px;padding:9px 18px;
+  background:linear-gradient(135deg,var(--green),#00bcd4);color:var(--bg);
+  border:none;border-radius:var(--r-sm);font-size:12px;font-weight:800;cursor:pointer;
+  box-shadow:0 3px 14px rgba(0,230,118,.3);transition:all .15s;
+}
+.add-portfolio-btn:hover{opacity:.9;transform:translateY(-1px)}
+.add-portfolio-btn.added{background:var(--bg3);color:var(--green);border:1px solid rgba(0,230,118,.3);box-shadow:none}
 
 /* KPI grid */
 .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
-.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden;transition:all .2s;cursor:default}
-.kpi:hover{border-color:var(--border2);transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,0,0,.3)}
-.kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(247,147,26,.35),transparent);opacity:0;transition:opacity .2s}
-.kpi:hover::after{opacity:1}
-.kpi-icon{position:absolute;right:12px;top:12px;font-size:24px;opacity:.07}
+.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden;transition:all .2s}
+.kpi:hover{border-color:var(--border2);transform:translateY(-1px)}
+.kpi-ic{position:absolute;right:12px;top:12px;font-size:22px;opacity:.07}
 .kpi-l{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
 .kpi-v{font-size:22px;font-weight:800;line-height:1}
 .kpi-s{font-size:10px;color:var(--text2);margin-top:4px}
 
-/* Layout grids */
-.col3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
-.col2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-.col1{margin-bottom:12px}
+/* Grids */
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.g1{margin-bottom:12px}
 
-/* Section card */
+/* Card */
 .card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
-.card-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.card-title{font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px}
-.card-title i{color:var(--accent);font-size:14px}
-.card-badge{font-size:10px;padding:2px 9px;border-radius:20px;font-weight:700;background:var(--bg3);color:var(--text2);border:1px solid var(--border2)}
+.card-hd{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;color:var(--text)}
+.card-title i{color:var(--green);font-size:14px}
+.card-bdg{font-size:10px;padding:2px 9px;border-radius:20px;font-weight:700;background:var(--bg3);color:var(--text2);border:1px solid var(--border2)}
 .card-body{padding:14px 16px}
+
+/* Native */
+.native-box{text-align:center;padding:8px 0 12px}
+.native-amount{font-size:40px;font-weight:900;letter-spacing:-.5px;margin-bottom:2px}
+.native-sym{font-size:13px;color:var(--text2);margin-bottom:10px}
+.native-usd{font-size:26px;font-weight:800;color:var(--green);margin-bottom:2px}
+.native-eur{font-size:13px;color:var(--text2);margin-bottom:14px}
+.native-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.ng-item{background:var(--bg3);border-radius:var(--r-sm);padding:9px 11px}
+.ng-l{font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
+.ng-v{font-size:13px;font-weight:700}
 
 /* Token rows */
 .tok-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
 .tok-row:last-child{border-bottom:none}
-.tok-avatar{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0}
+.tok-av{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0}
 .tok-info{flex:1;min-width:0}
 .tok-sym{font-size:12px;font-weight:800}
 .tok-name{font-size:10px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tok-right{text-align:right}
+.tok-r{text-align:right}
 .tok-bal{font-size:13px;font-weight:800}
 .tok-usd{font-size:10px;color:var(--text2);margin-top:1px}
 
-/* TX rows */
+/* TX */
 .tx-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
 .tx-row:last-child{border-bottom:none}
-.tx-dot{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
-.tx-in{background:rgba(34,197,94,.1);color:var(--green)}
-.tx-out{background:rgba(239,68,68,.1);color:var(--red)}
-.tx-contract{background:rgba(59,130,246,.1);color:var(--blue)}
+.tx-dot{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.tx-in{background:rgba(0,230,118,.1);color:var(--green)}
+.tx-out{background:rgba(255,82,82,.1);color:var(--red)}
+.tx-ct{background:rgba(68,138,255,.1);color:var(--blue)}
 .tx-body{flex:1;min-width:0}
 .tx-hash{font-size:11px;font-weight:700;font-family:monospace}
 .tx-hash a{color:var(--blue);text-decoration:none}
 .tx-hash a:hover{text-decoration:underline}
 .tx-sub{font-size:10px;color:var(--text3);margin-top:2px}
-.tx-right{text-align:right;flex-shrink:0}
+.tx-r{text-align:right;flex-shrink:0}
 .tx-val{font-size:12px;font-weight:800}
 .tx-time{font-size:10px;color:var(--text3);margin-top:1px}
 
-/* NFT grid */
-.nft-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px}
+/* NFT */
+.nft-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
 .nft-card{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r-sm);overflow:hidden;cursor:pointer;transition:all .2s}
-.nft-card:hover{border-color:var(--border3);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.35)}
-.nft-img{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:32px;background:linear-gradient(135deg,var(--bg4),var(--bg5))}
-.nft-label{padding:6px 8px}
+.nft-card:hover{border-color:var(--green);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.nft-img{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:30px;background:linear-gradient(135deg,var(--bg4),var(--bg5))}
+.nft-lbl{padding:5px 8px}
 .nft-name{font-size:10px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .nft-cnt{font-size:9px;color:var(--text3)}
-
-/* DeFi rows */
-.defi-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
-.defi-row:last-child{border-bottom:none}
-.defi-icon{width:30px;height:30px;border-radius:8px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
-.defi-body{flex:1}
-.defi-name{font-size:12px;font-weight:700}
-.defi-type{font-size:10px;color:var(--text3)}
-.defi-right{text-align:right}
-.defi-usd{font-size:13px;font-weight:800}
-.defi-sub{font-size:10px;color:var(--text2)}
 
 /* Stat rows */
 .stat-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
@@ -166,300 +291,350 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .stat-l{font-size:11px;color:var(--text2)}
 .stat-v{font-size:12px;font-weight:700}
 
-/* Native box */
-.native-box{text-align:center;padding:10px 0 14px}
-.native-amount{font-size:38px;font-weight:900;letter-spacing:-.5px;margin-bottom:2px}
-.native-sym{font-size:13px;color:var(--text2);margin-bottom:12px}
-.native-usd{font-size:24px;font-weight:800;color:var(--green);margin-bottom:3px}
-.native-eur{font-size:13px;color:var(--text2);margin-bottom:14px}
-.native-stats{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.ns-item{background:var(--bg3);border-radius:var(--r-sm);padding:9px 11px}
-.ns-l{font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
-.ns-v{font-size:13px;font-weight:700}
+/* DeFi */
+.defi-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.defi-row:last-child{border-bottom:none}
+.defi-ico{width:32px;height:32px;border-radius:9px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.defi-body{flex:1}
+.defi-name{font-size:12px;font-weight:700}
+.defi-type{font-size:10px;color:var(--text3)}
+.defi-r{text-align:right}
+.defi-usd{font-size:13px;font-weight:800}
+.defi-sub{font-size:10px;color:var(--text2)}
 
-/* Icon button */
+/* Shimmer for loading cells */
+.shimmer{background:linear-gradient(90deg,var(--bg3) 0%,var(--bg4) 50%,var(--bg3) 100%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:4px;height:16px;width:100%}
+
+/* Icon btn */
 .icon-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:3px 6px;border-radius:4px;transition:all .15s;line-height:1}
-.icon-btn:hover{color:var(--accent);background:rgba(247,147,26,.1)}
+.icon-btn:hover{color:var(--green);background:rgba(0,230,118,.1)}
 
-/* Empty state */
-.empty{text-align:center;padding:26px;color:var(--text3);font-size:12px}
-.empty i{font-size:30px;display:block;margin-bottom:8px;opacity:.5}
+/* Empty */
+.empty{text-align:center;padding:28px;color:var(--text3);font-size:12px}
+.empty i{font-size:30px;display:block;margin-bottom:8px;opacity:.4}
 
-/* Pos/neg/warn */
+/* Colors */
 .pos{color:var(--green)}.neg{color:var(--red)}.warn{color:var(--yellow)}.info{color:var(--blue)}
 
-.footer-note{text-align:center;font-size:10px;color:var(--text3);margin-top:24px;padding-bottom:8px}
+.footer-note{text-align:center;font-size:10px;color:var(--text3);margin-top:20px;padding-bottom:8px}
 
-@media(max-width:680px){
-  .kpi-grid{grid-template-columns:1fr 1fr}
-  .col3,.col2{grid-template-columns:1fr}
+/* ═══ PORTFOLIO ADDED TOAST ═══ */
+.toast{
+  position:fixed;bottom:24px;right:24px;z-index:999;
+  background:var(--bg2);border:1px solid rgba(0,230,118,.3);border-radius:var(--r);
+  padding:12px 18px;display:flex;align-items:center;gap:10px;
+  font-size:12px;font-weight:600;color:var(--green);
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+  transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.4,0,.2,1);
+}
+.toast.show{transform:translateY(0);opacity:1}
+.toast i{font-size:16px}
+
+@media(max-width:700px){
+  .kpi-grid,.g3{grid-template-columns:1fr 1fr}
+  .g2{grid-template-columns:1fr}
+  .portfolio-strip{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
 <body>
+<div class="app">
 
-<!-- HEADER -->
-<div class="page-header">
-  <div class="logo-row">
-    <div class="logo-icon">₿</div>
-    <div><div class="logo-name">CryptoEdge AI</div><div class="logo-sub">Wallet Analyzer</div></div>
-  </div>
-  <div class="page-title">Analisi Wallet On-Chain</div>
-  <div class="page-sub">Inserisci un indirizzo Ethereum o EVM-compatible per vedere saldo, token, NFT, transazioni e posizioni DeFi in tempo reale</div>
+<!-- ═══ LEFT NAV ═══ -->
+<div class="leftnav">
+  <a class="nav-logo" href="index.html" title="Nexora Home">N</a>
+  <div class="nav-sep"></div>
+  <a class="nav-btn active" href="#" title="Wallet"><i class="ti ti-wallet"></i></a>
+  <a class="nav-btn" href="index.html" title="Dashboard"><i class="ti ti-layout-dashboard"></i></a>
+  <a class="nav-btn" href="backtest.html" title="Backtest"><i class="ti ti-history"></i></a>
+  <a class="nav-btn" title="Screener"><i class="ti ti-filter"></i></a>
+  <a class="nav-btn" title="Alert"><i class="ti ti-bell"></i></a>
+  <div class="nav-spacer"></div>
+  <div class="nav-sep"></div>
+  <div class="nav-btn" title="Impostazioni"><i class="ti ti-settings"></i></div>
+  <div class="nav-avatar">U</div>
 </div>
 
-<!-- SEARCH -->
-<div class="search-card">
-  <div class="search-label">Indirizzo wallet (Ethereum / EVM)</div>
-  <div class="search-row">
-    <input class="search-input" id="wallet-input" type="text"
-      placeholder="0x71C7656EC7ab88b098defB751B7401B5f6d8976F"
-      onkeydown="if(event.key==='Enter')analyzeWallet()">
-    <button class="search-btn" id="search-btn" onclick="analyzeWallet()">
-      <i class="ti ti-search"></i> Analizza
-    </button>
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <a class="topbar-back" href="index.html"><i class="ti ti-arrow-left"></i> Home</a>
+    <div class="topbar-title">
+      <div class="dot"></div>
+      Nexora — Wallet Analyzer
+    </div>
+    <div class="topbar-right">
+      <div class="search-box">
+        <i class="ti ti-search"></i>
+        <input type="text" placeholder="Cerca indirizzo, token, tx..." id="quick-search" onkeydown="if(event.key==='Enter'){document.getElementById('wallet-input').value=this.value;analyzeWallet()}">
+      </div>
+      <div class="tb-btn" title="Notifiche"><i class="ti ti-bell"></i></div>
+      <div class="tb-btn" title="Impostazioni"><i class="ti ti-settings"></i></div>
+      <div class="live-pill">LIVE</div>
+    </div>
   </div>
-  <div class="chain-tabs" id="chain-tabs">
-    <div class="chain-tab active" onclick="setChain('eth',this)"><i class="ti ti-currency-ethereum"></i>Ethereum</div>
-    <div class="chain-tab" onclick="setChain('bsc',this)"><span style="font-weight:900">B</span>BNB Chain</div>
-    <div class="chain-tab" onclick="setChain('polygon',this)"><span style="font-weight:900">⬡</span>Polygon</div>
-    <div class="chain-tab" onclick="setChain('arbitrum',this)"><span style="font-weight:900">A</span>Arbitrum</div>
-    <div class="chain-tab" onclick="setChain('base',this)"><span style="font-weight:900">Ⓑ</span>Base</div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- Portfolio strip (aggiornato in tempo reale) -->
+    <div class="portfolio-strip" id="portfolio-strip">
+      <div class="pstrip-card">
+        <i class="ti ti-currency-dollar psc-icon"></i>
+        <div class="psc-label">Portfolio totale</div>
+        <div class="psc-val" id="ps-total">$0.00</div>
+        <div class="psc-sub">Portafoglio aggiunto</div>
+        <div class="psc-chg up" id="ps-total-chg" style="display:none">+0.00%</div>
+      </div>
+      <div class="pstrip-card">
+        <i class="ti ti-currency-ethereum psc-icon"></i>
+        <div class="psc-label">ETH valore</div>
+        <div class="psc-val" id="ps-eth">—</div>
+        <div class="psc-sub" id="ps-eth-sub">0.000000 ETH</div>
+      </div>
+      <div class="pstrip-card">
+        <i class="ti ti-coins psc-icon"></i>
+        <div class="psc-label">Token portfolio</div>
+        <div class="psc-val" id="ps-tokens">$0.00</div>
+        <div class="psc-sub" id="ps-tokens-sub">0 token aggiunti</div>
+      </div>
+      <div class="pstrip-card">
+        <i class="ti ti-trending-up psc-icon"></i>
+        <div class="psc-label">Prezzo ETH live</div>
+        <div class="psc-val" id="ps-eth-price">—</div>
+        <div class="psc-sub" id="ps-eth-chg">Aggiornamento...</div>
+      </div>
+    </div>
+
+    <!-- Search hero -->
+    <div class="search-hero">
+      <div class="hero-label"><i class="ti ti-search"></i> Analisi On-Chain</div>
+      <div class="hero-title">Analizza qualsiasi wallet EVM</div>
+      <div class="hero-sub">ETH, BNB Chain, Polygon, Arbitrum, Base — saldo, token, NFT, transazioni e posizioni DeFi</div>
+      <div class="hero-input-row">
+        <input class="hero-input" id="wallet-input" type="text"
+          placeholder="0x71C7656EC7ab88b098defB751B7401B5f6d8976F"
+          onkeydown="if(event.key==='Enter')analyzeWallet()">
+        <button class="hero-btn" id="search-btn" onclick="analyzeWallet()">
+          <i class="ti ti-search"></i> Analizza
+        </button>
+      </div>
+      <div class="chain-pills">
+        <div class="cpill active" onclick="setChain('eth',this)"><i class="ti ti-currency-ethereum"></i>Ethereum</div>
+        <div class="cpill" onclick="setChain('bsc',this)">BNB Chain</div>
+        <div class="cpill" onclick="setChain('polygon',this)">Polygon</div>
+        <div class="cpill" onclick="setChain('arbitrum',this)">Arbitrum</div>
+        <div class="cpill" onclick="setChain('base',this)">Base</div>
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div class="err-box" id="err-box">
+      <i class="ti ti-alert-triangle"></i>
+      <div><div id="err-msg">Errore</div><div class="err-detail" id="err-detail"></div></div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-wrap" id="loading-wrap">
+      <div class="spinner"></div>
+      <div class="loading-title">Analisi in corso...</div>
+      <div class="loading-sub" id="loading-sub">Connessione alla blockchain...</div>
+      <div class="steps">
+        <div class="step" id="step-1"><span class="step-ic"><i class="ti ti-point"></i></span>Saldo nativo</div>
+        <div class="step" id="step-2"><span class="step-ic"><i class="ti ti-point"></i></span>Prezzi live</div>
+        <div class="step" id="step-3"><span class="step-ic"><i class="ti ti-point"></i></span>Token ERC-20</div>
+        <div class="step" id="step-4"><span class="step-ic"><i class="ti ti-point"></i></span>Transazioni</div>
+        <div class="step" id="step-5"><span class="step-ic"><i class="ti ti-point"></i></span>NFT & DeFi</div>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="results" id="results">
+
+      <div class="addr-bar" id="addr-bar"></div>
+      <div class="kpi-grid" id="kpi-grid"></div>
+
+      <div class="g3">
+        <div class="card"><div class="card-hd"><div class="card-title"><i class="ti ti-currency-ethereum"></i>Saldo nativo</div></div><div class="card-body" id="sect-native"></div></div>
+        <div class="card"><div class="card-hd"><div class="card-title"><i class="ti ti-coins"></i>Token ERC-20</div><span class="card-bdg" id="bdg-tok">—</span></div><div class="card-body" id="sect-tokens"></div></div>
+        <div class="card"><div class="card-hd"><div class="card-title"><i class="ti ti-chart-bar"></i>Statistiche</div></div><div class="card-body" id="sect-stats"></div></div>
+      </div>
+
+      <div class="g1 card">
+        <div class="card-hd"><div class="card-title"><i class="ti ti-arrows-exchange"></i>Transazioni recenti</div><span class="card-bdg" id="bdg-txs">—</span></div>
+        <div class="card-body" id="sect-txs"></div>
+      </div>
+
+      <div class="g2">
+        <div class="card"><div class="card-hd"><div class="card-title"><i class="ti ti-photo"></i>NFT</div><span class="card-bdg" id="bdg-nfts">—</span></div><div class="card-body" id="sect-nfts"></div></div>
+        <div class="card"><div class="card-hd"><div class="card-title"><i class="ti ti-building-bank"></i>Posizioni DeFi</div><span class="card-bdg" id="bdg-defi">—</span></div><div class="card-body" id="sect-defi"></div></div>
+      </div>
+
+      <div class="footer-note" id="footer-note"></div>
+    </div>
+
   </div>
 </div>
-
-<!-- ERROR -->
-<div class="error-wrap" id="error-wrap">
-  <div class="error-box">
-    <i class="ti ti-alert-triangle"></i>
-    <div><div id="error-msg">Errore</div><div class="error-detail" id="error-detail"></div></div>
-  </div>
 </div>
 
-<!-- LOADING -->
-<div class="loading-wrap" id="loading-wrap">
-  <div class="spinner"></div>
-  <div class="loading-title">Analisi in corso...</div>
-  <div class="loading-sub" id="loading-sub">Connessione alle API blockchain</div>
-  <div class="steps-list">
-    <div class="step-item" id="step-1"><span class="step-icon"><i class="ti ti-point"></i></span>Saldo nativo</div>
-    <div class="step-item" id="step-2"><span class="step-icon"><i class="ti ti-point"></i></span>Prezzi live</div>
-    <div class="step-item" id="step-3"><span class="step-icon"><i class="ti ti-point"></i></span>Token ERC-20</div>
-    <div class="step-item" id="step-4"><span class="step-icon"><i class="ti ti-point"></i></span>Transazioni</div>
-    <div class="step-item" id="step-5"><span class="step-icon"><i class="ti ti-point"></i></span>NFT & DeFi</div>
-  </div>
-</div>
-
-<!-- RESULTS -->
-<div class="results-wrap" id="results-wrap">
-  <div class="addr-banner" id="addr-banner"></div>
-  <div class="kpi-grid" id="kpi-grid"></div>
-
-  <div class="col3">
-    <div class="card"><div class="card-head"><div class="card-title"><i class="ti ti-currency-ethereum"></i>Saldo nativo</div></div><div class="card-body" id="sect-native"></div></div>
-    <div class="card"><div class="card-head"><div class="card-title"><i class="ti ti-coins"></i>Token ERC-20</div><span class="card-badge" id="badge-tokens">—</span></div><div class="card-body" id="sect-tokens"></div></div>
-    <div class="card"><div class="card-head"><div class="card-title"><i class="ti ti-chart-bar"></i>Statistiche</div></div><div class="card-body" id="sect-stats"></div></div>
-  </div>
-
-  <div class="col1 card">
-    <div class="card-head"><div class="card-title"><i class="ti ti-arrows-exchange"></i>Transazioni recenti</div><span class="card-badge" id="badge-txs">—</span></div>
-    <div class="card-body" id="sect-txs"></div>
-  </div>
-
-  <div class="col2">
-    <div class="card"><div class="card-head"><div class="card-title"><i class="ti ti-photo"></i>NFT</div><span class="card-badge" id="badge-nfts">—</span></div><div class="card-body" id="sect-nfts"></div></div>
-    <div class="card"><div class="card-head"><div class="card-title"><i class="ti ti-building-bank"></i>Posizioni DeFi</div><span class="card-badge" id="badge-defi">—</span></div><div class="card-body" id="sect-defi"></div></div>
-  </div>
-
-  <div class="footer-note" id="footer-note"></div>
-</div>
+<!-- Toast -->
+<div class="toast" id="toast"><i class="ti ti-check-circle"></i><span id="toast-msg">Portfolio aggiunto!</span></div>
 
 <script>
-/* ═══════════════════
-   CONFIG
-═══════════════════ */
-let currentChain = 'eth';
-let nativePrice = { usd:0, eur:0, chg:0 };
+/* ═══ CONFIG ═══ */
+let chain = 'eth', nativePrice = { usd:0, eur:0, chg:0 };
 
-const CHAINS = {
-  eth:     { name:'Ethereum', sym:'ETH',  explorer:'https://etherscan.io',   coingecko:'ethereum',      scanApi:'https://api.etherscan.io/api' },
-  bsc:     { name:'BNB Chain',sym:'BNB',  explorer:'https://bscscan.com',    coingecko:'binancecoin',   scanApi:'https://api.bscscan.com/api' },
-  polygon: { name:'Polygon',  sym:'MATIC',explorer:'https://polygonscan.com',coingecko:'matic-network', scanApi:'https://api.polygonscan.com/api' },
-  arbitrum:{ name:'Arbitrum', sym:'ETH',  explorer:'https://arbiscan.io',    coingecko:'ethereum',      scanApi:'https://api.arbiscan.io/api' },
-  base:    { name:'Base',     sym:'ETH',  explorer:'https://basescan.org',   coingecko:'ethereum',      scanApi:'https://api.basescan.org/api' },
+// Portfolio state — persists across analysis
+const portfolio = {
+  wallets: {},   // addr -> { chain, bal, tokens, addedAt }
+  ethBal: 0,
+  tokUSD: 0,
+  ethPrice: 0,
 };
 
-/* Token colours */
-const TOK_COLORS = ['#F7931A','#627EEA','#9945FF','#22c55e','#3b82f6','#a855f7','#f59e0b','#ef4444','#06b6d4','#E6007A'];
+const CHAINS = {
+  eth:     { name:'Ethereum', sym:'ETH',   explorer:'https://etherscan.io',    coingecko:'ethereum',      scan:'https://api.etherscan.io/api',   rpc:'https://rpc.ankr.com/eth' },
+  bsc:     { name:'BNB Chain',sym:'BNB',   explorer:'https://bscscan.com',     coingecko:'binancecoin',   scan:'https://api.bscscan.com/api',    rpc:'https://rpc.ankr.com/bsc' },
+  polygon: { name:'Polygon',  sym:'MATIC', explorer:'https://polygonscan.com', coingecko:'matic-network', scan:'https://api.polygonscan.com/api', rpc:'https://rpc.ankr.com/polygon' },
+  arbitrum:{ name:'Arbitrum', sym:'ETH',   explorer:'https://arbiscan.io',     coingecko:'ethereum',      scan:'https://api.arbiscan.io/api',    rpc:'https://rpc.ankr.com/arbitrum' },
+  base:    { name:'Base',     sym:'ETH',   explorer:'https://basescan.org',    coingecko:'ethereum',      scan:'https://api.basescan.org/api',   rpc:'https://rpc.ankr.com/base' },
+};
 
-/* ═══════════════════
-   HELPERS
-═══════════════════ */
+const TOK_COLORS = ['#F7931A','#627EEA','#9945FF','#00e676','#448aff','#e040fb','#ffca28','#ff5252','#18ffff','#E6007A'];
+
+/* ═══ HELPERS ═══ */
 function setChain(c, el) {
-  currentChain = c;
-  document.querySelectorAll('.chain-tab').forEach(t => t.classList.remove('active'));
+  chain = c;
+  document.querySelectorAll('.cpill').forEach(p => p.classList.remove('active'));
   el.classList.add('active');
 }
 
-function step(n, state) {
+function doStep(n, state) {
   const el = document.getElementById('step-' + n);
   if (!el) return;
-  el.className = 'step-item ' + (state || '');
-  const icons = { active:'ti-loader-2', done:'ti-circle-check', error:'ti-circle-x' };
+  el.className = 'step ' + (state || '');
+  const icons = { active:'ti-loader-2', done:'ti-circle-check', err:'ti-circle-x' };
   const ic = el.querySelector('i');
-  if (ic) {
-    ic.className = 'ti ' + (icons[state] || 'ti-point');
-    ic.style.animation = state === 'active' ? 'spin .7s linear infinite' : '';
-  }
+  if (ic) { ic.className = 'ti ' + (icons[state] || 'ti-point'); ic.style.animation = state === 'active' ? 'spin .7s linear infinite' : ''; }
 }
 
-function showError(msg, detail = '') {
+function showErr(msg, detail = '') {
   document.getElementById('loading-wrap').style.display = 'none';
-  document.getElementById('results-wrap').style.display = 'none';
-  const w = document.getElementById('error-wrap');
-  document.getElementById('error-msg').textContent = msg;
-  document.getElementById('error-detail').textContent = detail;
-  w.style.display = 'block';
+  document.getElementById('results').style.display = 'none';
+  const b = document.getElementById('err-box');
+  document.getElementById('err-msg').textContent = msg;
+  document.getElementById('err-detail').textContent = detail;
+  b.style.display = 'flex';
   document.getElementById('search-btn').disabled = false;
 }
+function hideErr() { document.getElementById('err-box').style.display = 'none'; }
 
-function hideError() { document.getElementById('error-wrap').style.display = 'none'; }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
 
-const fmtUSD = (n) => {
-  if (!n || isNaN(n)) return '$—';
-  if (n >= 1e9)  return '$' + (n/1e9).toFixed(2)  + 'B';
-  if (n >= 1e6)  return '$' + (n/1e6).toFixed(2)  + 'M';
-  if (n >= 1e3)  return '$' + (n/1e3).toFixed(2)  + 'K';
-  return '$' + n.toFixed(2);
+const fUSD = n => { if (!n || isNaN(n)) return '$—'; if (n>=1e9) return '$'+(n/1e9).toFixed(2)+'B'; if (n>=1e6) return '$'+(n/1e6).toFixed(2)+'M'; if (n>=1e3) return '$'+(n/1e3).toFixed(2)+'K'; return '$'+n.toFixed(2); };
+const fEUR = n => !n||isNaN(n)?'—':'€'+n.toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fN   = (n,d=4) => !n||isNaN(n)?'—':parseFloat(n)>=1?parseFloat(n).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:d}):parseFloat(n).toFixed(d);
+const shrt = (a,s=6,e=4) => a?a.slice(0,s)+'…'+a.slice(-e):'—';
+const ago  = ts => { const d=Math.floor(Date.now()/1000)-parseInt(ts); if(d<60)return d+'s fa'; if(d<3600)return Math.floor(d/60)+'m fa'; if(d<86400)return Math.floor(d/3600)+'h fa'; return Math.floor(d/86400)+'g fa'; };
+async function copyAddr(t) { try { await navigator.clipboard.writeText(t); showToast('Indirizzo copiato'); } catch(e) {} }
+
+/* ═══ RPC — multi-chain balance ═══ */
+const RPC_FALLBACKS = {
+  eth:     ['https://rpc.ankr.com/eth','https://eth.drpc.org','https://1rpc.io/eth','https://eth-mainnet.public.blastapi.io'],
+  bsc:     ['https://rpc.ankr.com/bsc','https://bsc.drpc.org','https://1rpc.io/bnb','https://bsc-dataseed.binance.org'],
+  polygon: ['https://rpc.ankr.com/polygon','https://polygon.drpc.org','https://1rpc.io/matic','https://polygon-rpc.com'],
+  arbitrum:['https://rpc.ankr.com/arbitrum','https://arbitrum.drpc.org','https://1rpc.io/arb','https://arb1.arbitrum.io/rpc'],
+  base:    ['https://rpc.ankr.com/base','https://base.drpc.org','https://1rpc.io/base','https://mainnet.base.org'],
 };
-const fmtEUR = (n) => !n||isNaN(n) ? '—' : '€' + n.toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
-const fmtN   = (n, d=4) => !n||isNaN(n) ? '—' : parseFloat(n) >= 1 ? parseFloat(n).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:d}) : parseFloat(n).toFixed(d);
-const short  = (a, s=6, e=4) => a ? a.slice(0,s)+'…'+a.slice(-e) : '—';
-const ago    = (ts) => { const d=Math.floor(Date.now()/1000)-parseInt(ts); if(d<60)return d+'s fa'; if(d<3600)return Math.floor(d/60)+'m fa'; if(d<86400)return Math.floor(d/3600)+'h fa'; return Math.floor(d/86400)+'g fa'; };
 
-async function copy(t) { try { await navigator.clipboard.writeText(t); } catch(e) {} }
-
-/* ═══════════════════
-   FETCH: ETH BALANCE
-   Uses Ankr public RPC — no CORS issues
-═══════════════════ */
-async function fetchNativeBalance(addr, chain) {
-  /* Ankr provides free public RPC with CORS enabled */
-  const ankrEndpoints = {
-    eth:     'https://rpc.ankr.com/eth',
-    bsc:     'https://rpc.ankr.com/bsc',
-    polygon: 'https://rpc.ankr.com/polygon',
-    arbitrum:'https://rpc.ankr.com/arbitrum',
-    base:    'https://rpc.ankr.com/base',
-  };
-
-  /* Secondary fallbacks per chain */
-  const fallbacks = {
-    eth:     ['https://eth.drpc.org','https://1rpc.io/eth','https://eth-mainnet.public.blastapi.io'],
-    bsc:     ['https://bsc.drpc.org','https://1rpc.io/bnb'],
-    polygon: ['https://polygon.drpc.org','https://1rpc.io/matic'],
-    arbitrum:['https://arbitrum.drpc.org','https://1rpc.io/arb'],
-    base:    ['https://base.drpc.org','https://1rpc.io/base'],
-  };
-
-  const endpoints = [ ankrEndpoints[chain], ...(fallbacks[chain] || []) ];
-
+async function rpcCall(c, method, params) {
+  const endpoints = RPC_FALLBACKS[c] || RPC_FALLBACKS.eth;
   for (const url of endpoints) {
     try {
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jsonrpc:'2.0', method:'eth_getBalance', params:[addr,'latest'], id:1 }),
+      const r = await fetch(url, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ jsonrpc:'2.0', method, params, id:1 }),
         signal: AbortSignal.timeout(8000),
       });
-      if (!res.ok) continue;
-      const data = await res.json();
-      if (data.result) return parseInt(data.result, 16) / 1e18;
-    } catch (_) { /* try next */ }
+      if (!r.ok) continue;
+      const d = await r.json();
+      if (d.result !== undefined) return d.result;
+    } catch(_) {}
   }
-  throw new Error(`Nessun nodo RPC raggiungibile per ${CHAINS[chain].name}. Riprova tra qualche secondo.`);
+  return null;
 }
 
-/* Transaction count */
-async function fetchTxCount(addr, chain) {
-  const url = {
-    eth:'https://rpc.ankr.com/eth', bsc:'https://rpc.ankr.com/bsc',
-    polygon:'https://rpc.ankr.com/polygon', arbitrum:'https://rpc.ankr.com/arbitrum',
-    base:'https://rpc.ankr.com/base'
-  }[chain] || 'https://rpc.ankr.com/eth';
-  try {
-    const res = await fetch(url, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ jsonrpc:'2.0', method:'eth_getTransactionCount', params:[addr,'latest'], id:1 }),
-      signal: AbortSignal.timeout(6000),
-    });
-    const d = await res.json();
-    return d.result ? parseInt(d.result, 16) : 0;
-  } catch(_) { return 0; }
+async function fetchBalance(addr, c) {
+  const res = await rpcCall(c, 'eth_getBalance', [addr, 'latest']);
+  if (res === null) throw new Error(`Impossibile leggere il saldo su ${CHAINS[c].name}. Tutti i nodi RPC sono offline o irraggiungibili. Riprova tra qualche secondo.`);
+  return parseInt(res, 16) / 1e18;
 }
 
-/* ═══════════════════
-   FETCH: PRICES
-   CoinGecko → Binance fallback
-═══════════════════ */
-async function fetchPrices(coingeckoId) {
-  const ids = 'ethereum,binancecoin,matic-network';
+async function fetchTxCount(addr, c) {
+  const res = await rpcCall(c, 'eth_getTransactionCount', [addr, 'latest']);
+  return res ? parseInt(res, 16) : 0;
+}
 
-  /* 1. CoinGecko */
+/* ═══ PRICES — CoinGecko → Binance → hardcoded ═══ */
+const PRICE_FALLBACKS = {
+  ethereum:       { usd:3800, eur:3510, chg:0 },
+  binancecoin:    { usd:620,  eur:572,  chg:0 },
+  'matic-network':{ usd:0.92, eur:0.85, chg:0 },
+};
+const BINANCE_SYM = { ethereum:'ETHUSDT', binancecoin:'BNBUSDT', 'matic-network':'MATICUSDT' };
+
+async function fetchPrices(cgId) {
+  // 1. CoinGecko
   try {
-    const r = await fetch(
-      `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd,eur&include_24hr_change=true`,
-      { signal: AbortSignal.timeout(6000) }
-    );
+    const r = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=ethereum,binancecoin,matic-network&vs_currencies=usd,eur&include_24hr_change=true`, { signal:AbortSignal.timeout(6000) });
     if (r.ok) {
       const d = await r.json();
-      const key = coingeckoId === 'binancecoin' ? 'binancecoin' : coingeckoId === 'matic-network' ? 'matic-network' : 'ethereum';
-      return {
-        usd: d[key]?.usd || 0,
-        eur: d[key]?.eur || 0,
-        chg: d[key]?.usd_24h_change || 0,
-        all: d,
-      };
+      const k = cgId;
+      portfolio.ethPrice = d.ethereum?.usd || 0;
+      return { usd:d[k]?.usd||0, eur:d[k]?.eur||0, chg:d[k]?.usd_24h_change||0 };
     }
   } catch(_) {}
-
-  /* 2. Binance fallback */
-  const binanceMap = { ethereum:'ETHUSDT', binancecoin:'BNBUSDT', 'matic-network':'MATICUSDT' };
-  const symbol = binanceMap[coingeckoId] || 'ETHUSDT';
+  // 2. Binance
+  const sym = BINANCE_SYM[cgId] || 'ETHUSDT';
   try {
-    const r = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`, { signal: AbortSignal.timeout(6000) });
+    const r = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${sym}`, { signal:AbortSignal.timeout(6000) });
     if (r.ok) {
       const d = await r.json();
       const p = parseFloat(d.lastPrice);
-      return { usd: p, eur: p * 0.925, chg: parseFloat(d.priceChangePercent) };
+      if (cgId === 'ethereum') portfolio.ethPrice = p;
+      return { usd:p, eur:p*0.925, chg:parseFloat(d.priceChangePercent) };
     }
   } catch(_) {}
-
-  /* 3. Hardcoded last-resort */
-  const fallbackPrices = { ethereum:{ usd:3800,eur:3510,chg:0 }, binancecoin:{ usd:620,eur:572,chg:0 }, 'matic-network':{ usd:0.92,eur:0.85,chg:0 } };
-  return fallbackPrices[coingeckoId] || fallbackPrices.ethereum;
+  // 3. Fallback
+  const fb = PRICE_FALLBACKS[cgId] || PRICE_FALLBACKS.ethereum;
+  if (cgId === 'ethereum') portfolio.ethPrice = fb.usd;
+  return fb;
 }
 
-/* ═══════════════════
-   FETCH: ETHERSCAN API
-   No API key needed for basic calls (rate 1 req/5s)
-═══════════════════ */
-async function fetchScanData(addr, chain) {
-  const base = CHAINS[chain].scanApi;
-  const result = { txs:[], tokens:[], nfts:[] };
+/* ═══ ETHERSCAN-COMPATIBLE SCAN ═══ */
+async function fetchScan(addr, c) {
+  const base = CHAINS[c].scan;
+  const out = { txs:[], tokens:[], nfts:[] };
 
-  /* Transactions */
+  // Transactions
   try {
     const u = `${base}?module=account&action=txlist&address=${addr}&sort=desc&page=1&offset=20`;
-    const r = await fetch(u, { signal: AbortSignal.timeout(10000) });
+    const r = await fetch(u, { signal:AbortSignal.timeout(10000) });
     const d = await r.json();
-    if (d.status === '1') result.txs = d.result || [];
+    if (d.status === '1') out.txs = d.result || [];
   } catch(_) {}
 
-  /* ERC-20 token transfers → aggregate balance */
+  // ERC-20 tokens
   try {
     const u = `${base}?module=account&action=tokentx&address=${addr}&sort=desc&page=1&offset=100`;
-    const r = await fetch(u, { signal: AbortSignal.timeout(10000) });
+    const r = await fetch(u, { signal:AbortSignal.timeout(10000) });
     const d = await r.json();
     if (d.status === '1' && Array.isArray(d.result)) {
       const map = {};
@@ -467,50 +642,46 @@ async function fetchScanData(addr, chain) {
         const sym = tx.tokenSymbol?.trim() || '?';
         const dec = parseInt(tx.tokenDecimal) || 18;
         const val = parseFloat(tx.value) / Math.pow(10, dec);
-        if (!map[sym]) map[sym] = { sym, name:tx.tokenName, contract:tx.contractAddress, balance:0, txCount:0 };
+        if (!map[sym]) map[sym] = { sym, name:tx.tokenName, contract:tx.contractAddress, balance:0 };
         if (tx.to?.toLowerCase() === addr.toLowerCase()) map[sym].balance += val;
         else map[sym].balance -= val;
-        map[sym].txCount++;
       }
-      result.tokens = Object.values(map)
-        .filter(t => t.balance > 0.000001)
-        .sort((a,b) => b.balance - a.balance);
+      out.tokens = Object.values(map).filter(t => t.balance > 0.000001).sort((a,b) => b.balance - a.balance);
     }
   } catch(_) {}
 
-  /* NFT (ERC-721) */
+  // NFTs
   try {
     const u = `${base}?module=account&action=tokennfttx&address=${addr}&sort=desc&page=1&offset=50`;
-    const r = await fetch(u, { signal: AbortSignal.timeout(10000) });
+    const r = await fetch(u, { signal:AbortSignal.timeout(10000) });
     const d = await r.json();
     if (d.status === '1' && Array.isArray(d.result)) {
       const map = {};
       for (const tx of d.result) {
         if (tx.to?.toLowerCase() !== addr.toLowerCase()) continue;
-        const key = tx.contractAddress;
-        if (!map[key]) map[key] = { name:tx.tokenName, sym:tx.tokenSymbol, contract:tx.contractAddress, ids:[] };
-        if (!map[key].ids.includes(tx.tokenID)) map[key].ids.push(tx.tokenID);
+        const k = tx.contractAddress;
+        if (!map[k]) map[k] = { name:tx.tokenName, sym:tx.tokenSymbol, contract:tx.contractAddress, ids:[] };
+        if (!map[k].ids.includes(tx.tokenID)) map[k].ids.push(tx.tokenID);
       }
-      result.nfts = Object.values(map);
+      out.nfts = Object.values(map);
     }
   } catch(_) {}
 
-  return result;
+  return out;
 }
 
-/* Token prices from CoinGecko */
+/* Token prices */
 async function fetchTokenPrices(tokens) {
   const symToId = {
-    USDT:'tether', USDC:'usd-coin', DAI:'dai', WETH:'weth', WBTC:'wrapped-bitcoin',
-    UNI:'uniswap', LINK:'chainlink', AAVE:'aave', CRV:'curve-dao-token',
-    MKR:'maker', LDO:'lido-dao', ARB:'arbitrum', OP:'optimism',
-    MATIC:'matic-network', SHIB:'shiba-inu', PEPE:'pepe',
-    stETH:'staked-ether', wstETH:'wrapped-steth', rETH:'rocket-pool-eth',
+    USDT:'tether',USDC:'usd-coin',DAI:'dai',WETH:'weth',WBTC:'wrapped-bitcoin',
+    UNI:'uniswap',LINK:'chainlink',AAVE:'aave',CRV:'curve-dao-token',MKR:'maker',
+    LDO:'lido-dao',ARB:'arbitrum',OP:'optimism',MATIC:'matic-network',
+    SHIB:'shiba-inu',PEPE:'pepe',stETH:'staked-ether',wstETH:'wrapped-steth',rETH:'rocket-pool-eth',
   };
   const ids = [...new Set(tokens.map(t => symToId[t.sym]).filter(Boolean))].join(',');
   if (!ids) return {};
   try {
-    const r = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`, { signal: AbortSignal.timeout(6000) });
+    const r = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`, { signal:AbortSignal.timeout(6000) });
     if (!r.ok) return {};
     const d = await r.json();
     const out = {};
@@ -519,58 +690,112 @@ async function fetchTokenPrices(tokens) {
   } catch(_) { return {}; }
 }
 
-/* ═══════════════════
-   MAIN
-═══════════════════ */
+/* ═══ PORTFOLIO STRIP UPDATE ═══ */
+function updatePortfolioStrip() {
+  const totalUSD = portfolio.ethBal * portfolio.ethPrice + portfolio.tokUSD;
+  const chg = nativePrice.chg || 0;
+
+  const e = id => document.getElementById(id);
+  e('ps-total').textContent = fUSD(totalUSD);
+  e('ps-eth').textContent = fUSD(portfolio.ethBal * portfolio.ethPrice);
+  e('ps-eth-sub').textContent = portfolio.ethBal.toFixed(6) + ' ETH';
+  e('ps-tokens').textContent = fUSD(portfolio.tokUSD);
+  e('ps-tokens-sub').textContent = Object.keys(portfolio.wallets).length + ' wallet aggiunt' + (Object.keys(portfolio.wallets).length === 1 ? 'o' : 'i');
+  e('ps-eth-price').textContent = fUSD(portfolio.ethPrice);
+  const chgEl = e('ps-eth-chg');
+  chgEl.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '% 24h';
+  chgEl.style.color = chg >= 0 ? 'var(--green)' : 'var(--red)';
+
+  if (totalUSD > 0) {
+    const chgEl2 = e('ps-total-chg');
+    chgEl2.style.display = 'inline-flex';
+    chgEl2.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
+    chgEl2.className = 'psc-chg ' + (chg >= 0 ? 'up' : 'dn');
+  }
+}
+
+/* Live price refresh every 15s */
+async function refreshLivePrices() {
+  try {
+    const r = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=ETHUSDT', { signal:AbortSignal.timeout(5000) });
+    if (r.ok) {
+      const d = await r.json();
+      portfolio.ethPrice = parseFloat(d.lastPrice);
+      nativePrice.chg = parseFloat(d.priceChangePercent);
+      nativePrice.usd = portfolio.ethPrice;
+      updatePortfolioStrip();
+    }
+  } catch(_) {}
+}
+
+/* ═══ ADD TO PORTFOLIO ═══ */
+function addToPortfolio(addr, c, bal, tokens, tokTotalUSD) {
+  const btn = document.getElementById('add-portfolio-btn');
+  if (portfolio.wallets[addr]) {
+    showToast('Wallet già nel portfolio!');
+    if (btn) { btn.innerHTML = '<i class="ti ti-check"></i> Aggiunto'; btn.classList.add('added'); }
+    return;
+  }
+  portfolio.wallets[addr] = { chain:c, bal, tokens, tokTotalUSD };
+  // Recalculate totals
+  portfolio.ethBal = Object.values(portfolio.wallets).reduce((a,w) => a + (w.bal || 0), 0);
+  portfolio.tokUSD = Object.values(portfolio.wallets).reduce((a,w) => a + (w.tokTotalUSD || 0), 0);
+  updatePortfolioStrip();
+  showToast('✓ Portfolio aggiornato! +' + fUSD(bal * portfolio.ethPrice));
+  if (btn) { btn.innerHTML = '<i class="ti ti-check"></i> Aggiunto'; btn.classList.add('added'); }
+
+  // Sync to main site (localStorage)
+  try {
+    const stored = JSON.parse(localStorage.getItem('nexora_portfolio') || '{}');
+    stored[addr] = { chain:c, bal, ethPrice: portfolio.ethPrice, tokTotalUSD, addedAt: Date.now() };
+    localStorage.setItem('nexora_portfolio', JSON.stringify(stored));
+  } catch(_) {}
+}
+
+/* ═══ MAIN ANALYZE ═══ */
 async function analyzeWallet() {
   const raw = document.getElementById('wallet-input').value.trim();
 
-  /* Validate */
-  if (!raw) return showError('Inserisci un indirizzo wallet.', '');
-  if (!raw.startsWith('0x')) return showError('Indirizzo non valido.', 'Deve iniziare con 0x');
-  if (raw.length !== 42) return showError('Lunghezza errata.', `Trovati ${raw.length} caratteri, richiesti 42`);
-  if (!/^0x[0-9a-fA-F]{40}$/.test(raw)) return showError('Caratteri non validi nell\'indirizzo.', 'Solo 0-9 e a-f sono accettati');
+  if (!raw) return showErr('Inserisci un indirizzo wallet.', '');
+  if (!raw.startsWith('0x')) return showErr('Indirizzo non valido.', 'Deve iniziare con 0x');
+  if (raw.length !== 42) return showErr('Lunghezza errata.', `Trovati ${raw.length} caratteri, richiesti 42`);
+  if (!/^0x[0-9a-fA-F]{40}$/.test(raw)) return showErr('Caratteri non validi.', 'Solo 0-9 e a-f');
 
-  const addr  = raw.toLowerCase();
-  const chain = currentChain;
-  const cfg   = CHAINS[chain];
+  const addr = raw.toLowerCase();
+  const cfg = CHAINS[chain];
 
-  /* Reset UI */
-  hideError();
-  document.getElementById('results-wrap').style.display = 'none';
+  hideErr();
+  document.getElementById('results').style.display = 'none';
   document.getElementById('loading-wrap').style.display = 'block';
   document.getElementById('search-btn').disabled = true;
-  document.getElementById('loading-sub').textContent = `Connessione a ${cfg.name}…`;
-  [1,2,3,4,5].forEach(n => step(n, ''));
+  document.getElementById('loading-sub').textContent = `Connessione a ${cfg.name}...`;
+  [1,2,3,4,5].forEach(n => doStep(n, ''));
 
   try {
-    /* STEP 1 — Native balance */
-    step(1, 'active');
-    document.getElementById('loading-sub').textContent = `Recupero saldo ${cfg.sym}…`;
-    const [bal, txCount] = await Promise.all([
-      fetchNativeBalance(addr, chain),
-      fetchTxCount(addr, chain),
-    ]);
-    step(1, 'done');
+    // Step 1 — Balance
+    doStep(1, 'active');
+    document.getElementById('loading-sub').textContent = `Lettura saldo ${cfg.sym} da ${cfg.name}...`;
+    const [bal, txCount] = await Promise.all([ fetchBalance(addr, chain), fetchTxCount(addr, chain) ]);
+    doStep(1, 'done');
 
-    /* STEP 2 — Prices */
-    step(2, 'active');
-    document.getElementById('loading-sub').textContent = 'Recupero prezzi live…';
+    // Step 2 — Prices
+    doStep(2, 'active');
+    document.getElementById('loading-sub').textContent = 'Recupero prezzi live...';
     nativePrice = await fetchPrices(cfg.coingecko);
     const balUSD = bal * nativePrice.usd;
     const balEUR = bal * nativePrice.eur;
-    step(2, 'done');
+    doStep(2, 'done');
 
-    /* STEP 3 — Tokens */
-    step(3, 'active');
-    document.getElementById('loading-sub').textContent = 'Scansione token ERC-20…';
-    const scanData = await fetchScanData(addr, chain);
-    const { txs, tokens, nfts } = scanData;
-    step(3, 'done');
+    // Step 3 — Tokens
+    doStep(3, 'active');
+    document.getElementById('loading-sub').textContent = 'Scansione token ERC-20...';
+    const scan = await fetchScan(addr, chain);
+    const { txs, tokens, nfts } = scan;
+    doStep(3, 'done');
 
-    /* STEP 4 — Token prices */
-    step(4, 'active');
-    document.getElementById('loading-sub').textContent = 'Calcolo valore portfolio…';
+    // Step 4 — Token prices
+    doStep(4, 'active');
+    document.getElementById('loading-sub').textContent = 'Calcolo valore portfolio...';
     const tokPrices = await fetchTokenPrices(tokens);
     let tokTotalUSD = 0;
     tokens.forEach(t => {
@@ -580,81 +805,81 @@ async function analyzeWallet() {
     });
     const totalUSD = balUSD + tokTotalUSD;
     const totalEUR = balEUR + tokTotalUSD * 0.925;
-    step(4, 'done');
+    doStep(4, 'done');
 
-    /* STEP 5 — NFT & DeFi */
-    step(5, 'active');
-    document.getElementById('loading-sub').textContent = 'Analisi NFT e DeFi…';
+    // Step 5 — NFT & DeFi
+    doStep(5, 'active');
     await new Promise(r => setTimeout(r, 200));
-    step(5, 'done');
+    doStep(5, 'done');
 
-    /* Tx stats */
-    const inTxs   = txs.filter(t => t.to?.toLowerCase()   === addr);
-    const outTxs  = txs.filter(t => t.from?.toLowerCase() === addr);
-    const gasETH  = txs.reduce((a,t) => a + parseInt(t.gasUsed||0)*parseInt(t.gasPrice||0)/1e18, 0);
-    const errTxs  = txs.filter(t => t.isError === '1');
-    const firstTs = txs.length ? txs[txs.length-1] : null;
-    const lastTs  = txs.length ? txs[0] : null;
+    // Tx stats
+    const inTx  = txs.filter(t => t.to?.toLowerCase()   === addr);
+    const outTx = txs.filter(t => t.from?.toLowerCase() === addr);
+    const gasETH = txs.reduce((a,t) => a + parseInt(t.gasUsed||0)*parseInt(t.gasPrice||0)/1e18, 0);
+    const errTx = txs.filter(t => t.isError === '1');
 
-    /* RENDER */
+    // Render
     document.getElementById('loading-wrap').style.display = 'none';
-    document.getElementById('results-wrap').style.display = 'block';
+    document.getElementById('results').style.display = 'block';
 
-    renderBanner(addr, chain, cfg, txCount);
-    renderKPIs(totalUSD, totalEUR, bal, balUSD, tokens.length, txCount, txs.length);
+    renderBanner(addr, chain, cfg, txCount, bal, tokens, tokTotalUSD);
+    renderKPIs(totalUSD, totalEUR, bal, balUSD, tokens.length, txCount);
     renderNative(bal, balUSD, balEUR, cfg);
-    renderTokens(tokens, cfg);
-    renderStats(txCount, inTxs.length, outTxs.length, gasETH, errTxs.length, firstTs, lastTs, tokTotalUSD);
+    renderTokens(tokens);
+    renderStats(txCount, inTx.length, outTx.length, gasETH, errTx.length, txs, tokTotalUSD, cfg);
     renderTxs(txs, addr, cfg);
     renderNFTs(nfts, cfg);
     renderDeFi(tokens);
 
     document.getElementById('footer-note').textContent =
-      `Analisi completata: ${new Date().toLocaleString('it-IT')} · Rete: ${cfg.name} · Dati: Ankr RPC + Etherscan + CoinGecko`;
+      `Analisi completata: ${new Date().toLocaleString('it-IT')} · ${cfg.name} · Ankr RPC + Etherscan + CoinGecko`;
+
+    // Update portfolio prices
+    updatePortfolioStrip();
 
   } catch(err) {
     console.error(err);
-    showError(err.message || 'Errore durante l\'analisi', 'Controlla la connessione o riprova più tardi');
-    [1,2,3,4,5].forEach(n => {
-      const el = document.getElementById('step-'+n);
-      if (el && el.classList.contains('active')) step(n, 'error');
-    });
+    showErr(err.message || 'Errore durante l\'analisi', 'Controlla la connessione e riprova');
+    [1,2,3,4,5].forEach(n => { const e = document.getElementById('step-'+n); if (e && e.classList.contains('active')) doStep(n, 'err'); });
   } finally {
     document.getElementById('search-btn').disabled = false;
   }
 }
 
-/* ═══════════════════
-   RENDER
-═══════════════════ */
-function renderBanner(addr, chain, cfg, txCount) {
-  document.getElementById('addr-banner').innerHTML = `
+/* ═══ RENDER ═══ */
+function renderBanner(addr, c, cfg, txCount, bal, tokens, tokTotalUSD) {
+  const isAdded = !!portfolio.wallets[addr];
+  document.getElementById('addr-bar').innerHTML = `
     <div class="addr-left">
-      <div class="addr-icon"><i class="ti ti-wallet"></i></div>
+      <div class="addr-ico"><i class="ti ti-wallet"></i></div>
       <div>
-        <div class="addr-label">Indirizzo ${cfg.name}</div>
+        <div class="addr-lbl">Indirizzo ${cfg.name}</div>
         <div class="addr-val">
           <span>${addr}</span>
-          <button class="icon-btn" onclick="copy('${addr}')" title="Copia indirizzo"><i class="ti ti-copy"></i></button>
-          <a href="${cfg.explorer}/address/${addr}" target="_blank" class="icon-btn" title="Apri su Explorer"><i class="ti ti-external-link"></i></a>
+          <button class="icon-btn" onclick="copyAddr('${addr}')" title="Copia"><i class="ti ti-copy"></i></button>
+          <a href="${cfg.explorer}/address/${addr}" target="_blank" class="icon-btn" title="Explorer"><i class="ti ti-external-link"></i></a>
         </div>
       </div>
     </div>
-    <div class="addr-badges">
-      <span class="badge badge-green"><i class="ti ti-check"></i>Valido</span>
-      <span class="badge badge-blue">${cfg.name}</span>
-      ${txCount > 0 ? `<span class="badge badge-yellow"><i class="ti ti-arrows-exchange"></i>${txCount.toLocaleString()} tx totali</span>` : '<span class="badge badge-orange">Wallet nuovo</span>'}
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <div class="addr-badges">
+        <span class="badge badge-g"><i class="ti ti-check"></i>Valido</span>
+        <span class="badge badge-b">${cfg.name}</span>
+        ${txCount > 0 ? `<span class="badge badge-y"><i class="ti ti-arrows-exchange"></i>${txCount.toLocaleString()} tx</span>` : '<span class="badge" style="background:rgba(68,138,255,.1);color:var(--blue);border:1px solid rgba(68,138,255,.2)">Nuovo</span>'}
+      </div>
+      <button class="add-portfolio-btn ${isAdded?'added':''}" id="add-portfolio-btn" onclick="addToPortfolio('${addr}','${c}',${bal},${JSON.stringify([])},${tokTotalUSD})">
+        ${isAdded ? '<i class="ti ti-check"></i> Aggiunto' : '<i class="ti ti-plus"></i> Aggiungi al portfolio'}
+      </button>
     </div>`;
 }
 
-function renderKPIs(totalUSD, totalEUR, bal, balUSD, tokCount, txCount, recentTxs) {
-  const chg = nativePrice.chg || 0;
-  const sym = CHAINS[currentChain].sym;
+function renderKPIs(totalUSD, totalEUR, bal, balUSD, tokCount, txCount) {
+  const chg = nativePrice.chg || 0, sym = CHAINS[chain].sym;
   document.getElementById('kpi-grid').innerHTML = `
-    <div class="kpi"><i class="ti ti-currency-dollar kpi-icon"></i><div class="kpi-l">Portfolio totale</div><div class="kpi-v">${fmtUSD(totalUSD)}</div><div class="kpi-s">${fmtEUR(totalEUR)}</div></div>
-    <div class="kpi"><i class="ti ti-currency-ethereum kpi-icon"></i><div class="kpi-l">Saldo ${sym}</div><div class="kpi-v">${fmtN(bal,6)}</div><div class="kpi-s">${fmtUSD(balUSD)}</div></div>
-    <div class="kpi"><i class="ti ti-coins kpi-icon"></i><div class="kpi-l">Token ERC-20</div><div class="kpi-v">${tokCount}</div><div class="kpi-s">token trovati</div></div>
-    <div class="kpi"><i class="ti ti-trending-up kpi-icon"></i><div class="kpi-l">Prezzo ${sym}</div><div class="kpi-v">${fmtUSD(nativePrice.usd)}</div><div class="kpi-s" style="color:${chg>=0?'var(--green)':'var(--red)'}">${chg>=0?'+':''}${chg.toFixed(2)}% 24h</div></div>`;
+    <div class="kpi"><i class="ti ti-currency-dollar kpi-ic"></i><div class="kpi-l">Portfolio wallet</div><div class="kpi-v">${fUSD(totalUSD)}</div><div class="kpi-s">${fEUR(totalEUR)}</div></div>
+    <div class="kpi"><i class="ti ti-currency-ethereum kpi-ic"></i><div class="kpi-l">Saldo ${sym}</div><div class="kpi-v">${fN(bal,6)}</div><div class="kpi-s">${fUSD(balUSD)}</div></div>
+    <div class="kpi"><i class="ti ti-coins kpi-ic"></i><div class="kpi-l">Token ERC-20</div><div class="kpi-v">${tokCount}</div><div class="kpi-s">token trovati</div></div>
+    <div class="kpi"><i class="ti ti-trending-up kpi-ic"></i><div class="kpi-l">Prezzo ${sym}</div><div class="kpi-v">${fUSD(nativePrice.usd)}</div><div class="kpi-s" style="color:${chg>=0?'var(--green)':'var(--red)'}">${chg>=0?'+':''}${chg.toFixed(2)}% 24h</div></div>`;
 }
 
 function renderNative(bal, usd, eur, cfg) {
@@ -663,77 +888,61 @@ function renderNative(bal, usd, eur, cfg) {
     <div class="native-box">
       <div class="native-amount">${bal.toFixed(6)}</div>
       <div class="native-sym">${cfg.sym}</div>
-      <div class="native-usd">${fmtUSD(usd)}</div>
-      <div class="native-eur">${fmtEUR(eur)}</div>
-      <div class="native-stats">
-        <div class="ns-item"><div class="ns-l">Prezzo</div><div class="ns-v">${fmtUSD(nativePrice.usd)}</div></div>
-        <div class="ns-item"><div class="ns-l">Var 24h</div><div class="ns-v" style="color:${chg>=0?'var(--green)':'var(--red)'}">${chg>=0?'+':''}${chg.toFixed(2)}%</div></div>
-        <div class="ns-item"><div class="ns-l">In EUR</div><div class="ns-v">${fmtEUR(nativePrice.eur)}</div></div>
-        <div class="ns-item"><div class="ns-l">Rete</div><div class="ns-v">${cfg.name}</div></div>
+      <div class="native-usd">${fUSD(usd)}</div>
+      <div class="native-eur">${fEUR(eur)}</div>
+      <div class="native-grid">
+        <div class="ng-item"><div class="ng-l">Prezzo</div><div class="ng-v">${fUSD(nativePrice.usd)}</div></div>
+        <div class="ng-item"><div class="ng-l">Var 24h</div><div class="ng-v" style="color:${chg>=0?'var(--green)':'var(--red)'}">${chg>=0?'+':''}${chg.toFixed(2)}%</div></div>
+        <div class="ng-item"><div class="ng-l">In EUR</div><div class="ng-v">${fEUR(nativePrice.eur)}</div></div>
+        <div class="ng-item"><div class="ng-l">Rete</div><div class="ng-v">${cfg.name}</div></div>
       </div>
     </div>`;
 }
 
-function renderTokens(tokens, cfg) {
-  document.getElementById('badge-tokens').textContent = tokens.length;
-  if (!tokens.length) {
-    document.getElementById('sect-tokens').innerHTML = '<div class="empty"><i class="ti ti-inbox"></i>Nessun token ERC-20 trovato</div>';
-    return;
-  }
+function renderTokens(tokens) {
+  document.getElementById('bdg-tok').textContent = tokens.length;
+  if (!tokens.length) { document.getElementById('sect-tokens').innerHTML = '<div class="empty"><i class="ti ti-inbox"></i>Nessun token ERC-20</div>'; return; }
   document.getElementById('sect-tokens').innerHTML = tokens.slice(0,10).map((t,i) => `
     <div class="tok-row">
-      <div class="tok-avatar" style="background:${TOK_COLORS[i%TOK_COLORS.length]}">${t.sym.slice(0,3)}</div>
-      <div class="tok-info">
-        <div class="tok-sym">${t.sym}</div>
-        <div class="tok-name">${t.name || '—'}</div>
-      </div>
-      <div class="tok-right">
-        <div class="tok-bal">${fmtN(t.balance,4)}</div>
-        <div class="tok-usd">${t.valueUSD ? fmtUSD(t.valueUSD) : '—'}</div>
-      </div>
-    </div>`).join('') +
-    (tokens.length > 10 ? `<div style="text-align:center;padding:10px 0;font-size:11px;color:var(--text3)">+ altri ${tokens.length-10} token</div>` : '');
+      <div class="tok-av" style="background:${TOK_COLORS[i%TOK_COLORS.length]}">${t.sym.slice(0,3)}</div>
+      <div class="tok-info"><div class="tok-sym">${t.sym}</div><div class="tok-name">${t.name||'—'}</div></div>
+      <div class="tok-r"><div class="tok-bal">${fN(t.balance,4)}</div><div class="tok-usd">${t.valueUSD?fUSD(t.valueUSD):'—'}</div></div>
+    </div>`).join('') + (tokens.length>10?`<div style="text-align:center;padding:10px 0;font-size:11px;color:var(--text3)">+ altri ${tokens.length-10} token</div>`:'');
 }
 
-function renderStats(txCount, inCnt, outCnt, gasETH, errCnt, firstTx, lastTx, tokUSD) {
+function renderStats(txCount, inCnt, outCnt, gasETH, errCnt, txs, tokUSD, cfg) {
+  const first = txs.length ? txs[txs.length-1] : null, last = txs.length ? txs[0] : null;
   document.getElementById('sect-stats').innerHTML = `
     <div class="stat-row"><span class="stat-l">Transazioni totali</span><span class="stat-v">${txCount.toLocaleString()}</span></div>
     <div class="stat-row"><span class="stat-l">In entrata (ultime 20)</span><span class="stat-v pos">${inCnt}</span></div>
     <div class="stat-row"><span class="stat-l">In uscita (ultime 20)</span><span class="stat-v neg">${outCnt}</span></div>
-    <div class="stat-row"><span class="stat-l">Transazioni fallite</span><span class="stat-v ${errCnt>0?'neg':''}">${errCnt}</span></div>
-    <div class="stat-row"><span class="stat-l">Gas totale speso</span><span class="stat-v warn">${gasETH.toFixed(5)} ${CHAINS[currentChain].sym}</span></div>
-    <div class="stat-row"><span class="stat-l">Valore token</span><span class="stat-v">${fmtUSD(tokUSD)}</span></div>
-    <div class="stat-row"><span class="stat-l">Prima TX</span><span class="stat-v" style="font-size:10px">${firstTx ? ago(firstTx.timeStamp) : '—'}</span></div>
-    <div class="stat-row"><span class="stat-l">Ultima TX</span><span class="stat-v" style="font-size:10px">${lastTx ? ago(lastTx.timeStamp) : '—'}</span></div>`;
+    <div class="stat-row"><span class="stat-l">TX fallite</span><span class="stat-v ${errCnt>0?'neg':''}">${errCnt}</span></div>
+    <div class="stat-row"><span class="stat-l">Gas totale</span><span class="stat-v warn">${gasETH.toFixed(5)} ${cfg.sym}</span></div>
+    <div class="stat-row"><span class="stat-l">Valore token</span><span class="stat-v">${fUSD(tokUSD)}</span></div>
+    <div class="stat-row"><span class="stat-l">Prima TX</span><span class="stat-v" style="font-size:10px">${first?ago(first.timeStamp):'—'}</span></div>
+    <div class="stat-row"><span class="stat-l">Ultima TX</span><span class="stat-v" style="font-size:10px">${last?ago(last.timeStamp):'—'}</span></div>`;
 }
 
 function renderTxs(txs, addr, cfg) {
-  document.getElementById('badge-txs').textContent = txs.length;
-  if (!txs.length) {
-    document.getElementById('sect-txs').innerHTML = '<div class="empty"><i class="ti ti-receipt-off"></i>Nessuna transazione trovata</div>';
-    return;
-  }
+  document.getElementById('bdg-txs').textContent = txs.length;
+  if (!txs.length) { document.getElementById('sect-txs').innerHTML = '<div class="empty"><i class="ti ti-receipt-off"></i>Nessuna transazione trovata</div>'; return; }
   document.getElementById('sect-txs').innerHTML = txs.slice(0,15).map(tx => {
     const isIn = tx.to?.toLowerCase() === addr;
-    const isContract = tx.input && tx.input.length > 2;
-    const type = isContract ? 'contract' : isIn ? 'in' : 'out';
-    const icon = isContract ? 'ti-code' : isIn ? 'ti-arrow-down' : 'ti-arrow-up';
+    const isCt = tx.input && tx.input.length > 2;
+    const type = isCt ? 'ct' : isIn ? 'in' : 'out';
+    const icon = isCt ? 'ti-code' : isIn ? 'ti-arrow-down' : 'ti-arrow-up';
     const val = parseFloat(tx.value) / 1e18;
-    const gasFee = parseInt(tx.gasUsed||0) * parseInt(tx.gasPrice||0) / 1e18;
+    const fee = parseInt(tx.gasUsed||0) * parseInt(tx.gasPrice||0) / 1e18;
     const failed = tx.isError === '1';
-    const hashShort = tx.hash ? tx.hash.slice(0,8)+'…'+tx.hash.slice(-6) : '—';
+    const hs = tx.hash ? tx.hash.slice(0,8)+'…'+tx.hash.slice(-6) : '—';
     return `<div class="tx-row">
       <div class="tx-dot tx-${type}"><i class="ti ${icon}"></i></div>
       <div class="tx-body">
-        <div class="tx-hash">
-          <a href="${cfg.explorer}/tx/${tx.hash}" target="_blank">${hashShort}</a>
-          ${failed ? '<span style="color:var(--red);font-size:9px;margin-left:6px;font-weight:700">FALLITA</span>' : ''}
-          ${isContract ? '<span style="color:var(--blue);font-size:9px;margin-left:6px">contratto</span>' : ''}
-        </div>
-        <div class="tx-sub">${isIn ? 'Da ' + short(tx.from) : 'A ' + short(tx.to)} · fee: ${gasFee.toFixed(5)} ${CHAINS[currentChain].sym}</div>
+        <div class="tx-hash"><a href="${cfg.explorer}/tx/${tx.hash}" target="_blank">${hs}</a>${failed?'<span style="color:var(--red);font-size:9px;margin-left:6px;font-weight:700">FAIL</span>':''}${isCt?'<span style="color:var(--blue);font-size:9px;margin-left:6px">contratto</span>':''}</div>
+        <div class="tx-sub">${isIn?'Da '+shrt(tx.from):'A '+shrt(tx.to)} · fee: ${fee.toFixed(5)} ${CHAINS[chain].sym}</div>
       </div>
-      <div class="tx-right">
-        <div class="tx-val" style="color:${isIn?'var(--green)':'var(--text2)'}">${isIn?'+':'-'}${val.toFixed(4)} ${CHAINS[currentChain].sym}</div>
+      <div class="tx-r">
+        <div class="tx-val" style="color:${isIn?'var(--green)':'var(--text2)'}">${isIn?'+':'-'}${val.toFixed(4)} ${CHAINS[chain].sym}</div>
         <div class="tx-time">${ago(tx.timeStamp)}</div>
       </div>
     </div>`;
@@ -741,61 +950,59 @@ function renderTxs(txs, addr, cfg) {
 }
 
 function renderNFTs(nfts, cfg) {
-  document.getElementById('badge-nfts').textContent = nfts.length;
-  if (!nfts.length) {
-    document.getElementById('sect-nfts').innerHTML = '<div class="empty"><i class="ti ti-photo-off"></i>Nessun NFT trovato</div>';
-    return;
-  }
-  const emojis = ['🎨','🖼','🎭','🎮','💎','🌟','🔥','🚀','🦊','🐉','🌈','🏆'];
+  document.getElementById('bdg-nfts').textContent = nfts.length;
+  if (!nfts.length) { document.getElementById('sect-nfts').innerHTML = '<div class="empty"><i class="ti ti-photo-off"></i>Nessun NFT trovato</div>'; return; }
+  const em = ['🎨','🖼','🎭','🎮','💎','🌟','🔥','🚀','🦊','🐉','🌈','🏆'];
   document.getElementById('sect-nfts').innerHTML = `<div class="nft-grid">${
-    nfts.slice(0,12).map((n,i) => `
-      <div class="nft-card" onclick="window.open('${cfg.explorer}/token/${n.contract}','_blank')">
-        <div class="nft-img">${emojis[i%emojis.length]}</div>
-        <div class="nft-label">
-          <div class="nft-name">${n.name||n.sym||'NFT'}</div>
-          <div class="nft-cnt">${n.ids.length} item${n.ids.length>1?'s':''}</div>
-        </div>
-      </div>`).join('')
+    nfts.slice(0,12).map((n,i) => `<div class="nft-card" onclick="window.open('${cfg.explorer}/token/${n.contract}','_blank')">
+      <div class="nft-img">${em[i%em.length]}</div>
+      <div class="nft-lbl"><div class="nft-name">${n.name||n.sym||'NFT'}</div><div class="nft-cnt">${n.ids.length} item${n.ids.length>1?'s':''}</div></div>
+    </div>`).join('')
   }</div>`;
 }
 
 function renderDeFi(tokens) {
   const protocols = [
-    { name:'Aave',        icon:'🏦', type:'Lending/Borrowing', syms:['aDAI','aUSDC','aETH','aWBTC','aUSDT','aWETH'] },
+    { name:'Aave',        icon:'🏦', type:'Lending', syms:['aDAI','aUSDC','aETH','aWBTC','aUSDT','aWETH'] },
     { name:'Compound',    icon:'🔄', type:'Lending',           syms:['cETH','cDAI','cUSDC','cUSDT'] },
     { name:'Uniswap',     icon:'🦄', type:'DEX Liquidity',     syms:['UNI-V2','UNI-V3'] },
     { name:'Lido',        icon:'🌊', type:'Liquid Staking',    syms:['stETH','wstETH'] },
-    { name:'Rocket Pool', icon:'🚀', type:'Liquid Staking',    syms:['rETH'] },
-    { name:'Coinbase',    icon:'🔵', type:'Liquid Staking',    syms:['cbETH'] },
-    { name:'Frax',        icon:'💵', type:'Stablecoin',        syms:['frxETH','sfrxETH'] },
-    { name:'Curve',       icon:'🌀', type:'DEX / Stablecoin',  syms:['CRV','cvxCRV','3CRV'] },
+    { name:'Rocket Pool', icon:'🚀', type:'Staking',           syms:['rETH'] },
+    { name:'Curve',       icon:'🌀', type:'DEX',               syms:['CRV','cvxCRV','3CRV'] },
   ];
-
   const found = protocols.map(p => {
     const toks = p.syms.map(s => tokens.find(t => t.sym.toLowerCase() === s.toLowerCase())).filter(Boolean);
-    const usdVal = toks.reduce((a,t) => a + (t.valueUSD||0), 0);
-    return toks.length ? { ...p, toks, usdVal } : null;
+    return toks.length ? { ...p, toks, usdVal: toks.reduce((a,t) => a+(t.valueUSD||0), 0) } : null;
   }).filter(Boolean);
-
-  document.getElementById('badge-defi').textContent = found.length;
-
-  if (!found.length) {
-    document.getElementById('sect-defi').innerHTML = '<div class="empty"><i class="ti ti-building-bank"></i>Nessuna posizione DeFi rilevata</div>';
-    return;
-  }
+  document.getElementById('bdg-defi').textContent = found.length;
+  if (!found.length) { document.getElementById('sect-defi').innerHTML = '<div class="empty"><i class="ti ti-building-bank"></i>Nessuna posizione DeFi rilevata</div>'; return; }
   document.getElementById('sect-defi').innerHTML = found.map(p => `
     <div class="defi-row">
-      <div class="defi-icon">${p.icon}</div>
-      <div class="defi-body">
-        <div class="defi-name">${p.name}</div>
-        <div class="defi-type">${p.type} · ${p.toks.map(t=>t.sym).join(', ')}</div>
-      </div>
-      <div class="defi-right">
-        <div class="defi-usd">${p.usdVal>0?fmtUSD(p.usdVal):'—'}</div>
-        <div class="defi-sub">${p.toks.length} posizione</div>
-      </div>
+      <div class="defi-ico">${p.icon}</div>
+      <div class="defi-body"><div class="defi-name">${p.name}</div><div class="defi-type">${p.type} · ${p.toks.map(t=>t.sym).join(', ')}</div></div>
+      <div class="defi-r"><div class="defi-usd">${p.usdVal>0?fUSD(p.usdVal):'—'}</div><div class="defi-sub">${p.toks.length} pos.</div></div>
     </div>`).join('');
 }
+
+/* ═══ LOAD PORTFOLIO FROM STORAGE ═══ */
+function loadStoredPortfolio() {
+  try {
+    const stored = JSON.parse(localStorage.getItem('nexora_portfolio') || '{}');
+    Object.entries(stored).forEach(([addr, w]) => {
+      if (!portfolio.wallets[addr]) {
+        portfolio.wallets[addr] = { chain:w.chain, bal:w.bal, tokTotalUSD:w.tokTotalUSD };
+        portfolio.ethBal += w.bal || 0;
+        portfolio.tokUSD += w.tokTotalUSD || 0;
+      }
+    });
+    updatePortfolioStrip();
+  } catch(_) {}
+}
+
+/* ═══ INIT ═══ */
+loadStoredPortfolio();
+refreshLivePrices();
+setInterval(refreshLivePrices, 15000);
 </script>
 </body>
 </html>
