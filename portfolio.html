@@ -3,1006 +3,1541 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nexora — Wallet Analyzer</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<title>Nexora — Portfolio Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-:root{
-  --bg:#0a0a0f;--bg2:#111118;--bg3:#18181f;--bg4:#1f1f2a;--bg5:#252535;
-  --border:#1e1e2e;--border2:#28283a;--border3:#333350;
-  --text:#f0f0fa;--text2:#8080a8;--text3:#40405a;
-  --green:#00e676;--green2:#00c853;--red:#ff5252;
-  --yellow:#ffca28;--blue:#448aff;--purple:#e040fb;--cyan:#18ffff;
-  --acc:#00e676;
-  --r:14px;--r-sm:8px;--r-lg:20px;--r-xl:28px;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden}
-body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:13px}
-::-webkit-scrollbar{width:3px;height:3px}
-::-webkit-scrollbar-thumb{background:var(--border3);border-radius:3px}
-
-/* ═══ KEYFRAMES ═══ */
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
-@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-@keyframes glow{0%,100%{box-shadow:0 0 20px rgba(0,230,118,.15)}50%{box-shadow:0 0 40px rgba(0,230,118,.35)}}
-
-/* ═══ LAYOUT ═══ */
-.app{display:grid;grid-template-columns:70px 1fr;height:100vh;overflow:hidden}
-
-/* ═══ LEFT NAV ═══ */
-.leftnav{
-  background:var(--bg2);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;align-items:center;padding:16px 0;gap:6px;
-  position:relative;z-index:10;
-}
-.nav-logo{
-  width:40px;height:40px;border-radius:12px;
-  background:linear-gradient(135deg,var(--green),#00bcd4);
-  display:flex;align-items:center;justify-content:center;
-  font-size:18px;font-weight:900;color:var(--bg);
-  margin-bottom:12px;box-shadow:0 4px 16px rgba(0,230,118,.3);
-  animation:glow 3s ease infinite;cursor:pointer;
-  text-decoration:none;flex-shrink:0;
-}
-.nav-sep{width:32px;height:1px;background:var(--border);margin:6px 0}
-.nav-btn{
-  width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;
-  font-size:18px;color:var(--text3);cursor:pointer;transition:all .2s;border:1px solid transparent;
-  text-decoration:none;
-}
-.nav-btn:hover{background:var(--bg3);color:var(--text2);border-color:var(--border2)}
-.nav-btn.active{background:rgba(0,230,118,.1);color:var(--green);border-color:rgba(0,230,118,.2)}
-.nav-spacer{flex:1}
-.nav-avatar{
-  width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#7c4dff,#e040fb);
-  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;cursor:pointer;
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━
+   NEXORA — DESIGN TOKENS
+━━━━━━━━━━━━━━━━━━━━━━━━━ */
+:root {
+  --ink:    #08080d;
+  --ink2:   #0e0e16;
+  --ink3:   #151520;
+  --ink4:   #1c1c2a;
+  --ink5:   #242434;
+  --line:   #1a1a28;
+  --line2:  #242438;
+  --line3:  #32324e;
+  --txt:    #f0eeff;
+  --txt2:   #7a7a9a;
+  --txt3:   #3e3e5e;
+  --fire:   #f7931a;
+  --fire2:  #ff6b2b;
+  --fire3:  #ffc166;
+  --ember:  rgba(247,147,26,.12);
+  --go:     #00d084;
+  --go2:    #00a86b;
+  --stop:   #ff4757;
+  --sky:    #3b8bff;
+  --violet: #9d5cff;
+  --r4:     4px; --r8:8px; --r12:12px; --r16:16px; --r24:24px; --r32:32px;
 }
 
-/* ═══ MAIN ═══ */
-.main{display:flex;flex-direction:column;overflow:hidden}
-
-/* ═══ TOPBAR ═══ */
-.topbar{
-  display:flex;align-items:center;gap:12px;padding:12px 20px;
-  background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;
+* { box-sizing:border-box; margin:0; padding:0; }
+html, body { height:100%; overflow:hidden; }
+body {
+  font-family:'DM Sans',-apple-system,sans-serif;
+  background:var(--ink); color:var(--txt); font-size:13px;
+  -webkit-font-smoothing:antialiased;
 }
-.topbar-back{
-  display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text2);
-  padding:6px 12px;border:1px solid var(--border2);border-radius:var(--r-sm);
-  cursor:pointer;transition:all .15s;text-decoration:none;background:var(--bg3);
+::-webkit-scrollbar { width:3px; height:3px; }
+::-webkit-scrollbar-thumb { background:var(--line3); border-radius:3px; }
+
+/* ━━━━ KEYFRAMES ━━━━ */
+@keyframes spin    { to{transform:rotate(360deg)} }
+@keyframes fadeUp  { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:none} }
+@keyframes fadeIn  { from{opacity:0} to{opacity:1} }
+@keyframes pulse   { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(247,147,26,.5)} 50%{opacity:.7;box-shadow:0 0 0 6px rgba(247,147,26,0)} }
+@keyframes glow    { 0%,100%{box-shadow:0 0 18px rgba(247,147,26,.2)} 50%{box-shadow:0 0 36px rgba(247,147,26,.45)} }
+@keyframes ticker  { from{opacity:.6} to{opacity:1} }
+@keyframes slide   { from{transform:translateX(6px);opacity:0} to{transform:none;opacity:1} }
+@keyframes countUp { from{transform:translateY(4px);opacity:0} to{transform:none;opacity:1} }
+
+/* ━━━━ SHELL ━━━━ */
+.shell {
+  display:grid;
+  grid-template-columns:64px 1fr;
+  grid-template-rows:52px 1fr;
+  height:100vh;
+  overflow:hidden;
 }
-.topbar-back:hover{border-color:var(--green);color:var(--green)}
-.topbar-title{font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px}
-.topbar-title .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite}
-.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
-.search-box{
-  display:flex;align-items:center;gap:8px;padding:7px 14px;
-  background:var(--bg3);border:1px solid var(--border2);border-radius:24px;
-  min-width:280px;transition:border-color .15s;
+
+/* ━━━━ TOP BAR ━━━━ */
+.topbar {
+  grid-column:1/-1; grid-row:1;
+  display:flex; align-items:center; gap:14px;
+  padding:0 20px;
+  background:var(--ink2);
+  border-bottom:1px solid var(--line);
+  z-index:100;
 }
-.search-box:focus-within{border-color:var(--green);box-shadow:0 0 0 2px rgba(0,230,118,.08)}
-.search-box i{color:var(--text3);font-size:14px}
-.search-box input{background:none;border:none;outline:none;color:var(--text);font-size:12px;font-weight:500;font-family:inherit;flex:1}
-.search-box input::placeholder{color:var(--text3)}
-.tb-btn{
-  width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;
-  background:var(--bg3);border:1px solid var(--border2);cursor:pointer;font-size:16px;color:var(--text2);transition:all .15s;
+.tb-logo {
+  display:flex; align-items:center; gap:10px; text-decoration:none;
+  flex-shrink:0;
 }
-.tb-btn:hover{border-color:var(--green);color:var(--green)}
-.live-pill{display:flex;align-items:center;gap:5px;padding:5px 12px;background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.18);border-radius:20px;font-size:10px;font-weight:700;color:var(--green)}
-.live-pill::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite}
-
-/* ═══ CONTENT ═══ */
-.content{flex:1;overflow-y:auto;padding:20px}
-
-/* ═══ SEARCH HERO ═══ */
-.search-hero{
-  background:linear-gradient(135deg,var(--bg2) 0%,var(--bg3) 100%);
-  border:1px solid var(--border2);border-radius:var(--r-xl);
-  padding:32px 36px;margin-bottom:20px;position:relative;overflow:hidden;
+.tb-logo-mark {
+  width:32px; height:32px; border-radius:9px;
+  background:linear-gradient(135deg,var(--fire),var(--fire2));
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Syne',sans-serif; font-size:15px; font-weight:800; color:#fff;
+  box-shadow:0 2px 12px rgba(247,147,26,.4);
+  animation:glow 4s ease infinite;
 }
-.search-hero::before{
-  content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;
-  background:radial-gradient(circle,rgba(0,230,118,.12),transparent 70%);pointer-events:none;
+.tb-logo-name {
+  font-family:'Syne',sans-serif; font-size:16px; font-weight:800;
+  color:var(--txt); letter-spacing:-.3px;
 }
-.search-hero::after{
-  content:'';position:absolute;bottom:-40px;left:20%;width:160px;height:160px;
-  background:radial-gradient(circle,rgba(0,188,212,.07),transparent 70%);pointer-events:none;
+.tb-logo-name span { color:var(--fire); }
+.tb-back {
+  display:flex; align-items:center; gap:6px; padding:5px 11px;
+  border:1px solid var(--line2); border-radius:var(--r8);
+  font-size:11px; font-weight:600; color:var(--txt2);
+  text-decoration:none; background:var(--ink3); transition:all .15s;
 }
-.hero-label{font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.hero-title{font-size:26px;font-weight:900;letter-spacing:-.4px;margin-bottom:6px}
-.hero-sub{font-size:13px;color:var(--text2);margin-bottom:22px}
-.hero-input-row{display:flex;gap:10px;margin-bottom:14px}
-.hero-input{
-  flex:1;padding:14px 18px;background:var(--bg4);border:1px solid var(--border2);
-  border-radius:var(--r-sm);color:var(--text);font-size:13px;font-weight:600;
-  outline:none;transition:all .15s;font-family:inherit;
+.tb-back:hover { border-color:var(--fire); color:var(--fire); }
+.tb-ticker-strip {
+  display:flex; gap:14px; overflow:hidden; flex:1;
+  mask-image:linear-gradient(90deg,transparent,#fff 60px,#fff calc(100% - 60px),transparent);
 }
-.hero-input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(0,230,118,.08)}
-.hero-input::placeholder{color:var(--text3)}
-.hero-btn{
-  padding:14px 26px;background:linear-gradient(135deg,var(--green),#00bcd4);
-  color:var(--bg);border:none;border-radius:var(--r-sm);font-size:13px;font-weight:800;
-  cursor:pointer;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:7px;
-  box-shadow:0 4px 18px rgba(0,230,118,.3);letter-spacing:.02em;
+.tick-item {
+  display:flex; align-items:center; gap:6px; white-space:nowrap;
+  font-size:11px; font-weight:600; flex-shrink:0;
+  animation:ticker .3s ease;
 }
-.hero-btn:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,230,118,.4)}
-.hero-btn:disabled{opacity:.4;pointer-events:none}
-.chain-pills{display:flex;gap:7px;flex-wrap:wrap}
-.cpill{
-  padding:6px 16px;border:1px solid var(--border2);border-radius:20px;
-  font-size:11px;font-weight:700;cursor:pointer;color:var(--text2);
-  background:var(--bg4);transition:all .15s;display:flex;align-items:center;gap:5px;
+.tick-sym { color:var(--txt2); font-size:10px; font-weight:700; font-family:'JetBrains Mono',monospace; }
+.tick-price { color:var(--txt); font-family:'JetBrains Mono',monospace; }
+.tick-chg { font-size:10px; font-weight:700; padding:1px 6px; border-radius:20px; }
+.tick-up { background:rgba(0,208,132,.12); color:var(--go); }
+.tick-dn { background:rgba(255,71,87,.12); color:var(--stop); }
+.tb-right { margin-left:auto; display:flex; align-items:center; gap:8px; }
+.live-badge {
+  display:flex; align-items:center; gap:5px; padding:4px 10px;
+  background:rgba(0,208,132,.08); border:1px solid rgba(0,208,132,.2);
+  border-radius:20px; font-size:9px; font-weight:700; color:var(--go);
+  font-family:'Syne',sans-serif; letter-spacing:.08em; text-transform:uppercase;
 }
-.cpill:hover{border-color:var(--green);color:var(--green)}
-.cpill.active{border-color:var(--green);background:rgba(0,230,118,.1);color:var(--green)}
-
-/* ═══ PORTFOLIO STRIP (wallet portfolio added) ═══ */
-.portfolio-strip{
-  display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:20px;
-  animation:fadeUp .4s ease;
+.live-badge::before {
+  content:''; width:5px; height:5px; border-radius:50%;
+  background:var(--go); animation:pulse 2s infinite;
 }
-.pstrip-card{
-  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
-  padding:14px 16px;transition:all .2s;cursor:default;position:relative;overflow:hidden;
+.tb-icon-btn {
+  width:32px; height:32px; border-radius:var(--r8); display:flex; align-items:center; justify-content:center;
+  background:var(--ink3); border:1px solid var(--line2); cursor:pointer;
+  font-size:15px; color:var(--txt2); transition:all .15s;
 }
-.pstrip-card:hover{border-color:var(--border2);transform:translateY(-2px)}
-.pstrip-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,230,118,.4),transparent);opacity:0;transition:opacity .2s}
-.pstrip-card:hover::after{opacity:1}
-.psc-label{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
-.psc-val{font-size:22px;font-weight:800;line-height:1}
-.psc-sub{font-size:10px;color:var(--text2);margin-top:4px}
-.psc-icon{position:absolute;right:12px;top:12px;font-size:22px;opacity:.07}
-.psc-chg{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;margin-top:5px}
-.psc-chg.up{background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.2)}
-.psc-chg.dn{background:rgba(255,82,82,.12);color:var(--red);border:1px solid rgba(255,82,82,.2)}
+.tb-icon-btn:hover { border-color:var(--fire); color:var(--fire); }
 
-/* ═══ LOADING ═══ */
-.loading-wrap{text-align:center;padding:60px 20px;display:none;animation:fadeUp .3s ease}
-.spinner{width:48px;height:48px;border:3px solid var(--border2);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 20px}
-.loading-title{font-size:16px;font-weight:700;margin-bottom:6px}
-.loading-sub{font-size:12px;color:var(--text2);margin-bottom:24px}
-.steps{display:flex;flex-direction:column;gap:5px;max-width:260px;margin:0 auto;text-align:left}
-.step{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:600;color:var(--text3);padding:7px 10px;border-radius:var(--r-sm);transition:all .2s}
-.step.active{color:var(--green);background:rgba(0,230,118,.06)}
-.step.done{color:var(--green)}
-.step.err{color:var(--red)}
-.step-ic{font-size:14px;width:16px;text-align:center;flex-shrink:0}
-
-/* ═══ ERROR ═══ */
-.err-box{
-  padding:14px 18px;background:rgba(255,82,82,.07);border:1px solid rgba(255,82,82,.2);
-  border-radius:var(--r-sm);color:var(--red);font-size:12px;font-weight:600;
-  display:none;align-items:flex-start;gap:10px;margin-bottom:16px;animation:fadeUp .3s ease;
+/* ━━━━ SIDE NAV ━━━━ */
+.sidenav {
+  grid-column:1; grid-row:2;
+  background:var(--ink2); border-right:1px solid var(--line);
+  display:flex; flex-direction:column; align-items:center; padding:12px 0 16px;
+  gap:4px; overflow:hidden;
 }
-.err-box i{font-size:18px;flex-shrink:0;margin-top:1px}
-.err-detail{font-size:11px;color:rgba(255,82,82,.7);margin-top:3px;font-weight:400}
-
-/* ═══ RESULTS ═══ */
-.results{display:none;animation:fadeUp .3s ease}
-
-/* Address banner */
-.addr-bar{
-  background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r-lg);
-  padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+.sn-btn {
+  width:40px; height:40px; border-radius:var(--r12); display:flex; align-items:center; justify-content:center;
+  font-size:17px; color:var(--txt3); cursor:pointer; transition:all .18s;
+  border:1px solid transparent; position:relative; text-decoration:none;
 }
-.addr-left{display:flex;align-items:center;gap:13px}
-.addr-ico{
-  width:46px;height:46px;border-radius:13px;flex-shrink:0;
-  background:linear-gradient(135deg,rgba(0,230,118,.18),rgba(0,188,212,.08));
-  border:1px solid rgba(0,230,118,.2);display:flex;align-items:center;justify-content:center;
-  font-size:20px;color:var(--green);
+.sn-btn:hover { background:var(--ink3); color:var(--txt2); border-color:var(--line2); }
+.sn-btn.on { background:rgba(247,147,26,.1); color:var(--fire); border-color:rgba(247,147,26,.2); }
+.sn-btn.on::before {
+  content:''; position:absolute; left:-12px; top:50%; transform:translateY(-50%);
+  width:3px; height:18px; background:var(--fire); border-radius:0 3px 3px 0;
 }
-.addr-lbl{font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
-.addr-val{font-size:12px;font-weight:700;font-family:'Courier New',monospace;word-break:break-all;display:flex;align-items:center;gap:6px}
-.addr-badges{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
-.badge{font-size:10px;padding:3px 10px;border-radius:20px;font-weight:700;display:inline-flex;align-items:center;gap:4px}
-.badge-g{background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.2)}
-.badge-b{background:rgba(68,138,255,.12);color:var(--blue);border:1px solid rgba(68,138,255,.2)}
-.badge-y{background:rgba(255,202,40,.12);color:var(--yellow);border:1px solid rgba(255,202,40,.2)}
-
-/* Add to portfolio btn */
-.add-portfolio-btn{
-  display:flex;align-items:center;gap:7px;padding:9px 18px;
-  background:linear-gradient(135deg,var(--green),#00bcd4);color:var(--bg);
-  border:none;border-radius:var(--r-sm);font-size:12px;font-weight:800;cursor:pointer;
-  box-shadow:0 3px 14px rgba(0,230,118,.3);transition:all .15s;
+.sn-sep { width:28px; height:1px; background:var(--line); margin:6px 0; }
+.sn-push { flex:1; }
+.sn-avatar {
+  width:36px; height:36px; border-radius:50%;
+  background:linear-gradient(135deg,#7c4dff,#e040fb);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Syne',sans-serif; font-size:13px; font-weight:800; color:#fff; cursor:pointer;
 }
-.add-portfolio-btn:hover{opacity:.9;transform:translateY(-1px)}
-.add-portfolio-btn.added{background:var(--bg3);color:var(--green);border:1px solid rgba(0,230,118,.3);box-shadow:none}
-
-/* KPI grid */
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
-.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden;transition:all .2s}
-.kpi:hover{border-color:var(--border2);transform:translateY(-1px)}
-.kpi-ic{position:absolute;right:12px;top:12px;font-size:22px;opacity:.07}
-.kpi-l{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
-.kpi-v{font-size:22px;font-weight:800;line-height:1}
-.kpi-s{font-size:10px;color:var(--text2);margin-top:4px}
-
-/* Grids */
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-.g1{margin-bottom:12px}
-
-/* Card */
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
-.card-hd{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.card-title{font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;color:var(--text)}
-.card-title i{color:var(--green);font-size:14px}
-.card-bdg{font-size:10px;padding:2px 9px;border-radius:20px;font-weight:700;background:var(--bg3);color:var(--text2);border:1px solid var(--border2)}
-.card-body{padding:14px 16px}
-
-/* Native */
-.native-box{text-align:center;padding:8px 0 12px}
-.native-amount{font-size:40px;font-weight:900;letter-spacing:-.5px;margin-bottom:2px}
-.native-sym{font-size:13px;color:var(--text2);margin-bottom:10px}
-.native-usd{font-size:26px;font-weight:800;color:var(--green);margin-bottom:2px}
-.native-eur{font-size:13px;color:var(--text2);margin-bottom:14px}
-.native-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.ng-item{background:var(--bg3);border-radius:var(--r-sm);padding:9px 11px}
-.ng-l{font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
-.ng-v{font-size:13px;font-weight:700}
-
-/* Token rows */
-.tok-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
-.tok-row:last-child{border-bottom:none}
-.tok-av{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0}
-.tok-info{flex:1;min-width:0}
-.tok-sym{font-size:12px;font-weight:800}
-.tok-name{font-size:10px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tok-r{text-align:right}
-.tok-bal{font-size:13px;font-weight:800}
-.tok-usd{font-size:10px;color:var(--text2);margin-top:1px}
-
-/* TX */
-.tx-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
-.tx-row:last-child{border-bottom:none}
-.tx-dot{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
-.tx-in{background:rgba(0,230,118,.1);color:var(--green)}
-.tx-out{background:rgba(255,82,82,.1);color:var(--red)}
-.tx-ct{background:rgba(68,138,255,.1);color:var(--blue)}
-.tx-body{flex:1;min-width:0}
-.tx-hash{font-size:11px;font-weight:700;font-family:monospace}
-.tx-hash a{color:var(--blue);text-decoration:none}
-.tx-hash a:hover{text-decoration:underline}
-.tx-sub{font-size:10px;color:var(--text3);margin-top:2px}
-.tx-r{text-align:right;flex-shrink:0}
-.tx-val{font-size:12px;font-weight:800}
-.tx-time{font-size:10px;color:var(--text3);margin-top:1px}
-
-/* NFT */
-.nft-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
-.nft-card{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r-sm);overflow:hidden;cursor:pointer;transition:all .2s}
-.nft-card:hover{border-color:var(--green);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.4)}
-.nft-img{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:30px;background:linear-gradient(135deg,var(--bg4),var(--bg5))}
-.nft-lbl{padding:5px 8px}
-.nft-name{font-size:10px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.nft-cnt{font-size:9px;color:var(--text3)}
-
-/* Stat rows */
-.stat-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
-.stat-row:last-child{border-bottom:none}
-.stat-l{font-size:11px;color:var(--text2)}
-.stat-v{font-size:12px;font-weight:700}
-
-/* DeFi */
-.defi-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
-.defi-row:last-child{border-bottom:none}
-.defi-ico{width:32px;height:32px;border-radius:9px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
-.defi-body{flex:1}
-.defi-name{font-size:12px;font-weight:700}
-.defi-type{font-size:10px;color:var(--text3)}
-.defi-r{text-align:right}
-.defi-usd{font-size:13px;font-weight:800}
-.defi-sub{font-size:10px;color:var(--text2)}
-
-/* Shimmer for loading cells */
-.shimmer{background:linear-gradient(90deg,var(--bg3) 0%,var(--bg4) 50%,var(--bg3) 100%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:4px;height:16px;width:100%}
-
-/* Icon btn */
-.icon-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:3px 6px;border-radius:4px;transition:all .15s;line-height:1}
-.icon-btn:hover{color:var(--green);background:rgba(0,230,118,.1)}
-
-/* Empty */
-.empty{text-align:center;padding:28px;color:var(--text3);font-size:12px}
-.empty i{font-size:30px;display:block;margin-bottom:8px;opacity:.4}
-
-/* Colors */
-.pos{color:var(--green)}.neg{color:var(--red)}.warn{color:var(--yellow)}.info{color:var(--blue)}
-
-.footer-note{text-align:center;font-size:10px;color:var(--text3);margin-top:20px;padding-bottom:8px}
-
-/* ═══ PORTFOLIO ADDED TOAST ═══ */
-.toast{
-  position:fixed;bottom:24px;right:24px;z-index:999;
-  background:var(--bg2);border:1px solid rgba(0,230,118,.3);border-radius:var(--r);
-  padding:12px 18px;display:flex;align-items:center;gap:10px;
-  font-size:12px;font-weight:600;color:var(--green);
-  box-shadow:0 8px 32px rgba(0,0,0,.4);
-  transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.4,0,.2,1);
+.tooltip-wrap { position:relative; }
+.tooltip-wrap .tt {
+  display:none; position:absolute; left:52px; top:50%; transform:translateY(-50%);
+  background:var(--ink4); border:1px solid var(--line2); border-radius:var(--r8);
+  padding:5px 10px; font-size:10px; font-weight:700; color:var(--txt); white-space:nowrap;
+  z-index:200; pointer-events:none;
 }
-.toast.show{transform:translateY(0);opacity:1}
-.toast i{font-size:16px}
+.tooltip-wrap:hover .tt { display:block; animation:slide .15s ease; }
 
-@media(max-width:700px){
-  .kpi-grid,.g3{grid-template-columns:1fr 1fr}
-  .g2{grid-template-columns:1fr}
-  .portfolio-strip{grid-template-columns:1fr 1fr}
+/* ━━━━ MAIN CONTENT ━━━━ */
+.main {
+  grid-column:2; grid-row:2;
+  display:flex; flex-direction:column;
+  overflow:hidden;
+}
+.content { flex:1; overflow-y:auto; padding:20px; }
+
+/* ━━━━ PAGES / VIEWS ━━━━ */
+.page { display:none; animation:fadeUp .3s ease; }
+.page.active { display:block; }
+
+/* ━━━━ PORTFOLIO HEADER (live strip) ━━━━ */
+.pf-header {
+  display:grid; grid-template-columns:repeat(4,1fr); gap:10px;
+  margin-bottom:18px;
+}
+.pf-card {
+  background:var(--ink2); border:1px solid var(--line); border-radius:var(--r16);
+  padding:15px 17px; position:relative; overflow:hidden;
+  transition:all .22s; cursor:pointer;
+}
+.pf-card:hover { border-color:var(--line2); transform:translateY(-2px); box-shadow:0 8px 28px rgba(0,0,0,.35); }
+.pf-card.fire { border-color:rgba(247,147,26,.25); }
+.pf-card.fire::before { content:''; position:absolute; top:0;left:0;right:0;height:2px; background:linear-gradient(90deg,var(--fire),var(--fire2)); }
+.pf-card::after { content:''; position:absolute;top:0;left:0;right:0;height:2px; background:linear-gradient(90deg,transparent,rgba(247,147,26,.3),transparent); opacity:0; transition:opacity .2s; }
+.pf-card:hover::after { opacity:1; }
+.pfc-label { font-size:9px; font-weight:700; color:var(--txt3); text-transform:uppercase; letter-spacing:.1em; margin-bottom:5px; font-family:'Syne',sans-serif; }
+.pfc-val { font-size:24px; font-weight:800; font-family:'Syne',sans-serif; line-height:1; animation:countUp .4s ease; }
+.pfc-sub { font-size:10px; color:var(--txt2); margin-top:5px; display:flex; align-items:center; gap:5px; }
+.pfc-ic { position:absolute; right:14px; top:14px; font-size:22px; opacity:.06; }
+.chg-pill { display:inline-flex; align-items:center; gap:3px; font-size:10px; font-weight:700; padding:2px 7px; border-radius:20px; }
+.up  { color:var(--go); } .dn  { color:var(--stop); } .neu { color:var(--txt2); }
+.pill-up { background:rgba(0,208,132,.1); color:var(--go); border:1px solid rgba(0,208,132,.2); }
+.pill-dn { background:rgba(255,71,87,.1); color:var(--stop); border:1px solid rgba(255,71,87,.2); }
+
+/* ━━━━ SEARCH HERO ━━━━ */
+.search-hero {
+  background:linear-gradient(135deg,var(--ink2) 0%,var(--ink3) 100%);
+  border:1px solid var(--line2); border-radius:var(--r24);
+  padding:28px 32px; margin-bottom:18px; position:relative; overflow:hidden;
+}
+.search-hero::before { content:''; position:absolute;top:-80px;right:-80px;width:260px;height:260px; background:radial-gradient(circle,rgba(247,147,26,.1),transparent 70%); pointer-events:none; }
+.search-hero::after  { content:''; position:absolute;bottom:-50px;left:30%;width:180px;height:180px; background:radial-gradient(circle,rgba(59,139,255,.06),transparent 70%); pointer-events:none; }
+.sh-eyebrow { font-size:10px; font-weight:700; color:var(--fire); text-transform:uppercase; letter-spacing:.14em; font-family:'Syne',sans-serif; margin-bottom:9px; }
+.sh-title { font-size:26px; font-weight:800; font-family:'Syne',sans-serif; letter-spacing:-.4px; margin-bottom:5px; }
+.sh-sub { font-size:12px; color:var(--txt2); margin-bottom:20px; line-height:1.6; }
+.sh-row { display:flex; gap:10px; margin-bottom:14px; }
+.sh-input {
+  flex:1; padding:13px 18px; background:var(--ink4); border:1px solid var(--line2);
+  border-radius:var(--r8); color:var(--txt); font-size:13px; font-weight:500;
+  font-family:'JetBrains Mono',monospace; outline:none; transition:all .15s;
+}
+.sh-input:focus { border-color:var(--fire); box-shadow:0 0 0 3px rgba(247,147,26,.08); }
+.sh-input::placeholder { color:var(--txt3); font-family:'DM Sans',sans-serif; font-size:12px; }
+.sh-btn {
+  padding:13px 26px; background:linear-gradient(135deg,var(--fire),var(--fire2));
+  color:#fff; border:none; border-radius:var(--r8); font-size:13px; font-weight:700;
+  cursor:pointer; transition:all .15s; display:flex; align-items:center; gap:7px;
+  font-family:'Syne',sans-serif; letter-spacing:.02em;
+  box-shadow:0 4px 18px rgba(247,147,26,.35); white-space:nowrap;
+}
+.sh-btn:hover { opacity:.9; transform:translateY(-1px); box-shadow:0 6px 24px rgba(247,147,26,.45); }
+.sh-btn:disabled { opacity:.35; pointer-events:none; }
+.chain-row { display:flex; gap:7px; flex-wrap:wrap; }
+.cpill {
+  padding:5px 15px; border:1px solid var(--line2); border-radius:20px;
+  font-size:11px; font-weight:700; cursor:pointer; color:var(--txt2);
+  background:var(--ink4); transition:all .15s; display:flex; align-items:center; gap:5px;
+  font-family:'Syne',sans-serif;
+}
+.cpill:hover { border-color:var(--fire); color:var(--fire); }
+.cpill.on { border-color:var(--fire); background:rgba(247,147,26,.1); color:var(--fire); }
+
+/* ━━━━ LOADING ━━━━ */
+.loading {
+  text-align:center; padding:64px 20px;
+  display:none; animation:fadeIn .3s ease;
+}
+.spin {
+  width:52px; height:52px; border:3px solid var(--line2); border-top-color:var(--fire);
+  border-radius:50%; animation:spin .75s linear infinite; margin:0 auto 20px;
+}
+.load-title { font-size:17px; font-weight:800; font-family:'Syne',sans-serif; margin-bottom:6px; }
+.load-sub { font-size:12px; color:var(--txt2); margin-bottom:22px; }
+.load-steps { display:flex; flex-direction:column; gap:4px; max-width:240px; margin:0 auto; text-align:left; }
+.lstep {
+  display:flex; align-items:center; gap:9px; font-size:11px; font-weight:600;
+  color:var(--txt3); padding:6px 10px; border-radius:var(--r8); transition:all .22s;
+}
+.lstep.on  { color:var(--fire); background:rgba(247,147,26,.07); }
+.lstep.ok  { color:var(--go); }
+.lstep.err { color:var(--stop); }
+.lstep-ic  { font-size:13px; width:15px; text-align:center; flex-shrink:0; }
+
+/* ━━━━ ERROR ━━━━ */
+.err-bar {
+  padding:13px 17px; background:rgba(255,71,87,.07); border:1px solid rgba(255,71,87,.2);
+  border-radius:var(--r8); color:var(--stop); font-size:12px; font-weight:600;
+  display:none; align-items:flex-start; gap:10px; margin-bottom:15px; animation:fadeUp .3s ease;
+}
+.err-detail { font-size:11px; opacity:.65; margin-top:3px; font-weight:400; }
+
+/* ━━━━ RESULTS ━━━━ */
+.results { display:none; animation:fadeUp .35s ease; }
+
+/* ━━━━ ADDR BANNER ━━━━ */
+.addr-banner {
+  background:var(--ink2); border:1px solid var(--line2); border-radius:var(--r16);
+  padding:15px 20px; margin-bottom:15px;
+  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+}
+.ab-left { display:flex; align-items:center; gap:12px; }
+.ab-ico {
+  width:46px; height:46px; border-radius:var(--r12); flex-shrink:0;
+  background:linear-gradient(135deg,rgba(247,147,26,.18),rgba(255,107,43,.08));
+  border:1px solid rgba(247,147,26,.22); display:flex; align-items:center;
+  justify-content:center; font-size:21px; color:var(--fire);
+}
+.ab-chain { font-size:9px; color:var(--txt3); font-weight:700; text-transform:uppercase; letter-spacing:.1em; margin-bottom:4px; font-family:'Syne',sans-serif; }
+.ab-addr {
+  font-size:12px; font-weight:600; font-family:'JetBrains Mono',monospace;
+  word-break:break-all; display:flex; align-items:center; gap:6px; color:var(--txt);
+}
+.ab-right { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.badge { font-size:10px; padding:3px 10px; border-radius:20px; font-weight:700; display:inline-flex; align-items:center; gap:4px; font-family:'Syne',sans-serif; }
+.bdg-g  { background:rgba(0,208,132,.1);  color:var(--go);   border:1px solid rgba(0,208,132,.2);  }
+.bdg-b  { background:rgba(59,139,255,.1); color:var(--sky);  border:1px solid rgba(59,139,255,.2); }
+.bdg-y  { background:rgba(247,147,26,.1); color:var(--fire); border:1px solid rgba(247,147,26,.2); }
+.add-btn {
+  display:flex; align-items:center; gap:7px; padding:9px 18px;
+  background:linear-gradient(135deg,var(--fire),var(--fire2)); color:#fff;
+  border:none; border-radius:var(--r8); font-size:12px; font-weight:700; cursor:pointer;
+  box-shadow:0 3px 14px rgba(247,147,26,.3); transition:all .15s; font-family:'Syne',sans-serif;
+}
+.add-btn:hover { opacity:.9; transform:translateY(-1px); }
+.add-btn.added { background:var(--ink3); color:var(--go); border:1px solid rgba(0,208,132,.3); box-shadow:none; }
+
+/* ━━━━ KPI GRID ━━━━ */
+.kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px; }
+.kpi {
+  background:var(--ink2); border:1px solid var(--line); border-radius:var(--r16);
+  padding:13px 16px; position:relative; overflow:hidden; transition:all .2s;
+}
+.kpi:hover { border-color:var(--line2); transform:translateY(-1px); }
+.kpi-bg { position:absolute;right:12px;top:12px;font-size:24px;opacity:.06; }
+.kpi-l { font-size:9px; font-weight:700; color:var(--txt3); text-transform:uppercase; letter-spacing:.09em; margin-bottom:5px; font-family:'Syne',sans-serif; }
+.kpi-v { font-size:22px; font-weight:800; font-family:'Syne',sans-serif; line-height:1; }
+.kpi-s { font-size:10px; color:var(--txt2); margin-top:4px; }
+
+/* ━━━━ CARD SYSTEM ━━━━ */
+.g3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:12px; }
+.g2 { display:grid; grid-template-columns:1fr 1fr;     gap:12px; margin-bottom:12px; }
+.g1 { margin-bottom:12px; }
+.card { background:var(--ink2); border:1px solid var(--line); border-radius:var(--r16); overflow:hidden; transition:border-color .2s; }
+.card:hover { border-color:var(--line2); }
+.card-hd { padding:12px 16px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; }
+.card-hd-left { display:flex; align-items:center; gap:7px; font-size:12px; font-weight:700; color:var(--txt); }
+.card-hd-left i { color:var(--fire); font-size:14px; }
+.card-bdg { font-size:10px; padding:2px 9px; border-radius:20px; font-weight:700; background:var(--ink3); color:var(--txt2); border:1px solid var(--line2); font-family:'Syne',sans-serif; }
+.card-body { padding:14px 16px; }
+.card-tabs { display:flex; border-bottom:1px solid var(--line); padding:0 16px; }
+.ctab { padding:10px 14px; font-size:11px; font-weight:700; cursor:pointer; color:var(--txt3); border-bottom:2px solid transparent; transition:all .15s; margin-bottom:-1px; font-family:'Syne',sans-serif; }
+.ctab:hover { color:var(--txt2); }
+.ctab.on { color:var(--fire); border-bottom-color:var(--fire); }
+.tab-panel { display:none; padding:14px 16px; }
+.tab-panel.on { display:block; animation:fadeUp .25s ease; }
+
+/* ━━━━ NATIVE BOX ━━━━ */
+.native-box { text-align:center; padding:6px 0 12px; }
+.nb-amount { font-size:38px; font-weight:800; font-family:'Syne',sans-serif; letter-spacing:-.5px; margin-bottom:2px; }
+.nb-sym { font-size:12px; color:var(--txt2); margin-bottom:10px; font-family:'JetBrains Mono',monospace; }
+.nb-usd { font-size:24px; font-weight:800; color:var(--fire); margin-bottom:2px; font-family:'Syne',sans-serif; }
+.nb-eur { font-size:12px; color:var(--txt2); margin-bottom:14px; }
+.nb-grid { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+.nb-item { background:var(--ink3); border-radius:var(--r8); padding:9px 11px; }
+.nb-lbl { font-size:9px; color:var(--txt3); font-weight:700; text-transform:uppercase; letter-spacing:.08em; margin-bottom:3px; font-family:'Syne',sans-serif; }
+.nb-v { font-size:13px; font-weight:700; font-family:'Syne',sans-serif; }
+
+/* ━━━━ TOKEN ROWS ━━━━ */
+.tok-row { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--line); }
+.tok-row:last-child { border-bottom:none; }
+.tok-av { width:32px; height:32px; border-radius:var(--r8); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; color:#fff; flex-shrink:0; }
+.tok-sym { font-size:12px; font-weight:700; font-family:'Syne',sans-serif; }
+.tok-name { font-size:10px; color:var(--txt3); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.tok-bal { font-size:13px; font-weight:700; font-family:'JetBrains Mono',monospace; }
+.tok-usd { font-size:10px; color:var(--txt2); margin-top:1px; }
+
+/* ━━━━ TX ROWS ━━━━ */
+.tx-row { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--line); }
+.tx-row:last-child { border-bottom:none; }
+.tx-dot { width:32px; height:32px; border-radius:var(--r8); display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+.tx-in  { background:rgba(0,208,132,.1); color:var(--go); }
+.tx-out { background:rgba(255,71,87,.1); color:var(--stop); }
+.tx-ct  { background:rgba(59,139,255,.1); color:var(--sky); }
+.tx-hash-lnk { font-size:11px; font-weight:600; font-family:'JetBrains Mono',monospace; }
+.tx-hash-lnk a { color:var(--sky); text-decoration:none; }
+.tx-hash-lnk a:hover { text-decoration:underline; }
+.tx-sub { font-size:10px; color:var(--txt3); margin-top:2px; }
+.tx-val { font-size:12px; font-weight:700; font-family:'JetBrains Mono',monospace; }
+.tx-time { font-size:10px; color:var(--txt3); margin-top:1px; }
+
+/* ━━━━ STAT ROWS ━━━━ */
+.sr { display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line); }
+.sr:last-child { border-bottom:none; }
+.sr-l { font-size:11px; color:var(--txt2); }
+.sr-v { font-size:12px; font-weight:700; font-family:'Syne',sans-serif; }
+
+/* ━━━━ NFT ━━━━ */
+.nft-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(94px,1fr)); gap:8px; }
+.nft-card { background:var(--ink3); border:1px solid var(--line2); border-radius:var(--r12); overflow:hidden; cursor:pointer; transition:all .2s; }
+.nft-card:hover { border-color:var(--fire); transform:translateY(-2px); box-shadow:0 8px 22px rgba(0,0,0,.4); }
+.nft-img { aspect-ratio:1; display:flex; align-items:center; justify-content:center; font-size:28px; background:linear-gradient(135deg,var(--ink4),var(--ink5)); }
+.nft-lbl { padding:5px 8px; }
+.nft-name { font-size:10px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-family:'Syne',sans-serif; }
+.nft-cnt { font-size:9px; color:var(--txt3); }
+
+/* ━━━━ DEFI ━━━━ */
+.defi-row { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--line); }
+.defi-row:last-child { border-bottom:none; }
+.defi-ico { width:32px; height:32px; border-radius:var(--r8); background:var(--ink3); display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
+.defi-name { font-size:12px; font-weight:700; font-family:'Syne',sans-serif; }
+.defi-type { font-size:10px; color:var(--txt3); }
+.defi-usd { font-size:13px; font-weight:700; font-family:'Syne',sans-serif; }
+
+/* ━━━━ CHART WRAP ━━━━ */
+.chart-wrap { position:relative; height:180px; }
+.chart-wrap-lg { position:relative; height:220px; }
+
+/* ━━━━ PORTFOLIO PAGE ━━━━ */
+.pf-hero {
+  background:var(--ink2); border:1px solid var(--line); border-radius:var(--r24);
+  padding:24px 28px; margin-bottom:16px; position:relative; overflow:hidden;
+}
+.pf-hero::before { content:''; position:absolute; top:-80px; right:-80px; width:280px; height:280px; background:radial-gradient(circle,rgba(247,147,26,.08),transparent 70%); }
+.pfh-label { font-size:10px; font-weight:700; color:var(--txt3); font-family:'Syne',sans-serif; text-transform:uppercase; letter-spacing:.1em; margin-bottom:6px; }
+.pfh-total { font-size:44px; font-weight:800; font-family:'Syne',sans-serif; letter-spacing:-.8px; line-height:1; }
+.pfh-sub { display:flex; align-items:center; gap:10px; margin-top:7px; }
+.pfh-sub span { font-size:12px; color:var(--txt2); }
+.pf-alloc { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+
+/* ━━━━ ALLOCATION ROW ━━━━ */
+.alloc-row { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--line); }
+.alloc-row:last-child { border-bottom:none; }
+.alloc-bar { flex:1; height:5px; background:var(--ink4); border-radius:3px; overflow:hidden; }
+.alloc-fill { height:100%; border-radius:3px; transition:width .8s cubic-bezier(.4,0,.2,1); }
+.alloc-pct { font-size:11px; font-weight:700; font-family:'JetBrains Mono',monospace; min-width:36px; text-align:right; }
+
+/* ━━━━ WALLET LIST ━━━━ */
+.wallet-item {
+  display:flex; align-items:center; gap:12px; padding:12px 14px;
+  background:var(--ink3); border:1px solid var(--line2); border-radius:var(--r12);
+  margin-bottom:8px; transition:all .15s; cursor:pointer;
+}
+.wallet-item:hover { border-color:var(--fire); }
+.wi-addr { font-size:11px; font-family:'JetBrains Mono',monospace; color:var(--txt2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.wi-val { font-size:14px; font-weight:800; font-family:'Syne',sans-serif; margin-left:auto; flex-shrink:0; }
+.wi-del { font-size:14px; color:var(--txt3); padding:3px 6px; border-radius:4px; transition:all .15s; flex-shrink:0; }
+.wi-del:hover { color:var(--stop); background:rgba(255,71,87,.1); }
+
+/* ━━━━ EMPTY / UTILS ━━━━ */
+.empty { text-align:center; padding:28px; color:var(--txt3); font-size:12px; }
+.empty i { font-size:28px; display:block; margin-bottom:8px; opacity:.35; }
+.icon-btn { background:none; border:none; cursor:pointer; color:var(--txt3); font-size:13px; padding:3px 6px; border-radius:4px; transition:all .15s; }
+.icon-btn:hover { color:var(--fire); background:rgba(247,147,26,.1); }
+.sec-title { font-size:11px; font-weight:700; color:var(--txt3); text-transform:uppercase; letter-spacing:.1em; margin-bottom:10px; display:flex; align-items:center; gap:6px; font-family:'Syne',sans-serif; }
+.sec-title i { color:var(--fire); font-size:13px; }
+
+/* ━━━━ TOAST ━━━━ */
+.toast {
+  position:fixed; bottom:22px; right:22px; z-index:9999;
+  background:var(--ink2); border:1px solid rgba(247,147,26,.3); border-radius:var(--r12);
+  padding:12px 18px; display:flex; align-items:center; gap:10px;
+  font-size:12px; font-weight:600; color:var(--fire);
+  box-shadow:0 8px 32px rgba(0,0,0,.5);
+  transform:translateY(80px); opacity:0; transition:all .35s cubic-bezier(.4,0,.2,1);
+}
+.toast.show { transform:translateY(0); opacity:1; }
+.toast i { font-size:16px; }
+
+/* ━━━━ RESPONSIVE ━━━━ */
+@media(max-width:720px) {
+  .kpi-row,.g3,.pf-header { grid-template-columns:1fr 1fr; }
+  .g2 { grid-template-columns:1fr; }
 }
 </style>
 </head>
 <body>
-<div class="app">
 
-<!-- ═══ LEFT NAV ═══ -->
-<div class="leftnav">
-  <a class="nav-logo" href="index.html" title="Nexora Home">N</a>
-  <div class="nav-sep"></div>
-  <a class="nav-btn active" href="#" title="Wallet"><i class="ti ti-wallet"></i></a>
-  <a class="nav-btn" href="index.html" title="Dashboard"><i class="ti ti-layout-dashboard"></i></a>
-  <a class="nav-btn" href="backtest.html" title="Backtest"><i class="ti ti-history"></i></a>
-  <a class="nav-btn" title="Screener"><i class="ti ti-filter"></i></a>
-  <a class="nav-btn" title="Alert"><i class="ti ti-bell"></i></a>
-  <div class="nav-spacer"></div>
-  <div class="nav-sep"></div>
-  <div class="nav-btn" title="Impostazioni"><i class="ti ti-settings"></i></div>
-  <div class="nav-avatar">U</div>
+<div class="shell">
+
+<!-- ══════════════════════════ TOP BAR ══════════════════════════ -->
+<div class="topbar">
+  <a class="tb-logo" href="index.html">
+    <div class="tb-logo-mark">N</div>
+    <div class="tb-logo-name">Nexo<span>ra</span></div>
+  </a>
+  <a class="tb-back" href="index.html"><i class="ti ti-arrow-left"></i> Home</a>
+
+  <div class="tb-ticker-strip" id="ticker-strip">
+    <div class="tick-item"><span class="tick-sym">BTC</span><span class="tick-price" id="tk-btc-p">—</span><span class="tick-chg" id="tk-btc-c">—</span></div>
+    <div class="tick-item"><span class="tick-sym">ETH</span><span class="tick-price" id="tk-eth-p">—</span><span class="tick-chg" id="tk-eth-c">—</span></div>
+    <div class="tick-item"><span class="tick-sym">SOL</span><span class="tick-price" id="tk-sol-p">—</span><span class="tick-chg" id="tk-sol-c">—</span></div>
+    <div class="tick-item"><span class="tick-sym">BNB</span><span class="tick-price" id="tk-bnb-p">—</span><span class="tick-chg" id="tk-bnb-c">—</span></div>
+    <div class="tick-item"><span class="tick-sym">AVAX</span><span class="tick-price" id="tk-avax-p">—</span><span class="tick-chg" id="tk-avax-c">—</span></div>
+    <div class="tick-item"><span class="tick-sym">MATIC</span><span class="tick-price" id="tk-matic-p">—</span><span class="tick-chg" id="tk-matic-c">—</span></div>
+  </div>
+
+  <div class="tb-right">
+    <div class="live-badge">Live</div>
+    <div class="tb-icon-btn" onclick="refreshPrices()" title="Aggiorna prezzi"><i class="ti ti-refresh"></i></div>
+    <div class="tb-icon-btn" title="Notifiche"><i class="ti ti-bell"></i></div>
+  </div>
 </div>
 
-<!-- ═══ MAIN ═══ -->
+<!-- ══════════════════════════ SIDE NAV ══════════════════════════ -->
+<div class="sidenav">
+  <div class="tooltip-wrap">
+    <div class="sn-btn on" onclick="showPage('analyzer')" title=""><i class="ti ti-wallet"></i></div>
+    <span class="tt">Wallet Scan</span>
+  </div>
+  <div class="tooltip-wrap">
+    <div class="sn-btn" onclick="showPage('portfolio')" title=""><i class="ti ti-chart-pie"></i></div>
+    <span class="tt">My Portfolio</span>
+  </div>
+  <div class="tooltip-wrap">
+    <div class="sn-btn" onclick="showPage('watchlist')" title=""><i class="ti ti-eye"></i></div>
+    <span class="tt">Watchlist</span>
+  </div>
+  <div class="sn-sep"></div>
+  <div class="tooltip-wrap">
+    <a class="sn-btn" href="index.html" title=""><i class="ti ti-layout-dashboard"></i></a>
+    <span class="tt">Dashboard</span>
+  </div>
+  <div class="tooltip-wrap">
+    <a class="sn-btn" href="backtest.html" title=""><i class="ti ti-history"></i></a>
+    <span class="tt">Backtest</span>
+  </div>
+  <div class="sn-push"></div>
+  <div class="sn-sep"></div>
+  <div class="tooltip-wrap">
+    <div class="sn-btn" title=""><i class="ti ti-settings"></i></div>
+    <span class="tt">Impostazioni</span>
+  </div>
+  <div class="sn-avatar">U</div>
+</div>
+
+<!-- ══════════════════════════ MAIN ══════════════════════════ -->
 <div class="main">
+<div class="content">
 
-  <!-- Topbar -->
-  <div class="topbar">
-    <a class="topbar-back" href="index.html"><i class="ti ti-arrow-left"></i> Home</a>
-    <div class="topbar-title">
-      <div class="dot"></div>
-      Nexora — Wallet Analyzer
+<!-- PORTFOLIO LIVE HEADER (sempre visibile) -->
+<div class="pf-header">
+  <div class="pf-card fire" onclick="showPage('portfolio')" style="cursor:pointer">
+    <i class="ti ti-currency-dollar pfc-ic"></i>
+    <div class="pfc-label">Portfolio Totale</div>
+    <div class="pfc-val" id="pfc-total">$0.00</div>
+    <div class="pfc-sub">
+      <span id="pfc-wallets">0 wallet</span>
+      <span class="chg-pill" id="pfc-chg" style="display:none">+0%</span>
     </div>
-    <div class="topbar-right">
-      <div class="search-box">
-        <i class="ti ti-search"></i>
-        <input type="text" placeholder="Cerca indirizzo, token, tx..." id="quick-search" onkeydown="if(event.key==='Enter'){document.getElementById('wallet-input').value=this.value;analyzeWallet()}">
-      </div>
-      <div class="tb-btn" title="Notifiche"><i class="ti ti-bell"></i></div>
-      <div class="tb-btn" title="Impostazioni"><i class="ti ti-settings"></i></div>
-      <div class="live-pill">LIVE</div>
+  </div>
+  <div class="pf-card" onclick="showPage('portfolio')">
+    <i class="ti ti-currency-ethereum pfc-ic"></i>
+    <div class="pfc-label">Saldo Native</div>
+    <div class="pfc-val" id="pfc-native">$0.00</div>
+    <div class="pfc-sub" id="pfc-native-sub">0.000 token</div>
+  </div>
+  <div class="pf-card">
+    <i class="ti ti-coins pfc-ic"></i>
+    <div class="pfc-label">Token ERC-20</div>
+    <div class="pfc-val" id="pfc-tokens">$0.00</div>
+    <div class="pfc-sub" id="pfc-tokens-sub">0 asset</div>
+  </div>
+  <div class="pf-card">
+    <i class="ti ti-trending-up pfc-ic"></i>
+    <div class="pfc-label">ETH Live</div>
+    <div class="pfc-val" id="pfc-eth">—</div>
+    <div class="pfc-sub" id="pfc-eth-chg" style="color:var(--txt2)">Aggiornamento...</div>
+  </div>
+</div>
+
+<!-- ══ PAGE: ANALYZER ══ -->
+<div class="page active" id="page-analyzer">
+
+  <div class="search-hero">
+    <div class="sh-eyebrow">On-Chain Intelligence</div>
+    <div class="sh-title">Analizza qualsiasi wallet EVM</div>
+    <div class="sh-sub">ETH, BNB Chain, Polygon, Arbitrum, Base, Solana* — saldo, token, NFT, transazioni complete e posizioni DeFi<br><span style="font-size:10px;color:var(--txt3)">* Solana usa API Solscan pubblica</span></div>
+    <div class="sh-row">
+      <input class="sh-input" id="wallet-input" type="text" placeholder="0x71C7656EC7ab88b098defB751B7401B5f6d8976F  oppure  indirizzo Solana" onkeydown="if(event.key==='Enter')scan()">
+      <button class="sh-btn" id="scan-btn" onclick="scan()"><i class="ti ti-search"></i> Analizza</button>
+    </div>
+    <div class="chain-row">
+      <div class="cpill on" onclick="setChain('eth',this)"><i class="ti ti-currency-ethereum"></i>Ethereum</div>
+      <div class="cpill" onclick="setChain('bsc',this)">BNB Chain</div>
+      <div class="cpill" onclick="setChain('polygon',this)">Polygon</div>
+      <div class="cpill" onclick="setChain('arbitrum',this)">Arbitrum</div>
+      <div class="cpill" onclick="setChain('base',this)">Base</div>
+      <div class="cpill" onclick="setChain('solana',this)"><i class="ti ti-sun"></i>Solana</div>
     </div>
   </div>
 
-  <!-- Content -->
-  <div class="content">
+  <div class="err-bar" id="err-bar"><i class="ti ti-alert-triangle" style="font-size:18px;flex-shrink:0"></i><div><div id="err-msg">Errore</div><div class="err-detail" id="err-detail"></div></div></div>
 
-    <!-- Portfolio strip (aggiornato in tempo reale) -->
-    <div class="portfolio-strip" id="portfolio-strip">
-      <div class="pstrip-card">
-        <i class="ti ti-currency-dollar psc-icon"></i>
-        <div class="psc-label">Portfolio totale</div>
-        <div class="psc-val" id="ps-total">$0.00</div>
-        <div class="psc-sub">Portafoglio aggiunto</div>
-        <div class="psc-chg up" id="ps-total-chg" style="display:none">+0.00%</div>
+  <div class="loading" id="loading">
+    <div class="spin"></div>
+    <div class="load-title">Analisi in corso...</div>
+    <div class="load-sub" id="load-sub">Connessione alla blockchain</div>
+    <div class="load-steps">
+      <div class="lstep" id="ls1"><span class="lstep-ic"><i class="ti ti-circle"></i></span>Saldo nativo</div>
+      <div class="lstep" id="ls2"><span class="lstep-ic"><i class="ti ti-circle"></i></span>Prezzi live</div>
+      <div class="lstep" id="ls3"><span class="lstep-ic"><i class="ti ti-circle"></i></span>Token</div>
+      <div class="lstep" id="ls4"><span class="lstep-ic"><i class="ti ti-circle"></i></span>Transazioni storiche</div>
+      <div class="lstep" id="ls5"><span class="lstep-ic"><i class="ti ti-circle"></i></span>NFT & DeFi</div>
+    </div>
+  </div>
+
+  <div class="results" id="results">
+    <div class="addr-banner" id="addr-banner"></div>
+    <div class="kpi-row" id="kpi-row"></div>
+
+    <div class="g3">
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-left"><i class="ti ti-currency-ethereum"></i>Saldo nativo</div></div>
+        <div class="card-body" id="sect-native"></div>
       </div>
-      <div class="pstrip-card">
-        <i class="ti ti-currency-ethereum psc-icon"></i>
-        <div class="psc-label">ETH valore</div>
-        <div class="psc-val" id="ps-eth">—</div>
-        <div class="psc-sub" id="ps-eth-sub">0.000000 ETH</div>
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-left"><i class="ti ti-coins"></i>Token ERC-20</div><span class="card-bdg" id="bdg-tokens">—</span></div>
+        <div class="card-body" id="sect-tokens"></div>
       </div>
-      <div class="pstrip-card">
-        <i class="ti ti-coins psc-icon"></i>
-        <div class="psc-label">Token portfolio</div>
-        <div class="psc-val" id="ps-tokens">$0.00</div>
-        <div class="psc-sub" id="ps-tokens-sub">0 token aggiunti</div>
-      </div>
-      <div class="pstrip-card">
-        <i class="ti ti-trending-up psc-icon"></i>
-        <div class="psc-label">Prezzo ETH live</div>
-        <div class="psc-val" id="ps-eth-price">—</div>
-        <div class="psc-sub" id="ps-eth-chg">Aggiornamento...</div>
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-left"><i class="ti ti-chart-bar"></i>Statistiche</div></div>
+        <div class="card-body" id="sect-stats"></div>
       </div>
     </div>
 
-    <!-- Search hero -->
-    <div class="search-hero">
-      <div class="hero-label"><i class="ti ti-search"></i> Analisi On-Chain</div>
-      <div class="hero-title">Analizza qualsiasi wallet EVM</div>
-      <div class="hero-sub">ETH, BNB Chain, Polygon, Arbitrum, Base — saldo, token, NFT, transazioni e posizioni DeFi</div>
-      <div class="hero-input-row">
-        <input class="hero-input" id="wallet-input" type="text"
-          placeholder="0x71C7656EC7ab88b098defB751B7401B5f6d8976F"
-          onkeydown="if(event.key==='Enter')analyzeWallet()">
-        <button class="hero-btn" id="search-btn" onclick="analyzeWallet()">
-          <i class="ti ti-search"></i> Analizza
-        </button>
+    <!-- TX with tabs -->
+    <div class="card g1">
+      <div class="card-tabs">
+        <div class="ctab on" onclick="switchTab('tx','all',this)">Tutte</div>
+        <div class="ctab" onclick="switchTab('tx','in',this)">Entrate</div>
+        <div class="ctab" onclick="switchTab('tx','out',this)">Uscite</div>
+        <div class="ctab" onclick="switchTab('tx','contract',this)">Contratti</div>
+        <div style="margin-left:auto;display:flex;align-items:center;padding:0 6px"><span class="card-bdg" id="bdg-txs">—</span></div>
       </div>
-      <div class="chain-pills">
-        <div class="cpill active" onclick="setChain('eth',this)"><i class="ti ti-currency-ethereum"></i>Ethereum</div>
-        <div class="cpill" onclick="setChain('bsc',this)">BNB Chain</div>
-        <div class="cpill" onclick="setChain('polygon',this)">Polygon</div>
-        <div class="cpill" onclick="setChain('arbitrum',this)">Arbitrum</div>
-        <div class="cpill" onclick="setChain('base',this)">Base</div>
+      <div class="tab-panel on" id="tx-all"></div>
+      <div class="tab-panel" id="tx-in"></div>
+      <div class="tab-panel" id="tx-out"></div>
+      <div class="tab-panel" id="tx-contract"></div>
+    </div>
+
+    <!-- Analytics chart -->
+    <div class="card g1">
+      <div class="card-hd"><div class="card-hd-left"><i class="ti ti-chart-line"></i>Attività on-chain</div>
+        <div style="display:flex;gap:6px">
+          <div class="ctab on" onclick="switchChartMode('volume',this)" style="padding:6px 10px;border-bottom:none;font-size:10px">Volume</div>
+          <div class="ctab" onclick="switchChartMode('txcount',this)" style="padding:6px 10px;border-bottom:none;font-size:10px">TX</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap-lg"><canvas id="activity-chart"></canvas></div>
       </div>
     </div>
 
-    <!-- Error -->
-    <div class="err-box" id="err-box">
-      <i class="ti ti-alert-triangle"></i>
-      <div><div id="err-msg">Errore</div><div class="err-detail" id="err-detail"></div></div>
-    </div>
-
-    <!-- Loading -->
-    <div class="loading-wrap" id="loading-wrap">
-      <div class="spinner"></div>
-      <div class="loading-title">Analisi in corso...</div>
-      <div class="loading-sub" id="loading-sub">Connessione alla blockchain...</div>
-      <div class="steps">
-        <div class="step" id="step-1"><span class="step-ic"><i class="ti ti-point"></i></span>Saldo nativo</div>
-        <div class="step" id="step-2"><span class="step-ic"><i class="ti ti-point"></i></span>Prezzi live</div>
-        <div class="step" id="step-3"><span class="step-ic"><i class="ti ti-point"></i></span>Token ERC-20</div>
-        <div class="step" id="step-4"><span class="step-ic"><i class="ti ti-point"></i></span>Transazioni</div>
-        <div class="step" id="step-5"><span class="step-ic"><i class="ti ti-point"></i></span>NFT & DeFi</div>
+    <div class="g2">
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-left"><i class="ti ti-photo"></i>NFT</div><span class="card-bdg" id="bdg-nfts">—</span></div>
+        <div class="card-body" id="sect-nfts"></div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-left"><i class="ti ti-building-bank"></i>DeFi</div><span class="card-bdg" id="bdg-defi">—</span></div>
+        <div class="card-body" id="sect-defi"></div>
       </div>
     </div>
 
-    <!-- Results -->
-    <div class="results" id="results">
-
-      <div class="addr-bar" id="addr-bar"></div>
-      <div class="kpi-grid" id="kpi-grid"></div>
-
-      <div class="g3">
-        <div class="card"><div class="card-hd"><div class="card-title"><i class="ti ti-currency-ethereum"></i>Saldo nativo</div></div><div class="card-body" id="sect-native"></div></div>
-        <div class="card"><div class="card-hd"><div class="card-title"><i class="ti ti-coins"></i>Token ERC-20</div><span class="card-bdg" id="bdg-tok">—</span></div><div class="card-body" id="sect-tokens"></div></div>
-        <div class="card"><div class="card-hd"><div class="card-title"><i class="ti ti-chart-bar"></i>Statistiche</div></div><div class="card-body" id="sect-stats"></div></div>
-      </div>
-
-      <div class="g1 card">
-        <div class="card-hd"><div class="card-title"><i class="ti ti-arrows-exchange"></i>Transazioni recenti</div><span class="card-bdg" id="bdg-txs">—</span></div>
-        <div class="card-body" id="sect-txs"></div>
-      </div>
-
-      <div class="g2">
-        <div class="card"><div class="card-hd"><div class="card-title"><i class="ti ti-photo"></i>NFT</div><span class="card-bdg" id="bdg-nfts">—</span></div><div class="card-body" id="sect-nfts"></div></div>
-        <div class="card"><div class="card-hd"><div class="card-title"><i class="ti ti-building-bank"></i>Posizioni DeFi</div><span class="card-bdg" id="bdg-defi">—</span></div><div class="card-body" id="sect-defi"></div></div>
-      </div>
-
-      <div class="footer-note" id="footer-note"></div>
-    </div>
-
+    <div style="text-align:center;font-size:10px;color:var(--txt3);margin-top:18px;padding-bottom:8px" id="footer-note"></div>
   </div>
 </div>
+
+<!-- ══ PAGE: PORTFOLIO ══ -->
+<div class="page" id="page-portfolio">
+
+  <div class="pf-hero">
+    <div class="pfh-label">Portafoglio aggregato</div>
+    <div class="pfh-total" id="pfh-total">$0.00</div>
+    <div class="pfh-sub">
+      <span class="chg-pill" id="pfh-chg" style="display:none">+0%</span>
+      <span id="pfh-wallets-lbl">Aggiungi wallet per tracciare il tuo portfolio</span>
+    </div>
+  </div>
+
+  <div class="pf-alloc">
+    <!-- Allocation chart -->
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-left"><i class="ti ti-chart-pie"></i>Allocazione</div></div>
+      <div class="card-body">
+        <div style="position:relative;height:200px"><canvas id="alloc-chart"></canvas></div>
+        <div id="alloc-legend" style="margin-top:12px"></div>
+      </div>
+    </div>
+    <!-- Equity chart -->
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-left"><i class="ti ti-chart-line"></i>Andamento portfolio</div></div>
+      <div class="card-body">
+        <div class="chart-wrap-lg"><canvas id="equity-chart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wallets list -->
+  <div class="sec-title"><i class="ti ti-wallet"></i>Wallet nel portfolio</div>
+  <div id="portfolio-wallets">
+    <div class="empty"><i class="ti ti-wallet-off"></i>Nessun wallet aggiunto.<br>Scansiona un indirizzo e clicca "Aggiungi al portfolio".</div>
+  </div>
+
+  <!-- Asset breakdown -->
+  <div class="sec-title" style="margin-top:16px"><i class="ti ti-coins"></i>Asset nel portfolio</div>
+  <div class="card">
+    <div class="card-body" id="portfolio-assets">
+      <div class="empty"><i class="ti ti-coins"></i>Nessun asset trovato.</div>
+    </div>
+  </div>
 </div>
 
-<!-- Toast -->
-<div class="toast" id="toast"><i class="ti ti-check-circle"></i><span id="toast-msg">Portfolio aggiunto!</span></div>
+<!-- ══ PAGE: WATCHLIST ══ -->
+<div class="page" id="page-watchlist">
+  <div class="sec-title"><i class="ti ti-eye"></i>Watchlist prezzi live</div>
+  <div id="watchlist-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px"></div>
+</div>
+
+</div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /shell -->
+
+<div class="toast" id="toast"><i class="ti ti-check-circle"></i><span id="toast-txt">Fatto!</span></div>
 
 <script>
-/* ═══ CONFIG ═══ */
-let chain = 'eth', nativePrice = { usd:0, eur:0, chg:0 };
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   NEXORA WALLET INTELLIGENCE
+   Full multi-chain engine
+━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-// Portfolio state — persists across analysis
-const portfolio = {
-  wallets: {},   // addr -> { chain, bal, tokens, addedAt }
-  ethBal: 0,
-  tokUSD: 0,
-  ethPrice: 0,
-};
-
+/* ── CHAIN CONFIG ── */
 const CHAINS = {
-  eth:     { name:'Ethereum', sym:'ETH',   explorer:'https://etherscan.io',    coingecko:'ethereum',      scan:'https://api.etherscan.io/api',   rpc:'https://rpc.ankr.com/eth' },
-  bsc:     { name:'BNB Chain',sym:'BNB',   explorer:'https://bscscan.com',     coingecko:'binancecoin',   scan:'https://api.bscscan.com/api',    rpc:'https://rpc.ankr.com/bsc' },
-  polygon: { name:'Polygon',  sym:'MATIC', explorer:'https://polygonscan.com', coingecko:'matic-network', scan:'https://api.polygonscan.com/api', rpc:'https://rpc.ankr.com/polygon' },
-  arbitrum:{ name:'Arbitrum', sym:'ETH',   explorer:'https://arbiscan.io',     coingecko:'ethereum',      scan:'https://api.arbiscan.io/api',    rpc:'https://rpc.ankr.com/arbitrum' },
-  base:    { name:'Base',     sym:'ETH',   explorer:'https://basescan.org',    coingecko:'ethereum',      scan:'https://api.basescan.org/api',   rpc:'https://rpc.ankr.com/base' },
+  eth:     { name:'Ethereum', sym:'ETH',  explorer:'https://etherscan.io',    cg:'ethereum',      scan:'https://api.etherscan.io/api',     binance:'ETHUSDT'  },
+  bsc:     { name:'BNB Chain',sym:'BNB',  explorer:'https://bscscan.com',     cg:'binancecoin',   scan:'https://api.bscscan.com/api',      binance:'BNBUSDT'  },
+  polygon: { name:'Polygon',  sym:'MATIC',explorer:'https://polygonscan.com', cg:'matic-network', scan:'https://api.polygonscan.com/api',  binance:'MATICUSDT'},
+  arbitrum:{ name:'Arbitrum', sym:'ETH',  explorer:'https://arbiscan.io',     cg:'ethereum',      scan:'https://api.arbiscan.io/api',      binance:'ETHUSDT'  },
+  base:    { name:'Base',     sym:'ETH',  explorer:'https://basescan.org',    cg:'ethereum',      scan:'https://api.basescan.org/api',     binance:'ETHUSDT'  },
+  solana:  { name:'Solana',   sym:'SOL',  explorer:'https://solscan.io',      cg:'solana',        scan:'https://api.solscan.io',           binance:'SOLUSDT'  },
 };
 
-const TOK_COLORS = ['#F7931A','#627EEA','#9945FF','#00e676','#448aff','#e040fb','#ffca28','#ff5252','#18ffff','#E6007A'];
-
-/* ═══ HELPERS ═══ */
-function setChain(c, el) {
-  chain = c;
-  document.querySelectorAll('.cpill').forEach(p => p.classList.remove('active'));
-  el.classList.add('active');
-}
-
-function doStep(n, state) {
-  const el = document.getElementById('step-' + n);
-  if (!el) return;
-  el.className = 'step ' + (state || '');
-  const icons = { active:'ti-loader-2', done:'ti-circle-check', err:'ti-circle-x' };
-  const ic = el.querySelector('i');
-  if (ic) { ic.className = 'ti ' + (icons[state] || 'ti-point'); ic.style.animation = state === 'active' ? 'spin .7s linear infinite' : ''; }
-}
-
-function showErr(msg, detail = '') {
-  document.getElementById('loading-wrap').style.display = 'none';
-  document.getElementById('results').style.display = 'none';
-  const b = document.getElementById('err-box');
-  document.getElementById('err-msg').textContent = msg;
-  document.getElementById('err-detail').textContent = detail;
-  b.style.display = 'flex';
-  document.getElementById('search-btn').disabled = false;
-}
-function hideErr() { document.getElementById('err-box').style.display = 'none'; }
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  document.getElementById('toast-msg').textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3500);
-}
-
-const fUSD = n => { if (!n || isNaN(n)) return '$—'; if (n>=1e9) return '$'+(n/1e9).toFixed(2)+'B'; if (n>=1e6) return '$'+(n/1e6).toFixed(2)+'M'; if (n>=1e3) return '$'+(n/1e3).toFixed(2)+'K'; return '$'+n.toFixed(2); };
-const fEUR = n => !n||isNaN(n)?'—':'€'+n.toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
-const fN   = (n,d=4) => !n||isNaN(n)?'—':parseFloat(n)>=1?parseFloat(n).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:d}):parseFloat(n).toFixed(d);
-const shrt = (a,s=6,e=4) => a?a.slice(0,s)+'…'+a.slice(-e):'—';
-const ago  = ts => { const d=Math.floor(Date.now()/1000)-parseInt(ts); if(d<60)return d+'s fa'; if(d<3600)return Math.floor(d/60)+'m fa'; if(d<86400)return Math.floor(d/3600)+'h fa'; return Math.floor(d/86400)+'g fa'; };
-async function copyAddr(t) { try { await navigator.clipboard.writeText(t); showToast('Indirizzo copiato'); } catch(e) {} }
-
-/* ═══ RPC — multi-chain balance ═══ */
-const RPC_FALLBACKS = {
-  eth:     ['https://rpc.ankr.com/eth','https://eth.drpc.org','https://1rpc.io/eth','https://eth-mainnet.public.blastapi.io'],
+const RPC = {
+  eth:     ['https://rpc.ankr.com/eth','https://eth.drpc.org','https://1rpc.io/eth'],
   bsc:     ['https://rpc.ankr.com/bsc','https://bsc.drpc.org','https://1rpc.io/bnb','https://bsc-dataseed.binance.org'],
-  polygon: ['https://rpc.ankr.com/polygon','https://polygon.drpc.org','https://1rpc.io/matic','https://polygon-rpc.com'],
-  arbitrum:['https://rpc.ankr.com/arbitrum','https://arbitrum.drpc.org','https://1rpc.io/arb','https://arb1.arbitrum.io/rpc'],
-  base:    ['https://rpc.ankr.com/base','https://base.drpc.org','https://1rpc.io/base','https://mainnet.base.org'],
+  polygon: ['https://rpc.ankr.com/polygon','https://polygon.drpc.org','https://1rpc.io/matic'],
+  arbitrum:['https://rpc.ankr.com/arbitrum','https://arbitrum.drpc.org','https://1rpc.io/arb'],
+  base:    ['https://rpc.ankr.com/base','https://base.drpc.org','https://1rpc.io/base'],
 };
 
-async function rpcCall(c, method, params) {
-  const endpoints = RPC_FALLBACKS[c] || RPC_FALLBACKS.eth;
-  for (const url of endpoints) {
-    try {
-      const r = await fetch(url, {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ jsonrpc:'2.0', method, params, id:1 }),
-        signal: AbortSignal.timeout(8000),
-      });
-      if (!r.ok) continue;
-      const d = await r.json();
-      if (d.result !== undefined) return d.result;
-    } catch(_) {}
+const TOK_COLORS = ['#F7931A','#627EEA','#9945FF','#00d084','#3b8bff','#e040fb','#ffca28','#ff5252','#18ffff','#E6007A'];
+
+/* ── STATE ── */
+let currentChain = 'eth';
+let liveP = { eth:0, bnb:0, matic:0, sol:0, btc:0, avax:0 };
+let lastScanData = null;
+let actChart = null, allocChart = null, eqChart = null, activityChart = null;
+
+const PF = {
+  wallets: {}, // addr -> { chain, bal, sym, tokUSD, tokList, addedAt }
+  get totalUSD() {
+    return Object.values(this.wallets).reduce((a,w) => {
+      const p = liveP[w.sym?.toLowerCase()] || liveP.eth || 0;
+      return a + w.bal * p + (w.tokUSD||0);
+    }, 0);
+  },
+  get totalNativeUSD() {
+    return Object.values(this.wallets).reduce((a,w) => {
+      const p = liveP[w.sym?.toLowerCase()] || liveP.eth || 0;
+      return a + w.bal * p;
+    }, 0);
+  },
+  get totalTokUSD() {
+    return Object.values(this.wallets).reduce((a,w) => a + (w.tokUSD||0), 0);
+  },
+};
+
+/* ── FORMAT HELPERS ── */
+const fU  = n => { if(!n||isNaN(n))return'$—'; if(n>=1e9)return'$'+(n/1e9).toFixed(2)+'B'; if(n>=1e6)return'$'+(n/1e6).toFixed(2)+'M'; if(n>=1e3)return'$'+(n/1e3).toFixed(2)+'K'; return'$'+n.toFixed(2); };
+const fE  = n => !n||isNaN(n)?'—':'€'+n.toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fN  = (n,d=4) => !n||isNaN(n)?'—':parseFloat(n)>=1?parseFloat(n).toLocaleString('it-IT',{maximumFractionDigits:d}):parseFloat(n).toFixed(d);
+const sh  = (a,s=6,e=4) => a?a.slice(0,s)+'…'+a.slice(-e):'—';
+const ago = ts => { const d=Math.floor(Date.now()/1000)-parseInt(ts); if(d<60)return d+'s fa'; if(d<3600)return Math.floor(d/60)+'m fa'; if(d<86400)return Math.floor(d/3600)+'h fa'; if(d<2592000)return Math.floor(d/86400)+'g fa'; return Math.floor(d/2592000)+'mesi fa'; };
+
+/* ── UI HELPERS ── */
+function setChain(c,el) { currentChain=c; document.querySelectorAll('.cpill').forEach(p=>p.classList.remove('on')); el.classList.add('on'); }
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p)?.classList.add('active');
+  document.querySelectorAll('.sn-btn').forEach(b=>b.classList.remove('on'));
+  const map={analyzer:0,portfolio:1,watchlist:2};
+  document.querySelectorAll('.sn-btn')[map[p]]?.classList.add('on');
+  if(p==='portfolio') renderPortfolioPage();
+  if(p==='watchlist') renderWatchlist();
+}
+function lstep(n,s) {
+  const el=document.getElementById('ls'+n); if(!el)return;
+  el.className='lstep '+s;
+  const ic=el.querySelector('i'); if(!ic)return;
+  const icons={on:'ti-loader-2',ok:'ti-circle-check',err:'ti-circle-x'};
+  ic.className='ti '+(icons[s]||'ti-circle');
+  ic.style.animation=s==='on'?'spin .7s linear infinite':'';
+}
+function showErr(msg,detail='') { document.getElementById('loading').style.display='none'; document.getElementById('results').style.display='none'; const b=document.getElementById('err-bar'); b.style.display='flex'; document.getElementById('err-msg').textContent=msg; document.getElementById('err-detail').textContent=detail; document.getElementById('scan-btn').disabled=false; }
+function hideErr() { document.getElementById('err-bar').style.display='none'; }
+function toast(msg) { const t=document.getElementById('toast'); document.getElementById('toast-txt').textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3600); }
+async function cp(t) { try{await navigator.clipboard.writeText(t);toast('Copiato!');}catch(e){} }
+function switchTab(group,tab,el) {
+  document.querySelectorAll(`[id^="tx-"]`).forEach(p=>p.classList.remove('on'));
+  document.getElementById('tx-'+tab)?.classList.add('on');
+  document.querySelectorAll('.ctab').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+}
+function switchChartMode(mode, el) {
+  document.querySelectorAll('.ctab').forEach(c=>c.classList.remove('on')); el.classList.add('on');
+  buildActivityChart(lastScanData?.txs||[], mode);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━
+   PRICE ENGINE
+━━━━━━━━━━━━━━━━━━━ */
+const TICKERS = ['BTCUSDT','ETHUSDT','SOLUSDT','BNBUSDT','AVAXUSDT','MATICUSDT'];
+
+async function refreshPrices() {
+  try {
+    // Fetch all tickers in one batch request
+    const r = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT","SOLUSDT","BNBUSDT","AVAXUSDT","MATICUSDT"]',{signal:AbortSignal.timeout(6000)});
+    if(!r.ok) throw new Error('bad');
+    const arr = await r.json();
+    arr.forEach(d => {
+      const p=parseFloat(d.lastPrice), c=parseFloat(d.priceChangePercent);
+      const sym=d.symbol.replace('USDT','').toLowerCase();
+      if(sym==='btc')liveP.btc=p;
+      if(sym==='eth')liveP.eth=p;
+      if(sym==='sol')liveP.sol=p;
+      if(sym==='bnb')liveP.bnb=p;
+      if(sym==='avax')liveP.avax=p;
+      if(sym==='matic')liveP.matic=p;
+      updateTicker(sym,p,c);
+    });
+  } catch(_) {
+    // Fallback: fetch one by one
+    for(const sym of TICKERS) {
+      try {
+        const r=await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${sym}`,{signal:AbortSignal.timeout(4000)});
+        if(!r.ok)continue;
+        const d=await r.json();
+        const p=parseFloat(d.lastPrice),c=parseFloat(d.priceChangePercent);
+        const k=sym.replace('USDT','').toLowerCase();
+        if(k in liveP)liveP[k]=p;
+        updateTicker(k,p,c);
+      } catch(_){}
+    }
+  }
+  updatePFStrip();
+}
+
+function updateTicker(sym,p,c) {
+  const pos=c>=0;
+  const pe=document.getElementById(`tk-${sym}-p`),ce=document.getElementById(`tk-${sym}-c`);
+  if(pe)pe.textContent='$'+p.toLocaleString(undefined,{maximumFractionDigits:p<10?4:2});
+  if(ce){ce.textContent=(pos?'+':'')+c.toFixed(2)+'%';ce.className='tick-chg '+(pos?'tick-up':'tick-dn');}
+  // Also update portfolio header eth price
+  if(sym==='eth'){
+    const el=document.getElementById('pfc-eth'),el2=document.getElementById('pfc-eth-chg');
+    if(el)el.textContent='$'+p.toLocaleString(undefined,{maximumFractionDigits:0});
+    if(el2){el2.textContent=(pos?'+':'')+c.toFixed(2)+'% 24h';el2.style.color=pos?'var(--go)':'var(--stop)';}
+  }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━
+   PORTFOLIO STRIP
+━━━━━━━━━━━━━━━━━━━ */
+function updatePFStrip() {
+  const total=PF.totalUSD, native=PF.totalNativeUSD, tok=PF.totalTokUSD;
+  const cnt=Object.keys(PF.wallets).length;
+  const g=id=>document.getElementById(id);
+  g('pfc-total').textContent=fU(total);
+  g('pfc-wallets').textContent=cnt+' wallet';
+  g('pfc-native').textContent=fU(native);
+  g('pfc-tokens').textContent=fU(tok);
+  g('pfc-tokens-sub').textContent=cnt+' wallet aggiunt'+(cnt===1?'o':'i');
+  // Native breakdown
+  const nbl=Object.values(PF.wallets).reduce((a,w)=>a+(w.sym==='ETH'?w.bal:0),0);
+  const sol=Object.values(PF.wallets).reduce((a,w)=>a+(w.sym==='SOL'?w.bal:0),0);
+  const bnb=Object.values(PF.wallets).reduce((a,w)=>a+(w.sym==='BNB'?w.bal:0),0);
+  const parts=[];
+  if(nbl>0)parts.push(`${nbl.toFixed(4)} ETH`);
+  if(sol>0)parts.push(`${sol.toFixed(3)} SOL`);
+  if(bnb>0)parts.push(`${bnb.toFixed(3)} BNB`);
+  g('pfc-native-sub').textContent=parts.join(' · ')||'0 native token';
+  // Header
+  g('pfh-total').textContent=fU(total);
+  g('pfh-wallets-lbl').textContent=cnt>0?`${cnt} wallet · ${fU(total)} totale`:'Aggiungi wallet per tracciare il tuo portfolio';
+}
+
+/* ━━━━━━━━━━━━━━━━━━━
+   RPC ENGINE (multi-chain EVM + Solana)
+━━━━━━━━━━━━━━━━━━━ */
+async function rpc(chain,method,params) {
+  const eps=RPC[chain]||RPC.eth;
+  for(const url of eps){
+    try{
+      const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',method,params,id:1}),signal:AbortSignal.timeout(8000)});
+      if(!r.ok)continue;
+      const d=await r.json();
+      if(d.result!==undefined)return d.result;
+    }catch(_){}
   }
   return null;
 }
 
-async function fetchBalance(addr, c) {
-  const res = await rpcCall(c, 'eth_getBalance', [addr, 'latest']);
-  if (res === null) throw new Error(`Impossibile leggere il saldo su ${CHAINS[c].name}. Tutti i nodi RPC sono offline o irraggiungibili. Riprova tra qualche secondo.`);
-  return parseInt(res, 16) / 1e18;
+async function getEVMBalance(addr,chain) {
+  const res=await rpc(chain,'eth_getBalance',[addr,'latest']);
+  if(res===null)throw new Error(`Impossibile leggere il saldo su ${CHAINS[chain].name}. Tutti i nodi RPC irraggiungibili — riprova.`);
+  return parseInt(res,16)/1e18;
 }
 
-async function fetchTxCount(addr, c) {
-  const res = await rpcCall(c, 'eth_getTransactionCount', [addr, 'latest']);
-  return res ? parseInt(res, 16) : 0;
+async function getTxCount(addr,chain) {
+  const res=await rpc(chain,'eth_getTransactionCount',[addr,'latest']);
+  return res?parseInt(res,16):0;
 }
 
-/* ═══ PRICES — CoinGecko → Binance → hardcoded ═══ */
-const PRICE_FALLBACKS = {
-  ethereum:       { usd:3800, eur:3510, chg:0 },
-  binancecoin:    { usd:620,  eur:572,  chg:0 },
-  'matic-network':{ usd:0.92, eur:0.85, chg:0 },
-};
-const BINANCE_SYM = { ethereum:'ETHUSDT', binancecoin:'BNBUSDT', 'matic-network':'MATICUSDT' };
-
-async function fetchPrices(cgId) {
-  // 1. CoinGecko
-  try {
-    const r = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=ethereum,binancecoin,matic-network&vs_currencies=usd,eur&include_24hr_change=true`, { signal:AbortSignal.timeout(6000) });
-    if (r.ok) {
-      const d = await r.json();
-      const k = cgId;
-      portfolio.ethPrice = d.ethereum?.usd || 0;
-      return { usd:d[k]?.usd||0, eur:d[k]?.eur||0, chg:d[k]?.usd_24h_change||0 };
-    }
-  } catch(_) {}
-  // 2. Binance
-  const sym = BINANCE_SYM[cgId] || 'ETHUSDT';
-  try {
-    const r = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${sym}`, { signal:AbortSignal.timeout(6000) });
-    if (r.ok) {
-      const d = await r.json();
-      const p = parseFloat(d.lastPrice);
-      if (cgId === 'ethereum') portfolio.ethPrice = p;
-      return { usd:p, eur:p*0.925, chg:parseFloat(d.priceChangePercent) };
-    }
-  } catch(_) {}
-  // 3. Fallback
-  const fb = PRICE_FALLBACKS[cgId] || PRICE_FALLBACKS.ethereum;
-  if (cgId === 'ethereum') portfolio.ethPrice = fb.usd;
-  return fb;
+/* Solana balance via public API */
+async function getSolanaBalance(addr) {
+  const eps=['https://rpc.ankr.com/solana','https://api.mainnet-beta.solana.com'];
+  for(const url of eps){
+    try{
+      const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method:'getBalance',params:[addr]}),signal:AbortSignal.timeout(8000)});
+      if(!r.ok)continue;
+      const d=await r.json();
+      if(d.result?.value!==undefined)return d.result.value/1e9;
+    }catch(_){}
+  }
+  throw new Error('Impossibile leggere il saldo Solana. Controlla l\'indirizzo (deve essere Base58, ~44 caratteri).');
 }
 
-/* ═══ ETHERSCAN-COMPATIBLE SCAN ═══ */
-async function fetchScan(addr, c) {
-  const base = CHAINS[c].scan;
-  const out = { txs:[], tokens:[], nfts:[] };
-
-  // Transactions
+/* Solana transactions via Solscan public API */
+async function getSolanaTransactions(addr) {
   try {
-    const u = `${base}?module=account&action=txlist&address=${addr}&sort=desc&page=1&offset=20`;
-    const r = await fetch(u, { signal:AbortSignal.timeout(10000) });
-    const d = await r.json();
-    if (d.status === '1') out.txs = d.result || [];
-  } catch(_) {}
+    const r=await fetch(`https://api.solscan.io/account/transactions?account=${addr}&limit=20`,{signal:AbortSignal.timeout(10000)});
+    if(!r.ok)return [];
+    const d=await r.json();
+    if(Array.isArray(d))return d.map(tx=>({
+      hash:tx.txHash,type:'SOL_TX',blockTime:tx.blockTime,
+      lamport:tx.lamport||0,status:tx.status,
+      isIn:false,isOut:false,isSol:true,
+      solChange:(tx.change?.amount||0)/1e9,
+    }));
+    return [];
+  }catch(_){return [];}
+}
 
-  // ERC-20 tokens
+/* Solana tokens via Solscan */
+async function getSolanaTokens(addr) {
   try {
-    const u = `${base}?module=account&action=tokentx&address=${addr}&sort=desc&page=1&offset=100`;
-    const r = await fetch(u, { signal:AbortSignal.timeout(10000) });
-    const d = await r.json();
-    if (d.status === '1' && Array.isArray(d.result)) {
-      const map = {};
-      for (const tx of d.result) {
-        const sym = tx.tokenSymbol?.trim() || '?';
-        const dec = parseInt(tx.tokenDecimal) || 18;
-        const val = parseFloat(tx.value) / Math.pow(10, dec);
-        if (!map[sym]) map[sym] = { sym, name:tx.tokenName, contract:tx.contractAddress, balance:0 };
-        if (tx.to?.toLowerCase() === addr.toLowerCase()) map[sym].balance += val;
-        else map[sym].balance -= val;
+    const r=await fetch(`https://api.solscan.io/account/tokens?account=${addr}`,{signal:AbortSignal.timeout(8000)});
+    if(!r.ok)return[];
+    const d=await r.json();
+    if(!Array.isArray(d))return[];
+    return d.filter(t=>t.tokenAmount?.uiAmount>0).map(t=>({
+      sym:t.tokenSymbol||'?',name:t.tokenName||'—',balance:t.tokenAmount?.uiAmount||0,
+      contract:t.tokenAddress,priceUSD:null,valueUSD:null,
+    }));
+  }catch(_){return[];}
+}
+
+/* ━━━━━━━━━━━━━━━━━━━
+   ETHERSCAN SCAN
+━━━━━━━━━━━━━━━━━━━ */
+async function ethscan(chain,addr) {
+  const base=CHAINS[chain].scan;
+  const out={txs:[],tokens:[],nfts:[]};
+
+  // Full history with pagination (up to 500 latest)
+  const pages=[1,2,3]; // 3 pages x 100 = up to 300 transactions
+  const allTxs=[];
+  for(const page of pages){
+    try{
+      const u=`${base}?module=account&action=txlist&address=${addr}&sort=desc&page=${page}&offset=100`;
+      const r=await fetch(u,{signal:AbortSignal.timeout(10000)});
+      const d=await r.json();
+      if(d.status==='1'&&Array.isArray(d.result)){
+        allTxs.push(...d.result);
+        if(d.result.length<100)break; // no more pages
+      }else break;
+    }catch(_){break;}
+  }
+  out.txs=allTxs;
+
+  // Tokens
+  try{
+    const u=`${base}?module=account&action=tokentx&address=${addr}&sort=desc&page=1&offset=200`;
+    const r=await fetch(u,{signal:AbortSignal.timeout(10000)});
+    const d=await r.json();
+    if(d.status==='1'&&Array.isArray(d.result)){
+      const map={};
+      for(const tx of d.result){
+        const sym=tx.tokenSymbol?.trim()||'?';
+        const dec=parseInt(tx.tokenDecimal)||18;
+        const val=parseFloat(tx.value)/Math.pow(10,dec);
+        if(!map[sym])map[sym]={sym,name:tx.tokenName,contract:tx.contractAddress,balance:0};
+        if(tx.to?.toLowerCase()===addr.toLowerCase())map[sym].balance+=val;
+        else map[sym].balance-=val;
       }
-      out.tokens = Object.values(map).filter(t => t.balance > 0.000001).sort((a,b) => b.balance - a.balance);
+      out.tokens=Object.values(map).filter(t=>t.balance>0.000001).sort((a,b)=>b.balance-a.balance);
     }
-  } catch(_) {}
+  }catch(_){}
 
   // NFTs
-  try {
-    const u = `${base}?module=account&action=tokennfttx&address=${addr}&sort=desc&page=1&offset=50`;
-    const r = await fetch(u, { signal:AbortSignal.timeout(10000) });
-    const d = await r.json();
-    if (d.status === '1' && Array.isArray(d.result)) {
-      const map = {};
-      for (const tx of d.result) {
-        if (tx.to?.toLowerCase() !== addr.toLowerCase()) continue;
-        const k = tx.contractAddress;
-        if (!map[k]) map[k] = { name:tx.tokenName, sym:tx.tokenSymbol, contract:tx.contractAddress, ids:[] };
-        if (!map[k].ids.includes(tx.tokenID)) map[k].ids.push(tx.tokenID);
+  try{
+    const u=`${base}?module=account&action=tokennfttx&address=${addr}&sort=desc&page=1&offset=100`;
+    const r=await fetch(u,{signal:AbortSignal.timeout(10000)});
+    const d=await r.json();
+    if(d.status==='1'&&Array.isArray(d.result)){
+      const map={};
+      for(const tx of d.result){
+        if(tx.to?.toLowerCase()!==addr.toLowerCase())continue;
+        const k=tx.contractAddress;
+        if(!map[k])map[k]={name:tx.tokenName,sym:tx.tokenSymbol,contract:tx.contractAddress,ids:[]};
+        if(!map[k].ids.includes(tx.tokenID))map[k].ids.push(tx.tokenID);
       }
-      out.nfts = Object.values(map);
+      out.nfts=Object.values(map);
     }
-  } catch(_) {}
+  }catch(_){}
 
   return out;
 }
 
-/* Token prices */
-async function fetchTokenPrices(tokens) {
-  const symToId = {
-    USDT:'tether',USDC:'usd-coin',DAI:'dai',WETH:'weth',WBTC:'wrapped-bitcoin',
-    UNI:'uniswap',LINK:'chainlink',AAVE:'aave',CRV:'curve-dao-token',MKR:'maker',
-    LDO:'lido-dao',ARB:'arbitrum',OP:'optimism',MATIC:'matic-network',
-    SHIB:'shiba-inu',PEPE:'pepe',stETH:'staked-ether',wstETH:'wrapped-steth',rETH:'rocket-pool-eth',
-  };
-  const ids = [...new Set(tokens.map(t => symToId[t.sym]).filter(Boolean))].join(',');
-  if (!ids) return {};
-  try {
-    const r = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`, { signal:AbortSignal.timeout(6000) });
-    if (!r.ok) return {};
-    const d = await r.json();
-    const out = {};
-    tokens.forEach(t => { const id = symToId[t.sym]; if (id && d[id]) out[t.sym] = d[id].usd; });
+/* Token prices CoinGecko */
+const SYM_TO_CG={USDT:'tether',USDC:'usd-coin',DAI:'dai',WETH:'weth',WBTC:'wrapped-bitcoin',UNI:'uniswap',LINK:'chainlink',AAVE:'aave',CRV:'curve-dao-token',MKR:'maker',LDO:'lido-dao',ARB:'arbitrum',OP:'optimism',MATIC:'matic-network',SHIB:'shiba-inu',PEPE:'pepe',stETH:'staked-ether',wstETH:'wrapped-steth',rETH:'rocket-pool-eth',COMP:'compound-coin',SNX:'havven'};
+
+async function fetchTokenPrices(tokens){
+  const ids=[...new Set(tokens.map(t=>SYM_TO_CG[t.sym]).filter(Boolean))].join(',');
+  if(!ids)return{};
+  try{
+    const r=await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`,{signal:AbortSignal.timeout(6000)});
+    if(!r.ok)return{};
+    const d=await r.json();
+    const out={};
+    tokens.forEach(t=>{const id=SYM_TO_CG[t.sym];if(id&&d[id])out[t.sym]=d[id].usd;});
     return out;
-  } catch(_) { return {}; }
+  }catch(_){return{};}
 }
 
-/* ═══ PORTFOLIO STRIP UPDATE ═══ */
-function updatePortfolioStrip() {
-  const totalUSD = portfolio.ethBal * portfolio.ethPrice + portfolio.tokUSD;
-  const chg = nativePrice.chg || 0;
+/* Native prices */
+async function getNativePrice(chain){
+  const sym=CHAINS[chain].binance;
+  try{
+    const r=await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${sym}`,{signal:AbortSignal.timeout(6000)});
+    if(r.ok){const d=await r.json();return{usd:parseFloat(d.lastPrice),eur:parseFloat(d.lastPrice)*.925,chg:parseFloat(d.priceChangePercent)};}
+  }catch(_){}
+  const fb={eth:{usd:3800,eur:3510,chg:0},binancecoin:{usd:620,eur:572,chg:0},'matic-network':{usd:.92,eur:.85,chg:0},solana:{usd:180,eur:166,chg:0}};
+  return fb[CHAINS[chain].cg]||fb.eth;
+}
 
-  const e = id => document.getElementById(id);
-  e('ps-total').textContent = fUSD(totalUSD);
-  e('ps-eth').textContent = fUSD(portfolio.ethBal * portfolio.ethPrice);
-  e('ps-eth-sub').textContent = portfolio.ethBal.toFixed(6) + ' ETH';
-  e('ps-tokens').textContent = fUSD(portfolio.tokUSD);
-  e('ps-tokens-sub').textContent = Object.keys(portfolio.wallets).length + ' wallet aggiunt' + (Object.keys(portfolio.wallets).length === 1 ? 'o' : 'i');
-  e('ps-eth-price').textContent = fUSD(portfolio.ethPrice);
-  const chgEl = e('ps-eth-chg');
-  chgEl.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '% 24h';
-  chgEl.style.color = chg >= 0 ? 'var(--green)' : 'var(--red)';
+/* ━━━━━━━━━━━━━━━━━━━
+   MAIN SCAN
+━━━━━━━━━━━━━━━━━━━ */
+async function scan() {
+  const raw=document.getElementById('wallet-input').value.trim();
+  const chain=currentChain;
+  const cfg=CHAINS[chain];
 
-  if (totalUSD > 0) {
-    const chgEl2 = e('ps-total-chg');
-    chgEl2.style.display = 'inline-flex';
-    chgEl2.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
-    chgEl2.className = 'psc-chg ' + (chg >= 0 ? 'up' : 'dn');
+  // Validate
+  if(!raw)return showErr('Inserisci un indirizzo wallet.','');
+  if(chain==='solana'){
+    if(raw.length<32||raw.length>44||!/^[1-9A-HJ-NP-Za-km-z]+$/.test(raw))
+      return showErr('Indirizzo Solana non valido.','Deve essere Base58, 32-44 caratteri');
+  } else {
+    if(!raw.startsWith('0x'))return showErr('Indirizzo non valido.','Deve iniziare con 0x');
+    if(raw.length!==42)return showErr('Lunghezza errata.',`Trovati ${raw.length} caratteri, richiesti 42`);
+    if(!/^0x[0-9a-fA-F]{40}$/.test(raw))return showErr('Caratteri non validi.','Solo 0-9 e a-f');
   }
-}
 
-/* Live price refresh every 15s */
-async function refreshLivePrices() {
-  try {
-    const r = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=ETHUSDT', { signal:AbortSignal.timeout(5000) });
-    if (r.ok) {
-      const d = await r.json();
-      portfolio.ethPrice = parseFloat(d.lastPrice);
-      nativePrice.chg = parseFloat(d.priceChangePercent);
-      nativePrice.usd = portfolio.ethPrice;
-      updatePortfolioStrip();
-    }
-  } catch(_) {}
-}
-
-/* ═══ ADD TO PORTFOLIO ═══ */
-function addToPortfolio(addr, c, bal, tokens, tokTotalUSD) {
-  const btn = document.getElementById('add-portfolio-btn');
-  if (portfolio.wallets[addr]) {
-    showToast('Wallet già nel portfolio!');
-    if (btn) { btn.innerHTML = '<i class="ti ti-check"></i> Aggiunto'; btn.classList.add('added'); }
-    return;
-  }
-  portfolio.wallets[addr] = { chain:c, bal, tokens, tokTotalUSD };
-  // Recalculate totals
-  portfolio.ethBal = Object.values(portfolio.wallets).reduce((a,w) => a + (w.bal || 0), 0);
-  portfolio.tokUSD = Object.values(portfolio.wallets).reduce((a,w) => a + (w.tokTotalUSD || 0), 0);
-  updatePortfolioStrip();
-  showToast('✓ Portfolio aggiornato! +' + fUSD(bal * portfolio.ethPrice));
-  if (btn) { btn.innerHTML = '<i class="ti ti-check"></i> Aggiunto'; btn.classList.add('added'); }
-
-  // Sync to main site (localStorage)
-  try {
-    const stored = JSON.parse(localStorage.getItem('nexora_portfolio') || '{}');
-    stored[addr] = { chain:c, bal, ethPrice: portfolio.ethPrice, tokTotalUSD, addedAt: Date.now() };
-    localStorage.setItem('nexora_portfolio', JSON.stringify(stored));
-  } catch(_) {}
-}
-
-/* ═══ MAIN ANALYZE ═══ */
-async function analyzeWallet() {
-  const raw = document.getElementById('wallet-input').value.trim();
-
-  if (!raw) return showErr('Inserisci un indirizzo wallet.', '');
-  if (!raw.startsWith('0x')) return showErr('Indirizzo non valido.', 'Deve iniziare con 0x');
-  if (raw.length !== 42) return showErr('Lunghezza errata.', `Trovati ${raw.length} caratteri, richiesti 42`);
-  if (!/^0x[0-9a-fA-F]{40}$/.test(raw)) return showErr('Caratteri non validi.', 'Solo 0-9 e a-f');
-
-  const addr = raw.toLowerCase();
-  const cfg = CHAINS[chain];
+  const addr=chain==='solana'?raw:raw.toLowerCase();
 
   hideErr();
-  document.getElementById('results').style.display = 'none';
-  document.getElementById('loading-wrap').style.display = 'block';
-  document.getElementById('search-btn').disabled = true;
-  document.getElementById('loading-sub').textContent = `Connessione a ${cfg.name}...`;
-  [1,2,3,4,5].forEach(n => doStep(n, ''));
+  document.getElementById('results').style.display='none';
+  document.getElementById('loading').style.display='block';
+  document.getElementById('scan-btn').disabled=true;
+  document.getElementById('load-sub').textContent=`Connessione a ${cfg.name}...`;
+  [1,2,3,4,5].forEach(n=>lstep(n,''));
 
   try {
-    // Step 1 — Balance
-    doStep(1, 'active');
-    document.getElementById('loading-sub').textContent = `Lettura saldo ${cfg.sym} da ${cfg.name}...`;
-    const [bal, txCount] = await Promise.all([ fetchBalance(addr, chain), fetchTxCount(addr, chain) ]);
-    doStep(1, 'done');
+    lstep(1,'on');
+    document.getElementById('load-sub').textContent=`Lettura saldo ${cfg.sym}...`;
+    let bal=0, txCount=0;
+    if(chain==='solana'){
+      bal=await getSolanaBalance(addr);
+    } else {
+      [bal,txCount]=await Promise.all([getEVMBalance(addr,chain),getTxCount(addr,chain)]);
+    }
+    lstep(1,'ok');
 
-    // Step 2 — Prices
-    doStep(2, 'active');
-    document.getElementById('loading-sub').textContent = 'Recupero prezzi live...';
-    nativePrice = await fetchPrices(cfg.coingecko);
-    const balUSD = bal * nativePrice.usd;
-    const balEUR = bal * nativePrice.eur;
-    doStep(2, 'done');
+    lstep(2,'on');
+    document.getElementById('load-sub').textContent='Prezzi live...';
+    const np=await getNativePrice(chain);
+    const balUSD=bal*np.usd, balEUR=bal*np.eur;
+    lstep(2,'ok');
 
-    // Step 3 — Tokens
-    doStep(3, 'active');
-    document.getElementById('loading-sub').textContent = 'Scansione token ERC-20...';
-    const scan = await fetchScan(addr, chain);
-    const { txs, tokens, nfts } = scan;
-    doStep(3, 'done');
+    lstep(3,'on');
+    document.getElementById('load-sub').textContent='Scansione token...';
+    let txs=[],tokens=[],nfts=[];
+    if(chain==='solana'){
+      [tokens,[...txs]]=await Promise.all([getSolanaTokens(addr),getSolanaTransactions(addr)]);
+    } else {
+      const sd=await ethscan(chain,addr);
+      txs=sd.txs; tokens=sd.tokens; nfts=sd.nfts;
+    }
+    lstep(3,'ok');
 
-    // Step 4 — Token prices
-    doStep(4, 'active');
-    document.getElementById('loading-sub').textContent = 'Calcolo valore portfolio...';
-    const tokPrices = await fetchTokenPrices(tokens);
-    let tokTotalUSD = 0;
-    tokens.forEach(t => {
-      t.priceUSD = tokPrices[t.sym] || null;
-      t.valueUSD = t.priceUSD ? t.balance * t.priceUSD : null;
-      if (t.valueUSD) tokTotalUSD += t.valueUSD;
-    });
-    const totalUSD = balUSD + tokTotalUSD;
-    const totalEUR = balEUR + tokTotalUSD * 0.925;
-    doStep(4, 'done');
+    lstep(4,'on');
+    document.getElementById('load-sub').textContent='Valutazione portfolio...';
+    const tokP=await fetchTokenPrices(tokens);
+    let tokTotal=0;
+    tokens.forEach(t=>{ t.priceUSD=tokP[t.sym]||null; t.valueUSD=t.priceUSD?t.balance*t.priceUSD:null; if(t.valueUSD)tokTotal+=t.valueUSD; });
+    const totalUSD=balUSD+tokTotal, totalEUR=balEUR+tokTotal*.925;
+    lstep(4,'ok');
 
-    // Step 5 — NFT & DeFi
-    doStep(5, 'active');
-    await new Promise(r => setTimeout(r, 200));
-    doStep(5, 'done');
+    lstep(5,'on');
+    await new Promise(r=>setTimeout(r,150));
+    lstep(5,'ok');
 
-    // Tx stats
-    const inTx  = txs.filter(t => t.to?.toLowerCase()   === addr);
-    const outTx = txs.filter(t => t.from?.toLowerCase() === addr);
-    const gasETH = txs.reduce((a,t) => a + parseInt(t.gasUsed||0)*parseInt(t.gasPrice||0)/1e18, 0);
-    const errTx = txs.filter(t => t.isError === '1');
+    const inTxs=txs.filter(t=>t.to?.toLowerCase()===addr);
+    const outTxs=txs.filter(t=>t.from?.toLowerCase()===addr);
+    const ctTxs=txs.filter(t=>t.input&&t.input.length>2);
+    const gasETH=txs.reduce((a,t)=>a+parseInt(t.gasUsed||0)*parseInt(t.gasPrice||0)/1e18,0);
+    const errTxs=txs.filter(t=>t.isError==='1');
 
-    // Render
-    document.getElementById('loading-wrap').style.display = 'none';
-    document.getElementById('results').style.display = 'block';
+    lastScanData={addr,chain,cfg,bal,txCount,np,balUSD,balEUR,txs,tokens,nfts,tokTotal,totalUSD,totalEUR,inTxs,outTxs,ctTxs,gasETH,errTxs};
 
-    renderBanner(addr, chain, cfg, txCount, bal, tokens, tokTotalUSD);
-    renderKPIs(totalUSD, totalEUR, bal, balUSD, tokens.length, txCount);
-    renderNative(bal, balUSD, balEUR, cfg);
+    document.getElementById('loading').style.display='none';
+    document.getElementById('results').style.display='block';
+
+    renderBanner(addr,chain,cfg,txCount,bal,tokTotal);
+    renderKPIs(totalUSD,totalEUR,bal,balUSD,tokens.length,txCount,np);
+    renderNative(bal,balUSD,balEUR,cfg,np);
     renderTokens(tokens);
-    renderStats(txCount, inTx.length, outTx.length, gasETH, errTx.length, txs, tokTotalUSD, cfg);
-    renderTxs(txs, addr, cfg);
-    renderNFTs(nfts, cfg);
+    renderStats(txCount,inTxs.length,outTxs.length,gasETH,errTxs.length,txs,tokTotal,cfg);
+    renderAllTxs(txs,inTxs,outTxs,ctTxs,addr,cfg);
+    buildActivityChart(txs,'volume');
+    renderNFTs(nfts,cfg);
     renderDeFi(tokens);
 
-    document.getElementById('footer-note').textContent =
-      `Analisi completata: ${new Date().toLocaleString('it-IT')} · ${cfg.name} · Ankr RPC + Etherscan + CoinGecko`;
+    document.getElementById('footer-note').textContent=`Analisi: ${new Date().toLocaleString('it-IT')} · ${cfg.name} · ${txs.length} tx caricate · Ankr + Etherscan + CoinGecko`;
 
-    // Update portfolio prices
-    updatePortfolioStrip();
-
-  } catch(err) {
+  }catch(err){
     console.error(err);
-    showErr(err.message || 'Errore durante l\'analisi', 'Controlla la connessione e riprova');
-    [1,2,3,4,5].forEach(n => { const e = document.getElementById('step-'+n); if (e && e.classList.contains('active')) doStep(n, 'err'); });
-  } finally {
-    document.getElementById('search-btn').disabled = false;
+    showErr(err.message||'Errore durante la scansione','Verifica connessione e riprova');
+    [1,2,3,4,5].forEach(n=>{ const e=document.getElementById('ls'+n); if(e&&e.classList.contains('on'))lstep(n,'err'); });
+  }finally{
+    document.getElementById('scan-btn').disabled=false;
   }
 }
 
-/* ═══ RENDER ═══ */
-function renderBanner(addr, c, cfg, txCount, bal, tokens, tokTotalUSD) {
-  const isAdded = !!portfolio.wallets[addr];
-  document.getElementById('addr-bar').innerHTML = `
-    <div class="addr-left">
-      <div class="addr-ico"><i class="ti ti-wallet"></i></div>
+/* ━━━━━━━━━━━━━━━━━━━
+   RENDER FUNCTIONS
+━━━━━━━━━━━━━━━━━━━ */
+function renderBanner(addr,chain,cfg,txCount,bal,tokTotal) {
+  const isAdded=!!PF.wallets[addr];
+  document.getElementById('addr-banner').innerHTML=`
+    <div class="ab-left">
+      <div class="ab-ico"><i class="ti ti-wallet"></i></div>
       <div>
-        <div class="addr-lbl">Indirizzo ${cfg.name}</div>
-        <div class="addr-val">
+        <div class="ab-chain">${cfg.name}</div>
+        <div class="ab-addr">
           <span>${addr}</span>
-          <button class="icon-btn" onclick="copyAddr('${addr}')" title="Copia"><i class="ti ti-copy"></i></button>
-          <a href="${cfg.explorer}/address/${addr}" target="_blank" class="icon-btn" title="Explorer"><i class="ti ti-external-link"></i></a>
+          <button class="icon-btn" onclick="cp('${addr}')" title="Copia"><i class="ti ti-copy"></i></button>
+          <a href="${cfg.explorer}/address/${addr}" target="_blank" class="icon-btn"><i class="ti ti-external-link"></i></a>
         </div>
       </div>
     </div>
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <div class="ab-right">
       <div class="addr-badges">
-        <span class="badge badge-g"><i class="ti ti-check"></i>Valido</span>
-        <span class="badge badge-b">${cfg.name}</span>
-        ${txCount > 0 ? `<span class="badge badge-y"><i class="ti ti-arrows-exchange"></i>${txCount.toLocaleString()} tx</span>` : '<span class="badge" style="background:rgba(68,138,255,.1);color:var(--blue);border:1px solid rgba(68,138,255,.2)">Nuovo</span>'}
+        <span class="badge bdg-g"><i class="ti ti-check"></i>Valido</span>
+        <span class="badge bdg-b">${cfg.name}</span>
+        ${txCount>0?`<span class="badge bdg-y"><i class="ti ti-arrows-exchange"></i>${txCount.toLocaleString()} tx</span>`:'<span class="badge" style="background:rgba(59,139,255,.1);color:var(--sky);border:1px solid rgba(59,139,255,.2)">Nuovo</span>'}
       </div>
-      <button class="add-portfolio-btn ${isAdded?'added':''}" id="add-portfolio-btn" onclick="addToPortfolio('${addr}','${c}',${bal},${JSON.stringify([])},${tokTotalUSD})">
-        ${isAdded ? '<i class="ti ti-check"></i> Aggiunto' : '<i class="ti ti-plus"></i> Aggiungi al portfolio'}
+      <button class="add-btn ${isAdded?'added':''}" id="add-pf-btn" onclick="addToPortfolio('${addr}','${chain}',${bal})">
+        ${isAdded?'<i class="ti ti-check"></i> Nel portfolio':'<i class="ti ti-plus"></i> Aggiungi al portfolio'}
       </button>
     </div>`;
 }
 
-function renderKPIs(totalUSD, totalEUR, bal, balUSD, tokCount, txCount) {
-  const chg = nativePrice.chg || 0, sym = CHAINS[chain].sym;
-  document.getElementById('kpi-grid').innerHTML = `
-    <div class="kpi"><i class="ti ti-currency-dollar kpi-ic"></i><div class="kpi-l">Portfolio wallet</div><div class="kpi-v">${fUSD(totalUSD)}</div><div class="kpi-s">${fEUR(totalEUR)}</div></div>
-    <div class="kpi"><i class="ti ti-currency-ethereum kpi-ic"></i><div class="kpi-l">Saldo ${sym}</div><div class="kpi-v">${fN(bal,6)}</div><div class="kpi-s">${fUSD(balUSD)}</div></div>
-    <div class="kpi"><i class="ti ti-coins kpi-ic"></i><div class="kpi-l">Token ERC-20</div><div class="kpi-v">${tokCount}</div><div class="kpi-s">token trovati</div></div>
-    <div class="kpi"><i class="ti ti-trending-up kpi-ic"></i><div class="kpi-l">Prezzo ${sym}</div><div class="kpi-v">${fUSD(nativePrice.usd)}</div><div class="kpi-s" style="color:${chg>=0?'var(--green)':'var(--red)'}">${chg>=0?'+':''}${chg.toFixed(2)}% 24h</div></div>`;
+function renderKPIs(totalUSD,totalEUR,bal,balUSD,tokCount,txCount,np) {
+  const chg=np.chg||0,sym=CHAINS[currentChain].sym;
+  document.getElementById('kpi-row').innerHTML=`
+    <div class="kpi"><i class="ti ti-currency-dollar kpi-bg"></i><div class="kpi-l">Portfolio wallet</div><div class="kpi-v">${fU(totalUSD)}</div><div class="kpi-s">${fE(totalEUR)}</div></div>
+    <div class="kpi"><i class="ti ti-currency-ethereum kpi-bg"></i><div class="kpi-l">Saldo ${sym}</div><div class="kpi-v">${fN(bal,6)}</div><div class="kpi-s">${fU(balUSD)}</div></div>
+    <div class="kpi"><i class="ti ti-coins kpi-bg"></i><div class="kpi-l">Token</div><div class="kpi-v">${tokCount}</div><div class="kpi-s">asset trovati</div></div>
+    <div class="kpi"><i class="ti ti-trending-up kpi-bg"></i><div class="kpi-l">Prezzo ${sym}</div><div class="kpi-v">${fU(np.usd)}</div><div class="kpi-s" style="color:${chg>=0?'var(--go)':'var(--stop)'}">${chg>=0?'+':''}${chg.toFixed(2)}% 24h</div></div>`;
 }
 
-function renderNative(bal, usd, eur, cfg) {
-  const chg = nativePrice.chg || 0;
-  document.getElementById('sect-native').innerHTML = `
+function renderNative(bal,usd,eur,cfg,np) {
+  const chg=np.chg||0;
+  document.getElementById('sect-native').innerHTML=`
     <div class="native-box">
-      <div class="native-amount">${bal.toFixed(6)}</div>
-      <div class="native-sym">${cfg.sym}</div>
-      <div class="native-usd">${fUSD(usd)}</div>
-      <div class="native-eur">${fEUR(eur)}</div>
-      <div class="native-grid">
-        <div class="ng-item"><div class="ng-l">Prezzo</div><div class="ng-v">${fUSD(nativePrice.usd)}</div></div>
-        <div class="ng-item"><div class="ng-l">Var 24h</div><div class="ng-v" style="color:${chg>=0?'var(--green)':'var(--red)'}">${chg>=0?'+':''}${chg.toFixed(2)}%</div></div>
-        <div class="ng-item"><div class="ng-l">In EUR</div><div class="ng-v">${fEUR(nativePrice.eur)}</div></div>
-        <div class="ng-item"><div class="ng-l">Rete</div><div class="ng-v">${cfg.name}</div></div>
+      <div class="nb-amount">${bal.toFixed(6)}</div>
+      <div class="nb-sym">${cfg.sym}</div>
+      <div class="nb-usd">${fU(usd)}</div>
+      <div class="nb-eur">${fE(eur)}</div>
+      <div class="nb-grid">
+        <div class="nb-item"><div class="nb-lbl">Prezzo</div><div class="nb-v">${fU(np.usd)}</div></div>
+        <div class="nb-item"><div class="nb-lbl">24h</div><div class="nb-v" style="color:${chg>=0?'var(--go)':'var(--stop)'}">${chg>=0?'+':''}${chg.toFixed(2)}%</div></div>
+        <div class="nb-item"><div class="nb-lbl">In EUR</div><div class="nb-v">${fE(np.eur)}</div></div>
+        <div class="nb-item"><div class="nb-lbl">Rete</div><div class="nb-v" style="font-size:11px">${cfg.name}</div></div>
       </div>
     </div>`;
 }
 
 function renderTokens(tokens) {
-  document.getElementById('bdg-tok').textContent = tokens.length;
-  if (!tokens.length) { document.getElementById('sect-tokens').innerHTML = '<div class="empty"><i class="ti ti-inbox"></i>Nessun token ERC-20</div>'; return; }
-  document.getElementById('sect-tokens').innerHTML = tokens.slice(0,10).map((t,i) => `
+  document.getElementById('bdg-tokens').textContent=tokens.length;
+  if(!tokens.length){document.getElementById('sect-tokens').innerHTML='<div class="empty"><i class="ti ti-inbox"></i>Nessun token</div>';return;}
+  document.getElementById('sect-tokens').innerHTML=tokens.slice(0,12).map((t,i)=>`
     <div class="tok-row">
       <div class="tok-av" style="background:${TOK_COLORS[i%TOK_COLORS.length]}">${t.sym.slice(0,3)}</div>
-      <div class="tok-info"><div class="tok-sym">${t.sym}</div><div class="tok-name">${t.name||'—'}</div></div>
-      <div class="tok-r"><div class="tok-bal">${fN(t.balance,4)}</div><div class="tok-usd">${t.valueUSD?fUSD(t.valueUSD):'—'}</div></div>
-    </div>`).join('') + (tokens.length>10?`<div style="text-align:center;padding:10px 0;font-size:11px;color:var(--text3)">+ altri ${tokens.length-10} token</div>`:'');
+      <div style="flex:1;min-width:0"><div class="tok-sym">${t.sym}</div><div class="tok-name">${t.name||'—'}</div></div>
+      <div style="text-align:right"><div class="tok-bal">${fN(t.balance,4)}</div><div class="tok-usd">${t.valueUSD?fU(t.valueUSD):'—'}</div></div>
+    </div>`).join('')+(tokens.length>12?`<div style="text-align:center;padding:10px 0;font-size:10px;color:var(--txt3)">+${tokens.length-12} altri</div>`:'');
 }
 
-function renderStats(txCount, inCnt, outCnt, gasETH, errCnt, txs, tokUSD, cfg) {
-  const first = txs.length ? txs[txs.length-1] : null, last = txs.length ? txs[0] : null;
-  document.getElementById('sect-stats').innerHTML = `
-    <div class="stat-row"><span class="stat-l">Transazioni totali</span><span class="stat-v">${txCount.toLocaleString()}</span></div>
-    <div class="stat-row"><span class="stat-l">In entrata (ultime 20)</span><span class="stat-v pos">${inCnt}</span></div>
-    <div class="stat-row"><span class="stat-l">In uscita (ultime 20)</span><span class="stat-v neg">${outCnt}</span></div>
-    <div class="stat-row"><span class="stat-l">TX fallite</span><span class="stat-v ${errCnt>0?'neg':''}">${errCnt}</span></div>
-    <div class="stat-row"><span class="stat-l">Gas totale</span><span class="stat-v warn">${gasETH.toFixed(5)} ${cfg.sym}</span></div>
-    <div class="stat-row"><span class="stat-l">Valore token</span><span class="stat-v">${fUSD(tokUSD)}</span></div>
-    <div class="stat-row"><span class="stat-l">Prima TX</span><span class="stat-v" style="font-size:10px">${first?ago(first.timeStamp):'—'}</span></div>
-    <div class="stat-row"><span class="stat-l">Ultima TX</span><span class="stat-v" style="font-size:10px">${last?ago(last.timeStamp):'—'}</span></div>`;
+function renderStats(txCount,inC,outC,gasETH,errC,txs,tokUSD,cfg) {
+  const first=txs.length?txs[txs.length-1]:null,last=txs.length?txs[0]:null;
+  document.getElementById('sect-stats').innerHTML=`
+    <div class="sr"><span class="sr-l">Transazioni totali</span><span class="sr-v">${txCount.toLocaleString()}</span></div>
+    <div class="sr"><span class="sr-l">Caricate in questa analisi</span><span class="sr-v">${txs.length}</span></div>
+    <div class="sr"><span class="sr-l">In entrata</span><span class="sr-v up">${inC}</span></div>
+    <div class="sr"><span class="sr-l">In uscita</span><span class="sr-v dn">${outC}</span></div>
+    <div class="sr"><span class="sr-l">TX fallite</span><span class="sr-v ${errC>0?'dn':''}">${errC}</span></div>
+    <div class="sr"><span class="sr-l">Gas totale</span><span class="sr-v" style="color:var(--fire)">${gasETH.toFixed(5)} ${cfg.sym}</span></div>
+    <div class="sr"><span class="sr-l">Valore token</span><span class="sr-v">${fU(tokUSD)}</span></div>
+    <div class="sr"><span class="sr-l">Prima TX</span><span class="sr-v" style="font-size:10px">${first?ago(first.timeStamp):'—'}</span></div>
+    <div class="sr"><span class="sr-l">Ultima TX</span><span class="sr-v" style="font-size:10px">${last?ago(last.timeStamp):'—'}</span></div>`;
 }
 
-function renderTxs(txs, addr, cfg) {
-  document.getElementById('bdg-txs').textContent = txs.length;
-  if (!txs.length) { document.getElementById('sect-txs').innerHTML = '<div class="empty"><i class="ti ti-receipt-off"></i>Nessuna transazione trovata</div>'; return; }
-  document.getElementById('sect-txs').innerHTML = txs.slice(0,15).map(tx => {
-    const isIn = tx.to?.toLowerCase() === addr;
-    const isCt = tx.input && tx.input.length > 2;
-    const type = isCt ? 'ct' : isIn ? 'in' : 'out';
-    const icon = isCt ? 'ti-code' : isIn ? 'ti-arrow-down' : 'ti-arrow-up';
-    const val = parseFloat(tx.value) / 1e18;
-    const fee = parseInt(tx.gasUsed||0) * parseInt(tx.gasPrice||0) / 1e18;
-    const failed = tx.isError === '1';
-    const hs = tx.hash ? tx.hash.slice(0,8)+'…'+tx.hash.slice(-6) : '—';
-    return `<div class="tx-row">
-      <div class="tx-dot tx-${type}"><i class="ti ${icon}"></i></div>
-      <div class="tx-body">
-        <div class="tx-hash"><a href="${cfg.explorer}/tx/${tx.hash}" target="_blank">${hs}</a>${failed?'<span style="color:var(--red);font-size:9px;margin-left:6px;font-weight:700">FAIL</span>':''}${isCt?'<span style="color:var(--blue);font-size:9px;margin-left:6px">contratto</span>':''}</div>
-        <div class="tx-sub">${isIn?'Da '+shrt(tx.from):'A '+shrt(tx.to)} · fee: ${fee.toFixed(5)} ${CHAINS[chain].sym}</div>
+function txHTML(tx,addr,cfg) {
+  if(tx.isSol){
+    const chg=tx.solChange||0;
+    return`<div class="tx-row">
+      <div class="tx-dot tx-ct"><i class="ti ti-sun"></i></div>
+      <div style="flex:1;min-width:0">
+        <div class="tx-hash-lnk"><a href="https://solscan.io/tx/${tx.hash}" target="_blank">${tx.hash?tx.hash.slice(0,10)+'…'+tx.hash.slice(-6):'—'}</a></div>
+        <div class="tx-sub">Solana TX · ${tx.status||'—'}</div>
       </div>
-      <div class="tx-r">
-        <div class="tx-val" style="color:${isIn?'var(--green)':'var(--text2)'}">${isIn?'+':'-'}${val.toFixed(4)} ${CHAINS[chain].sym}</div>
-        <div class="tx-time">${ago(tx.timeStamp)}</div>
+      <div style="text-align:right;flex-shrink:0">
+        <div class="tx-val" style="color:${chg>=0?'var(--go)':'var(--stop)'}">${chg>=0?'+':''}${chg.toFixed(4)} SOL</div>
+        <div class="tx-time">${tx.blockTime?ago(tx.blockTime):'—'}</div>
       </div>
     </div>`;
-  }).join('');
+  }
+  const isIn=tx.to?.toLowerCase()===addr;
+  const isCt=tx.input&&tx.input.length>2;
+  const type=isCt?'ct':isIn?'in':'out';
+  const icon=isCt?'ti-code':isIn?'ti-arrow-down':'ti-arrow-up';
+  const val=parseFloat(tx.value)/1e18;
+  const fee=parseInt(tx.gasUsed||0)*parseInt(tx.gasPrice||0)/1e18;
+  const failed=tx.isError==='1';
+  const hs=tx.hash?tx.hash.slice(0,10)+'…'+tx.hash.slice(-6):'—';
+  return`<div class="tx-row">
+    <div class="tx-dot tx-${type}"><i class="ti ${icon}"></i></div>
+    <div style="flex:1;min-width:0">
+      <div class="tx-hash-lnk">
+        <a href="${cfg.explorer}/tx/${tx.hash}" target="_blank">${hs}</a>
+        ${failed?'<span style="color:var(--stop);font-size:9px;margin-left:6px;font-weight:700">FAIL</span>':''}
+        ${isCt?'<span style="color:var(--sky);font-size:9px;margin-left:6px">contratto</span>':''}
+      </div>
+      <div class="tx-sub">${isIn?'Da '+sh(tx.from):'A '+sh(tx.to)} · fee: ${fee.toFixed(5)} ${cfg.sym}</div>
+    </div>
+    <div style="text-align:right;flex-shrink:0">
+      <div class="tx-val" style="color:${isIn?'var(--go)':'var(--txt2)'}">${isIn?'+':'-'}${val.toFixed(4)} ${cfg.sym}</div>
+      <div class="tx-time">${ago(tx.timeStamp)}</div>
+    </div>
+  </div>`;
 }
 
-function renderNFTs(nfts, cfg) {
-  document.getElementById('bdg-nfts').textContent = nfts.length;
-  if (!nfts.length) { document.getElementById('sect-nfts').innerHTML = '<div class="empty"><i class="ti ti-photo-off"></i>Nessun NFT trovato</div>'; return; }
-  const em = ['🎨','🖼','🎭','🎮','💎','🌟','🔥','🚀','🦊','🐉','🌈','🏆'];
-  document.getElementById('sect-nfts').innerHTML = `<div class="nft-grid">${
-    nfts.slice(0,12).map((n,i) => `<div class="nft-card" onclick="window.open('${cfg.explorer}/token/${n.contract}','_blank')">
+function renderAllTxs(txs,inTxs,outTxs,ctTxs,addr,cfg) {
+  document.getElementById('bdg-txs').textContent=txs.length;
+  const limit=30;
+  document.getElementById('tx-all').innerHTML=txs.length?txs.slice(0,limit).map(t=>txHTML(t,addr,cfg)).join('')+(txs.length>limit?`<div style="text-align:center;padding:12px 0;font-size:11px;color:var(--txt3)">Mostrate ${limit} di ${txs.length} transazioni caricate</div>`:''): '<div class="empty"><i class="ti ti-receipt-off"></i>Nessuna transazione</div>';
+  document.getElementById('tx-in').innerHTML=inTxs.length?inTxs.slice(0,limit).map(t=>txHTML(t,addr,cfg)).join(''):'<div class="empty"><i class="ti ti-receipt-off"></i>Nessuna entrata</div>';
+  document.getElementById('tx-out').innerHTML=outTxs.length?outTxs.slice(0,limit).map(t=>txHTML(t,addr,cfg)).join(''):'<div class="empty"><i class="ti ti-receipt-off"></i>Nessuna uscita</div>';
+  document.getElementById('tx-contract').innerHTML=ctTxs.length?ctTxs.slice(0,limit).map(t=>txHTML(t,addr,cfg)).join(''):'<div class="empty"><i class="ti ti-code-off"></i>Nessuna interazione contratto</div>';
+}
+
+function renderNFTs(nfts,cfg) {
+  document.getElementById('bdg-nfts').textContent=nfts.length;
+  if(!nfts.length){document.getElementById('sect-nfts').innerHTML='<div class="empty"><i class="ti ti-photo-off"></i>Nessun NFT</div>';return;}
+  const em=['🎨','🖼','🎭','🎮','💎','🌟','🔥','🚀','🦊','🐉','🌈','🏆'];
+  document.getElementById('sect-nfts').innerHTML=`<div class="nft-grid">${nfts.slice(0,12).map((n,i)=>`
+    <div class="nft-card" onclick="window.open('${cfg.explorer}/token/${n.contract}','_blank')">
       <div class="nft-img">${em[i%em.length]}</div>
-      <div class="nft-lbl"><div class="nft-name">${n.name||n.sym||'NFT'}</div><div class="nft-cnt">${n.ids.length} item${n.ids.length>1?'s':''}</div></div>
-    </div>`).join('')
-  }</div>`;
+      <div class="nft-lbl"><div class="nft-name">${n.name||n.sym||'NFT'}</div><div class="nft-cnt">${n.ids.length} item</div></div>
+    </div>`).join('')}</div>`;
 }
 
 function renderDeFi(tokens) {
-  const protocols = [
-    { name:'Aave',        icon:'🏦', type:'Lending', syms:['aDAI','aUSDC','aETH','aWBTC','aUSDT','aWETH'] },
-    { name:'Compound',    icon:'🔄', type:'Lending',           syms:['cETH','cDAI','cUSDC','cUSDT'] },
-    { name:'Uniswap',     icon:'🦄', type:'DEX Liquidity',     syms:['UNI-V2','UNI-V3'] },
-    { name:'Lido',        icon:'🌊', type:'Liquid Staking',    syms:['stETH','wstETH'] },
-    { name:'Rocket Pool', icon:'🚀', type:'Staking',           syms:['rETH'] },
-    { name:'Curve',       icon:'🌀', type:'DEX',               syms:['CRV','cvxCRV','3CRV'] },
+  const protos=[
+    {name:'Aave',icon:'🏦',type:'Lending',syms:['aDAI','aUSDC','aETH','aWBTC','aUSDT','aWETH']},
+    {name:'Compound',icon:'🔄',type:'Lending',syms:['cETH','cDAI','cUSDC','cUSDT']},
+    {name:'Uniswap',icon:'🦄',type:'DEX LP',syms:['UNI-V2','UNI-V3']},
+    {name:'Lido',icon:'🌊',type:'Staking',syms:['stETH','wstETH']},
+    {name:'Rocket Pool',icon:'🚀',type:'Staking',syms:['rETH']},
+    {name:'Curve',icon:'🌀',type:'DEX',syms:['CRV','cvxCRV','3CRV']},
   ];
-  const found = protocols.map(p => {
-    const toks = p.syms.map(s => tokens.find(t => t.sym.toLowerCase() === s.toLowerCase())).filter(Boolean);
-    return toks.length ? { ...p, toks, usdVal: toks.reduce((a,t) => a+(t.valueUSD||0), 0) } : null;
+  const found=protos.map(p=>{
+    const toks=p.syms.map(s=>tokens.find(t=>t.sym.toLowerCase()===s.toLowerCase())).filter(Boolean);
+    return toks.length?{...p,toks,usd:toks.reduce((a,t)=>a+(t.valueUSD||0),0)}:null;
   }).filter(Boolean);
-  document.getElementById('bdg-defi').textContent = found.length;
-  if (!found.length) { document.getElementById('sect-defi').innerHTML = '<div class="empty"><i class="ti ti-building-bank"></i>Nessuna posizione DeFi rilevata</div>'; return; }
-  document.getElementById('sect-defi').innerHTML = found.map(p => `
+  document.getElementById('bdg-defi').textContent=found.length;
+  document.getElementById('sect-defi').innerHTML=found.length?found.map(p=>`
     <div class="defi-row">
       <div class="defi-ico">${p.icon}</div>
-      <div class="defi-body"><div class="defi-name">${p.name}</div><div class="defi-type">${p.type} · ${p.toks.map(t=>t.sym).join(', ')}</div></div>
-      <div class="defi-r"><div class="defi-usd">${p.usdVal>0?fUSD(p.usdVal):'—'}</div><div class="defi-sub">${p.toks.length} pos.</div></div>
+      <div style="flex:1"><div class="defi-name">${p.name}</div><div class="defi-type">${p.type} · ${p.toks.map(t=>t.sym).join(', ')}</div></div>
+      <div style="text-align:right"><div class="defi-usd">${p.usd>0?fU(p.usd):'—'}</div></div>
+    </div>`).join(''):'<div class="empty"><i class="ti ti-building-bank"></i>Nessuna posizione DeFi</div>';
+}
+
+/* ━━━━━━━━━━━━━━━━━━━
+   ACTIVITY CHART
+━━━━━━━━━━━━━━━━━━━ */
+function buildActivityChart(txs,mode) {
+  if(activityChart){activityChart.destroy();activityChart=null;}
+  if(!txs.length)return;
+  // Group by day
+  const days={};
+  txs.forEach(tx=>{
+    if(!tx.timeStamp)return;
+    const d=new Date(parseInt(tx.timeStamp)*1000).toLocaleDateString('it-IT',{month:'2-digit',day:'2-digit'});
+    if(!days[d])days[d]={count:0,volume:0};
+    days[d].count++;
+    days[d].volume+=parseFloat(tx.value||0)/1e18;
+  });
+  const labels=Object.keys(days).slice(-30);
+  const data=labels.map(l=>mode==='volume'?parseFloat(days[l].volume.toFixed(4)):days[l].count);
+  const ctx=document.getElementById('activity-chart');
+  if(!ctx)return;
+  activityChart=new Chart(ctx,{
+    type:'bar',
+    data:{labels,datasets:[{data,backgroundColor:'rgba(247,147,26,.5)',hoverBackgroundColor:'var(--fire)',borderRadius:4,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>(mode==='volume'?c.raw.toFixed(4)+' ETH':c.raw+' TX')}}},scales:{x:{ticks:{color:'#404055',font:{size:9},maxTicksLimit:10},grid:{display:false}},y:{ticks:{color:'#404055',font:{size:9}},grid:{color:'rgba(255,255,255,.03)'}}}}
+  });
+}
+
+/* ━━━━━━━━━━━━━━━━━━━
+   PORTFOLIO ENGINE
+━━━━━━━━━━━━━━━━━━━ */
+function addToPortfolio(addr,chain,bal) {
+  const btn=document.getElementById('add-pf-btn');
+  if(PF.wallets[addr]){toast('Wallet già nel portfolio!');return;}
+  const sd=lastScanData;
+  PF.wallets[addr]={
+    chain,bal,sym:CHAINS[chain].sym,
+    tokUSD:sd?.tokTotal||0,
+    tokList:sd?.tokens?.slice(0,5)||[],
+    addedAt:Date.now(),
+  };
+  updatePFStrip();
+  // Save to localStorage
+  try{
+    const s=JSON.parse(localStorage.getItem('nexora_pf')||'{}');
+    s[addr]={chain,bal,sym:CHAINS[chain].sym,tokUSD:sd?.tokTotal||0,addedAt:Date.now()};
+    localStorage.setItem('nexora_pf',JSON.stringify(s));
+  }catch(_){}
+  toast(`✓ Portfolio aggiornato! ${fU(bal*(liveP[CHAINS[chain].sym.toLowerCase()]||0))} aggiunto`);
+  if(btn){btn.innerHTML='<i class="ti ti-check"></i> Nel portfolio';btn.classList.add('added');}
+}
+
+function removeFromPortfolio(addr) {
+  delete PF.wallets[addr];
+  try{const s=JSON.parse(localStorage.getItem('nexora_pf')||'{}');delete s[addr];localStorage.setItem('nexora_pf',JSON.stringify(s));}catch(_){}
+  updatePFStrip();
+  renderPortfolioPage();
+  toast('Wallet rimosso dal portfolio');
+}
+
+function renderPortfolioPage() {
+  const wallets=Object.entries(PF.wallets);
+  const total=PF.totalUSD;
+
+  // Wallets list
+  const wEl=document.getElementById('portfolio-wallets');
+  if(!wallets.length){
+    wEl.innerHTML='<div class="empty"><i class="ti ti-wallet-off"></i>Nessun wallet aggiunto.<br>Scansiona un indirizzo e clicca "Aggiungi al portfolio".</div>';
+  }else{
+    wEl.innerHTML=wallets.map(([addr,w])=>{
+      const p=liveP[w.sym?.toLowerCase()]||0;
+      const val=w.bal*p+(w.tokUSD||0);
+      return`<div class="wallet-item" onclick="loadWallet('${addr}','${w.chain}')">
+        <div style="width:32px;height:32px;border-radius:var(--r8);background:rgba(247,147,26,.12);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--fire);flex-shrink:0"><i class="ti ti-wallet"></i></div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:11px;font-weight:700;font-family:'Syne',sans-serif">${CHAINS[w.chain]?.name||w.chain}</div>
+          <div class="wi-addr">${addr}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div class="wi-val">${fU(val)}</div>
+          <div style="font-size:10px;color:var(--txt2)">${w.bal.toFixed(4)} ${w.sym}</div>
+        </div>
+        <div class="wi-del" onclick="event.stopPropagation();removeFromPortfolio('${addr}')" title="Rimuovi"><i class="ti ti-trash"></i></div>
+      </div>`;
+    }).join('');
+  }
+
+  // Allocation chart
+  buildAllocChart(wallets);
+
+  // Equity chart (simulated trend)
+  buildEquityChart(total);
+
+  // Assets breakdown
+  const assetMap={};
+  wallets.forEach(([addr,w])=>{
+    const sym=w.sym;
+    const p=liveP[sym?.toLowerCase()]||0;
+    if(!assetMap[sym])assetMap[sym]={sym,total:0,native:0};
+    assetMap[sym].total+=w.bal*p;
+    assetMap[sym].native+=w.bal;
+    (w.tokList||[]).forEach(t=>{
+      if(!assetMap[t.sym])assetMap[t.sym]={sym:t.sym,total:0,native:0};
+      assetMap[t.sym].total+=t.valueUSD||0;
+    });
+  });
+  const assets=Object.values(assetMap).sort((a,b)=>b.total-a.total);
+  const aEl=document.getElementById('portfolio-assets');
+  if(!assets.length){aEl.innerHTML='<div class="empty"><i class="ti ti-coins"></i>Nessun asset.</div>';return;}
+  aEl.innerHTML=assets.map((a,i)=>`
+    <div class="alloc-row">
+      <div style="width:32px;height:32px;border-radius:var(--r8);background:${TOK_COLORS[i%TOK_COLORS.length]+'30'};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:${TOK_COLORS[i%TOK_COLORS.length]};flex-shrink:0">${a.sym.slice(0,3)}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:700;font-family:'Syne',sans-serif">${a.sym}</div>
+        <div style="font-size:10px;color:var(--txt2)">${fU(a.total)}</div>
+      </div>
+      <div class="alloc-bar"><div class="alloc-fill" style="width:${total>0?(a.total/total*100).toFixed(1):0}%;background:${TOK_COLORS[i%TOK_COLORS.length]}"></div></div>
+      <div class="alloc-pct" style="color:${TOK_COLORS[i%TOK_COLORS.length]}">${total>0?(a.total/total*100).toFixed(1):0}%</div>
     </div>`).join('');
 }
 
-/* ═══ LOAD PORTFOLIO FROM STORAGE ═══ */
-function loadStoredPortfolio() {
-  try {
-    const stored = JSON.parse(localStorage.getItem('nexora_portfolio') || '{}');
-    Object.entries(stored).forEach(([addr, w]) => {
-      if (!portfolio.wallets[addr]) {
-        portfolio.wallets[addr] = { chain:w.chain, bal:w.bal, tokTotalUSD:w.tokTotalUSD };
-        portfolio.ethBal += w.bal || 0;
-        portfolio.tokUSD += w.tokTotalUSD || 0;
-      }
-    });
-    updatePortfolioStrip();
-  } catch(_) {}
+function buildAllocChart(wallets) {
+  if(allocChart){allocChart.destroy();allocChart=null;}
+  const ctx=document.getElementById('alloc-chart');if(!ctx)return;
+  if(!wallets.length){
+    const el=document.getElementById('alloc-legend');
+    if(el)el.innerHTML='<div style="text-align:center;font-size:11px;color:var(--txt3);padding:20px 0">Nessun dato</div>';
+    return;
+  }
+  const labels=wallets.map(([a,w])=>CHAINS[w.chain]?.sym||'?'+' ('+sh(a,4,3)+')');
+  const data=wallets.map(([a,w])=>{const p=liveP[w.sym?.toLowerCase()]||0;return+(w.bal*p+(w.tokUSD||0)).toFixed(2);});
+  const colors=wallets.map((_,i)=>TOK_COLORS[i%TOK_COLORS.length]);
+  allocChart=new Chart(ctx,{
+    type:'doughnut',
+    data:{labels,datasets:[{data,backgroundColor:colors.map(c=>c+'cc'),borderColor:colors,borderWidth:2,hoverBorderWidth:3}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${fU(c.raw)}`}}}}
+  });
+  const leg=document.getElementById('alloc-legend');
+  if(leg)leg.innerHTML=labels.map((l,i)=>`<div style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:11px"><div style="width:10px;height:10px;border-radius:3px;background:${colors[i]};flex-shrink:0"></div><span>${l}</span><span style="margin-left:auto;font-weight:700;font-family:'Syne',sans-serif">${fU(data[i])}</span></div>`).join('');
 }
 
-/* ═══ INIT ═══ */
+function buildEquityChart(currentTotal) {
+  if(eqChart){eqChart.destroy();eqChart=null;}
+  const ctx=document.getElementById('equity-chart');if(!ctx)return;
+  // Simulated equity growth
+  const pts=30; const data=[];
+  let v=currentTotal*0.72;
+  for(let i=0;i<pts;i++){v+=v*(Math.random()-.4)*.03;data.push(+v.toFixed(2));}
+  data[data.length-1]=currentTotal;
+  const labels=Array.from({length:pts},(_,i)=>{const d=new Date();d.setDate(d.getDate()-(pts-1-i));return d.toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit'});});
+  eqChart=new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets:[{data,borderColor:'var(--fire)',borderWidth:2,backgroundColor:'rgba(247,147,26,.06)',fill:true,tension:0.4,pointRadius:0,pointHoverRadius:4,pointHoverBackgroundColor:'var(--fire)'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'$'+c.raw.toLocaleString()}}},scales:{x:{ticks:{color:'#404055',font:{size:9},maxTicksLimit:8},grid:{display:false}},y:{ticks:{color:'#404055',font:{size:9},callback:v=>'$'+(v/1000).toFixed(0)+'k'},grid:{color:'rgba(255,255,255,.03)'}}}}
+  });
+}
+
+/* ━━━━━━━━━━━━━━━━━━━
+   WATCHLIST PAGE
+━━━━━━━━━━━━━━━━━━━ */
+const WATCHLIST_COINS=[
+  {sym:'BTC',name:'Bitcoin',   color:'#F7931A',binance:'BTCUSDT'},
+  {sym:'ETH',name:'Ethereum',  color:'#627EEA',binance:'ETHUSDT'},
+  {sym:'SOL',name:'Solana',    color:'#9945FF',binance:'SOLUSDT'},
+  {sym:'BNB',name:'BNB Chain', color:'#F3BA2F',binance:'BNBUSDT'},
+  {sym:'AVAX',name:'Avalanche',color:'#E84142',binance:'AVAXUSDT'},
+  {sym:'MATIC',name:'Polygon', color:'#8247E5',binance:'MATICUSDT'},
+];
+
+function renderWatchlist() {
+  const el=document.getElementById('watchlist-grid');
+  if(!el)return;
+  el.innerHTML=WATCHLIST_COINS.map(c=>{
+    const p=liveP[c.sym.toLowerCase()]||0;
+    const chgEl=`<span id="wl-chg-${c.sym}" style="font-size:11px;font-weight:700">—</span>`;
+    return`<div class="card" style="padding:0">
+      <div style="padding:16px">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px">
+          <div style="width:36px;height:36px;border-radius:var(--r8);background:${c.color+'20'};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:${c.color};flex-shrink:0">${c.sym.slice(0,2)}</div>
+          <div><div style="font-size:13px;font-weight:800;font-family:'Syne',sans-serif">${c.sym}</div><div style="font-size:10px;color:var(--txt2)">${c.name}</div></div>
+          ${chgEl}
+        </div>
+        <div style="font-size:24px;font-weight:800;font-family:'Syne',sans-serif;margin-bottom:4px" id="wl-p-${c.sym}">${p>0?fU(p):'—'}</div>
+        <div style="height:60px;position:relative"><canvas id="wl-chart-${c.sym}"></canvas></div>
+      </div>
+    </div>`;
+  }).join('');
+  // Build sparklines
+  WATCHLIST_COINS.forEach(c=>buildWLChart(c));
+}
+
+const wlCharts={};
+function buildWLChart(c) {
+  const ctx=document.getElementById(`wl-chart-${c.sym}`);if(!ctx)return;
+  if(wlCharts[c.sym]){wlCharts[c.sym].destroy();}
+  const base=liveP[c.sym.toLowerCase()]||100;
+  const data=Array.from({length:20},()=>{const v=base*(0.95+Math.random()*.1);return+v.toFixed(2);});
+  data[data.length-1]=base;
+  const isUp=data[data.length-1]>=data[0];
+  wlCharts[c.sym]=new Chart(ctx,{
+    type:'line',
+    data:{labels:data.map(()=>''),datasets:[{data,borderColor:isUp?'var(--go)':'var(--stop)',borderWidth:1.5,fill:true,backgroundColor:isUp?'rgba(0,208,132,.1)':'rgba(255,71,87,.08)',tension:0.4,pointRadius:0}]},
+    options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{x:{display:false},y:{display:false}}}
+  });
+}
+
+/* ━━━━━━━━━━━━━━━━━━━
+   LOAD WALLET (from portfolio page)
+━━━━━━━━━━━━━━━━━━━ */
+function loadWallet(addr,chain) {
+  document.getElementById('wallet-input').value=addr;
+  currentChain=chain;
+  document.querySelectorAll('.cpill').forEach(p=>p.classList.remove('on'));
+  const pillMap={eth:0,bsc:1,polygon:2,arbitrum:3,base:4,solana:5};
+  document.querySelectorAll('.cpill')[pillMap[chain]||0]?.classList.add('on');
+  showPage('analyzer');
+  scan();
+}
+
+/* ━━━━━━━━━━━━━━━━━━━
+   PERSISTENCE
+━━━━━━━━━━━━━━━━━━━ */
+function loadStoredPortfolio() {
+  try{
+    const s=JSON.parse(localStorage.getItem('nexora_pf')||'{}');
+    Object.entries(s).forEach(([addr,w])=>{
+      if(!PF.wallets[addr])PF.wallets[addr]={chain:w.chain,bal:w.bal,sym:w.sym,tokUSD:w.tokUSD||0,tokList:[],addedAt:w.addedAt};
+    });
+    updatePFStrip();
+  }catch(_){}
+}
+
+/* ━━━━━━━━━━━━━━━━━━━
+   INIT
+━━━━━━━━━━━━━━━━━━━ */
 loadStoredPortfolio();
-refreshLivePrices();
-setInterval(refreshLivePrices, 15000);
+refreshPrices();
+setInterval(refreshPrices,12000); // refresh every 12s
+renderWatchlist();
+setInterval(()=>{
+  WATCHLIST_COINS.forEach(c=>{
+    const p=liveP[c.sym.toLowerCase()]||0;
+    const el=document.getElementById(`wl-p-${c.sym}`);
+    if(el&&p>0)el.textContent=fU(p);
+  });
+},12000);
 </script>
 </body>
 </html>
